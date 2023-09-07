@@ -425,6 +425,9 @@ class DaemonDomain extends Domain {
       if (featureFlags.isWindowsEnabled && supportedPlatforms.contains(SupportedPlatform.windows)) {
         result.add('windows');
       }
+      if (featureFlags.isOhosEnabled && supportedPlatforms.contains(SupportedPlatform.ohos)) {
+        result.add('ohos');
+      }
       if (featureFlags.isIOSEnabled && supportedPlatforms.contains(SupportedPlatform.ios)) {
         result.add('ios');
       }

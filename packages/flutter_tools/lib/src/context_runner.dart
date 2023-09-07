@@ -55,6 +55,9 @@ import 'macos/macos_workflow.dart';
 import 'macos/xcdevice.dart';
 import 'macos/xcode.dart';
 import 'mdns_discovery.dart';
+import 'ohos/ohos_doctor.dart';
+import 'ohos/ohos_sdk.dart';
+import 'ohos/ohos_workflow.dart';
 import 'persistent_tool_state.dart';
 import 'reporting/crash_reporting.dart';
 import 'reporting/first_run.dart';
@@ -107,6 +110,7 @@ Future<T> runInContext<T>(
         stdio: globals.stdio,
       ),
       AndroidSdk: AndroidSdk.locateAndroidSdk,
+      OhosSdk: OhosSdk.localOhosSdk,
       AndroidStudio: AndroidStudio.latestValid,
       AndroidValidator: () => AndroidValidator(
         androidStudio: globals.androidStudio,
@@ -116,6 +120,17 @@ Future<T> runInContext<T>(
         platform: globals.platform,
         processManager: globals.processManager,
         userMessages: globals.userMessages,
+      ),
+      OhosValidator: () => OhosValidator(
+          ohosSdk: globals.ohosSdk,
+          fileSystem: globals.fs,
+          logger: globals.logger,
+          platform: globals.platform,
+          processManager: globals.processManager,
+          userMessages: userMessages),
+      OhosWorkflow: () => OhosWorkflow(
+        ohosSdk: globals.ohosSdk,
+        featureFlags: featureFlags,
       ),
       AndroidWorkflow: () => AndroidWorkflow(
         androidSdk: globals.androidSdk,
@@ -127,6 +142,7 @@ Future<T> runInContext<T>(
         logger: globals.logger,
         fileSystem: globals.fs,
         androidSdk: globals.androidSdk,
+        ohosSdk: globals.ohosSdk,
       ),
       Artifacts: () => CachedArtifacts(
         fileSystem: globals.fs,
@@ -187,12 +203,14 @@ Future<T> runInContext<T>(
         processManager: globals.processManager,
         platform: globals.platform,
         androidSdk: globals.androidSdk,
+        ohosSdk: globals.ohosSdk,
         iosSimulatorUtils: globals.iosSimulatorUtils!,
         featureFlags: featureFlags,
         fileSystem: globals.fs,
         iosWorkflow: globals.iosWorkflow!,
         artifacts: globals.artifacts!,
         flutterVersion: globals.flutterVersion,
+        ohosWorkflow: ohosWorkflow!,
         androidWorkflow: androidWorkflow!,
         fuchsiaWorkflow: fuchsiaWorkflow!,
         xcDevice: globals.xcdevice!,

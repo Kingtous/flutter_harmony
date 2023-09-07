@@ -49,6 +49,9 @@ enum Artifact {
   /// Tools related to subsetting or icon font files.
   fontSubset,
   constFinder,
+
+  /// the flutter engine runtime
+  flutterEngineSo,
 }
 
 /// A subset of [Artifact]s that are platform and build mode independent
@@ -113,6 +116,8 @@ TargetPlatform? _mapTargetPlatform(TargetPlatform? targetPlatform) {
   switch (targetPlatform) {
     case TargetPlatform.android:
       return TargetPlatform.android_arm64;
+    case TargetPlatform.ohos:
+      return TargetPlatform.ohos_arm64;
     case TargetPlatform.ios:
     case TargetPlatform.darwin:
     case TargetPlatform.linux_x64:
@@ -126,6 +131,9 @@ TargetPlatform? _mapTargetPlatform(TargetPlatform? targetPlatform) {
     case TargetPlatform.android_arm64:
     case TargetPlatform.android_x64:
     case TargetPlatform.android_x86:
+    case TargetPlatform.ohos_arm:
+    case TargetPlatform.ohos_arm64:
+    case TargetPlatform.ohos_x64:
     case null:
       return targetPlatform;
   }
@@ -148,6 +156,10 @@ bool _isWindows(TargetPlatform? platform) {
     case TargetPlatform.linux_x64:
     case TargetPlatform.tester:
     case TargetPlatform.web_javascript:
+    case TargetPlatform.ohos:
+    case TargetPlatform.ohos_arm:
+    case TargetPlatform.ohos_arm64:
+    case TargetPlatform.ohos_x64:
     case null:
       return false;
   }
@@ -201,6 +213,8 @@ String? _artifactToFileName(Artifact artifact, [ TargetPlatform? platform, Build
       return 'font-subset$exe';
     case Artifact.constFinder:
       return 'const_finder.dart.snapshot';
+    case Artifact.flutterEngineSo:
+      return 'libflutter.so';
   }
 }
 
@@ -442,6 +456,10 @@ class CachedArtifacts implements Artifacts {
         return _getFuchsiaArtifactPath(artifact, platform!, mode!);
       case TargetPlatform.tester:
       case TargetPlatform.web_javascript:
+      case TargetPlatform.ohos:
+      case TargetPlatform.ohos_arm:
+      case TargetPlatform.ohos_arm64:
+      case TargetPlatform.ohos_x64:
       case null:
         return _getHostArtifactPath(artifact, platform ?? _currentHostPlatform(_platform, _operatingSystemUtils), mode);
     }
@@ -489,6 +507,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.vmSnapshotData:
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
+      case Artifact.flutterEngineSo:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -521,6 +540,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.vmSnapshotData:
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
+      case Artifact.flutterEngineSo:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -565,6 +585,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.vmSnapshotData:
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
+      case Artifact.flutterEngineSo:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -634,6 +655,10 @@ class CachedArtifacts implements Artifacts {
       case Artifact.fuchsiaFlutterRunner:
       case Artifact.fuchsiaKernelCompiler:
         throw StateError('Artifact $artifact not available for platform $platform.');
+      case Artifact.flutterEngineSo:
+        return _cache.getArtifactDirectory('engine')
+            .childFile(_artifactToFileName(artifact)!)
+            .path;
     }
   }
 
@@ -768,8 +793,21 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
   final OperatingSystemUtils _operatingSystemUtils;
   final CachedArtifacts _backupCache;
 
+  /// this list hostArtifact will execute by the backup engine ,because local engine arch not match .
+  final List<HostArtifact> hostArtifactList = [
+    HostArtifact.engineDartBinary,
+    HostArtifact.impellerc,
+  ];
+
+  bool isOhosLocalEngine(){
+    return localEngineName.contains('ohos');
+  }
+
   @override
   FileSystemEntity getHostArtifact(HostArtifact artifact) {
+    if(isOhosLocalEngine() && hostArtifactList.contains(artifact)){
+      return _backupCache.getHostArtifact(artifact);
+    }
     switch (artifact) {
       case HostArtifact.engineDartSdkPath:
         final String path = _getDartSdkPath();
@@ -860,7 +898,7 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
     final String? artifactFileName = isDirectoryArtifact ? null : _artifactToFileName(artifact, platform, mode);
     switch (artifact) {
       case Artifact.genSnapshot:
-        return _genSnapshotPath();
+        return _genSnapshotPath(platform);
       case Artifact.flutterTester:
         return _flutterTesterPath(platform!);
       case Artifact.isolateSnapshotData:
@@ -908,6 +946,7 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
       case Artifact.linuxHeaders:
       case Artifact.windowsDesktopPath:
       case Artifact.windowsCppClientWrapper:
+      case Artifact.flutterEngineSo:
         return _fileSystem.path.join(_hostEngineOutPath, artifactFileName);
       case Artifact.frontendServerSnapshotForEngineDartSdk:
         return _fileSystem.path.join(
@@ -967,6 +1006,10 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
       case TargetPlatform.fuchsia_x64:
       case TargetPlatform.web_javascript:
       case TargetPlatform.tester:
+      case TargetPlatform.ohos:
+      case TargetPlatform.ohos_arm:
+      case TargetPlatform.ohos_arm64:
+      case TargetPlatform.ohos_x64:
         throwToolExit('Unsupported host platform: $hostPlatform');
     }
   }
@@ -975,8 +1018,14 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
     return _fileSystem.path.join(engineOutPath, 'flutter_web_sdk');
   }
 
-  String _genSnapshotPath() {
-    const List<String> clangDirs = <String>['.', 'clang_x64', 'clang_x86', 'clang_i386', 'clang_arm64'];
+  String _genSnapshotPath(TargetPlatform? platform) {
+    late List<String> clangDirs;
+    if (isOhosPlatform(platform)) {
+      // on ohos platform, clang_x64 has compatibility first
+      clangDirs = <String>['clang_x64', '.', 'clang_x86', 'clang_i386', 'clang_arm64'];
+    } else {
+      clangDirs = <String>['.', 'clang_x64', 'clang_x86', 'clang_i386', 'clang_arm64'];
+    }
     final String genSnapshotName = _artifactToFileName(Artifact.genSnapshot)!;
     for (final String clangDir in clangDirs) {
       final String genSnapshotPath = _fileSystem.path.join(engineOutPath, clangDir, genSnapshotName);

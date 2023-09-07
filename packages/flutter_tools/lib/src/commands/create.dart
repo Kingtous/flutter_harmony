@@ -274,6 +274,7 @@ class CreateCommand extends CreateBase {
     final bool includeLinux;
     final bool includeMacos;
     final bool includeWindows;
+    final bool includeOhos;
     if (template == FlutterProjectType.module) {
       // The module template only supports iOS and Android.
       includeIos = true;
@@ -282,6 +283,7 @@ class CreateCommand extends CreateBase {
       includeLinux = false;
       includeMacos = false;
       includeWindows = false;
+      includeOhos = false;
     } else {
       includeIos = featureFlags.isIOSEnabled && platforms.contains('ios');
       includeAndroid = featureFlags.isAndroidEnabled && platforms.contains('android');
@@ -289,6 +291,7 @@ class CreateCommand extends CreateBase {
       includeLinux = featureFlags.isLinuxEnabled && platforms.contains('linux');
       includeMacos = featureFlags.isMacOSEnabled && platforms.contains('macos');
       includeWindows = featureFlags.isWindowsEnabled && platforms.contains('windows');
+      includeOhos = featureFlags.isOhosEnabled && platforms.contains('ohos');
     }
 
     String? developmentTeam;
@@ -323,6 +326,7 @@ class CreateCommand extends CreateBase {
       linux: includeLinux,
       macos: includeMacos,
       windows: includeWindows,
+      ohos: includeOhos,
       // Enable null safety everywhere.
       dartSdkVersionBounds: "'>=$dartSdk <3.0.0'",
       implementationTests: boolArgDeprecated('implementation-tests'),

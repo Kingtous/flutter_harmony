@@ -20,6 +20,9 @@ class ConfigCommand extends FlutterCommand {
       help: 'Clear the saved development certificate choice used to sign apps for iOS device deployment.');
     argParser.addOption('android-sdk', help: 'The Android SDK directory.');
     argParser.addOption('android-studio-dir', help: 'The Android Studio install directory.');
+    argParser.addOption('ohos-sdk', help: 'The OpenHarmony SDK directory.');
+    argParser.addOption('ohpm-home', help: 'The ohpm tool directory.');
+    argParser.addOption('signTool-home', help: 'The sign tool directory.');
     argParser.addOption('build-dir', help: 'The relative path to override a projects build directory.',
         valueHelp: 'out/');
     argParser.addFlag('machine',
@@ -137,6 +140,18 @@ class ConfigCommand extends FlutterCommand {
 
     if (argResults?.wasParsed('android-studio-dir') ?? false) {
       _updateConfig('android-studio-dir', stringArgDeprecated('android-studio-dir')!);
+    }
+
+    if (argResults?.wasParsed('ohos-sdk') ?? false) {
+      _updateConfig('ohos-sdk', stringArgDeprecated('ohos-sdk')!);
+    }
+
+    if (argResults?.wasParsed('ohpm-home') ?? false) {
+      _updateConfig('ohpm-home', stringArgDeprecated('ohpm-home')!);
+    }
+
+    if (argResults?.wasParsed('signTool-home') ?? false) {
+      _updateConfig('signTool-home', stringArgDeprecated('signTool-home')!);
     }
 
     if (argResults?.wasParsed('clear-ios-signing-cert') ?? false) {

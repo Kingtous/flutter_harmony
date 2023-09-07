@@ -35,6 +35,7 @@ import 'devfs.dart';
 import 'device.dart';
 import 'features.dart';
 import 'globals.dart' as globals;
+import 'ohos/hdc_server.dart';
 import 'project.dart';
 import 'resident_devtools_handler.dart';
 import 'run_cold.dart';
@@ -247,6 +248,13 @@ class FlutterDevice {
     bool isWaitingForVm = false;
 
     subscription = observatoryUris!.listen((Uri? observatoryUri) async {
+      // when on hdc server mode,the host is not local,change to hdc server
+      final String? hdcServerHost = getHdcServerHost();
+      if(hdcServerHost!=null){
+        const String localHost = '0.0.0.0';
+        observatoryUri = Uri.parse(observatoryUri?.toString()?.replaceAll(localHost, hdcServerHost)??localHost);
+      }
+
       // FYI, this message is used as a sentinel in tests.
       globals.printTrace('Connecting to service protocol: $observatoryUri');
       isWaitingForVm = true;
