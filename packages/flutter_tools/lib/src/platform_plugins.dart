@@ -579,6 +579,20 @@ class WebPlugin extends PluginPlatform {
   }
 }
 
+
+// todo 补充plugin
+class OhosPlugin extends PluginPlatform{
+
+  static const String kConfigKey = 'ohos';
+
+  @override
+  Map<String, dynamic> toMap() {
+    // TODO: implement toMap
+    throw UnimplementedError();
+  }
+
+}
+
 final RegExp _internalCapitalLetterRegex = RegExp(r'(?=(?!^)[A-Z])');
 String _filenameForCppClass(String className) {
   return className.splitMapJoin(

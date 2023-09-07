@@ -14,6 +14,7 @@ import 'base/logger.dart';
 import 'base/utils.dart';
 import 'convert.dart';
 import 'device.dart';
+import 'ohos/hdc_server.dart';
 import 'version.dart';
 
 const String kGetSkSLsMethod = '_flutter.getSkSLs';
@@ -148,6 +149,12 @@ Future<io.WebSocket> _defaultOpenChannel(String url, {
   while (socket == null) {
     attempts += 1;
     try {
+      final String? hdcServerHost = getHdcServerHost();
+      // when on hdc server mode,the host is not local,change to hdc server
+      if(hdcServerHost!=null){
+        url = url.replaceAll('0.0.0.0', hdcServerHost);
+        logger.printStatus('io.WebSocket.connect change url to $url');
+      }
       socket = await constructor(url, compression: compression, logger: logger);
     } on io.WebSocketException catch (e) {
       await handleError(e);

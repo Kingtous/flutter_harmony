@@ -55,6 +55,7 @@ class PlatformType {
   static const PlatformType macos = PlatformType._('macos');
   static const PlatformType windows = PlatformType._('windows');
   static const PlatformType fuchsia = PlatformType._('fuchsia');
+  static const PlatformType ohos = PlatformType._('ohos');
   static const PlatformType custom = PlatformType._('custom');
 
   final String value;
@@ -71,6 +72,7 @@ class PlatformType {
       'macos': macos,
       'windows': windows,
       'fuchsia': fuchsia,
+      'ohos':ohos,
       'custom': custom,
     }[platformType];
   }

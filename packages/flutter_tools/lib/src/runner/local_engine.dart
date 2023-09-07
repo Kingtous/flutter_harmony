@@ -152,7 +152,8 @@ class LocalEngineLocator {
   String _getHostEngineBasename(String localEngineBasename) {
     if (localEngineBasename.startsWith('web_') ||
         localEngineBasename.startsWith('wasm_') ||
-        localEngineBasename.startsWith('host_')) {
+        localEngineBasename.startsWith('host_') ||
+        localEngineBasename.startsWith('ohos_')) {
       // Don't modify the web or host local engine's basename.
       return localEngineBasename;
     }

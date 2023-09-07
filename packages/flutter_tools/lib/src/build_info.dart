@@ -581,6 +581,11 @@ enum TargetPlatform {
   android_arm64,
   android_x64,
   android_x86,
+  //ohos platform
+  ohos,
+  ohos_arm,
+  ohos_arm64,
+  ohos_x64,
 }
 
 /// iOS and macOS target device architecture.
@@ -598,6 +603,24 @@ enum AndroidArch {
   arm64_v8a,
   x86,
   x86_64,
+}
+
+enum OhosArch {
+  armeabi_v7a,
+  arm64_v8a,
+  x86_64,
+}
+
+
+bool isOhosPlatform(TargetPlatform? targetPlatform){
+  switch(targetPlatform){
+    case TargetPlatform.ohos:
+    case TargetPlatform.ohos_arm:
+    case TargetPlatform.ohos_arm64:
+    case TargetPlatform.ohos_x64:
+      return true;
+  }
+  return false;
 }
 
 /// The default set of iOS device architectures to build for.
@@ -737,6 +760,14 @@ String getNameForTargetPlatform(TargetPlatform platform, {DarwinArch? darwinArch
       return 'web-javascript';
     case TargetPlatform.android:
       return 'android';
+    case TargetPlatform.ohos:
+      return 'ohos';
+    case TargetPlatform.ohos_arm:
+      return 'ohos-arm';
+    case TargetPlatform.ohos_arm64:
+      return 'ohos-arm64';
+    case TargetPlatform.ohos_x64:
+      return 'ohos-x86';
   }
 }
 
@@ -766,12 +797,20 @@ TargetPlatform getTargetPlatformForName(String platform) {
       return TargetPlatform.darwin;
     case 'linux-x64':
       return TargetPlatform.linux_x64;
-   case 'linux-arm64':
+    case 'linux-arm64':
       return TargetPlatform.linux_arm64;
     case 'windows-x64':
       return TargetPlatform.windows_x64;
     case 'web-javascript':
       return TargetPlatform.web_javascript;
+    case 'ohos':
+      return TargetPlatform.ohos;
+    case 'ohos-arm':
+      return TargetPlatform.ohos_arm;
+    case 'ohos-arm64':
+      return TargetPlatform.ohos_arm64;
+    case 'ohos-x64':
+      return TargetPlatform.ohos_x64;
   }
   throw Exception('Unsupported platform name "$platform"');
 }
@@ -816,6 +855,40 @@ String getPlatformNameForAndroidArch(AndroidArch arch) {
   }
 }
 
+OhosArch getOhosArchForName(String platform) {
+  switch (platform) {
+    case 'ohos-arm':
+      return OhosArch.armeabi_v7a;
+    case 'ohos-arm64':
+      return OhosArch.arm64_v8a;
+    case 'ohos-x86':
+      return OhosArch.x86_64;
+  }
+  throw Exception('Unsupported Ohos arch name "$platform"');
+}
+
+String getNameForOhosArch(OhosArch arch) {
+  switch (arch) {
+    case OhosArch.armeabi_v7a:
+      return 'armeabi-v7a';
+    case OhosArch.arm64_v8a:
+      return 'arm64-v8a';
+    case OhosArch.x86_64:
+      return 'x86_64';
+  }
+}
+
+String getPlatformNameForOhosArch(OhosArch arch) {
+  switch (arch) {
+    case OhosArch.armeabi_v7a:
+      return 'ohos-arm';
+    case OhosArch.arm64_v8a:
+      return 'ohos-arm64';
+    case OhosArch.x86_64:
+      return 'ohos-x86';
+  }
+}
+
 String fuchsiaArchForTargetPlatform(TargetPlatform targetPlatform) {
   switch (targetPlatform) {
     case TargetPlatform.fuchsia_arm64:
@@ -834,6 +907,10 @@ String fuchsiaArchForTargetPlatform(TargetPlatform targetPlatform) {
     case TargetPlatform.tester:
     case TargetPlatform.web_javascript:
     case TargetPlatform.windows_x64:
+    case TargetPlatform.ohos:
+    case TargetPlatform.ohos_arm:
+    case TargetPlatform.ohos_arm64:
+    case TargetPlatform.ohos_x64:
       throw UnsupportedError('Unexpected Fuchsia platform $targetPlatform');
   }
 }
@@ -905,6 +982,11 @@ String getMacOSBuildDirectory() {
 /// Returns the web build output directory.
 String getWebBuildDirectory() {
   return globals.fs.path.join(getBuildDirectory(), 'web');
+}
+
+/// Returns the ohos build output directory.
+String getOhosBuildDirectory(){
+  return globals.fs.path.join(getBuildDirectory(), 'ohos');
 }
 
 /// Returns the Linux build output directory.
@@ -1089,6 +1171,10 @@ String getNameForTargetPlatformArch(TargetPlatform platform) {
     case TargetPlatform.ios:
     case TargetPlatform.tester:
     case TargetPlatform.web_javascript:
+    case TargetPlatform.ohos:
+    case TargetPlatform.ohos_arm:
+    case TargetPlatform.ohos_arm64:
+    case TargetPlatform.ohos_x64:
       throw UnsupportedError('Unexpected target platform $platform');
   }
 }
