@@ -1,122 +1,82 @@
-<a href="https://flutter.dev/">
-  <h1 align="center">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://storage.googleapis.com/cms-storage-bucket/6e19fee6b47b36ca613f.png">
-      <img alt="Flutter" src="https://storage.googleapis.com/cms-storage-bucket/c823e53b3a1a7b0d36a9.png">
-    </picture>
-  </h1>
-</a>
+Flutter SDK 仓库
+==============
 
-[![Build Status - Cirrus][]][Build status]
-[![Discord badge][]][Discord instructions]
-[![Twitter handle][]][Twitter badge]
-[![codecov](https://codecov.io/gh/flutter/flutter/branch/master/graph/badge.svg?token=11yDrJU2M2)](https://codecov.io/gh/flutter/flutter)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5631/badge)](https://bestpractices.coreinfrastructure.org/projects/5631)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/flutter/flutter/badge)](https://api.securityscorecards.dev/projects/github.com/flutter/flutter)
+原始仓来源：https://github.com/flutter/flutter
 
-Flutter is Google's SDK for crafting beautiful, fast user experiences for
-mobile, web, and desktop from a single codebase. Flutter works with existing
-code, is used by developers and organizations around the world, and is free and
-open source.
+## 仓库说明：
+本仓库是基于flutter sdk对于OpenHarmony的兼容拓展，可支持使用flutter tools指令编译和构建OpenHarmony应用程序。
 
-## Documentation
+## 构建说明：
 
-* [Install Flutter](https://flutter.dev/get-started/)
-* [Flutter documentation](https://docs.flutter.dev/)
-* [Development wiki](https://github.com/flutter/flutter/wiki)
-* [Contributing to Flutter](https://github.com/flutter/flutter/blob/master/CONTRIBUTING.md)
+* 构建环境：
+目前flutter tools指令仅支持linux下使用
 
-For announcements about new releases, follow the
-[flutter-announce@googlegroups.com](https://groups.google.com/forum/#!forum/flutter-announce)
-mailing list. Our documentation also tracks [breaking
-changes](https://docs.flutter.dev/release/breaking-changes) across releases.
+* 构建依赖：
+依赖[flutter engine](https://github.com/flutter/engine)构建产物，请在flutter tools指令运行参数中添加：--local-engine=\<engine产物目录\>
 
-## Terms of service
+* 构建步骤：
+1. 配置OpenHarmony sdk路径到环境变量OHOS_SDK_HOME，
+请先下载：[Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，然后参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 下载OpenHarmony sdk。
+（PS:api 10需要从[每日构建](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component)下载ohos-full-sdk）
 
-The Flutter tool may occasionally download resources from Google servers. By
-downloading or using the Flutter SDK, you agree to the Google Terms of Service:
-https://policies.google.com/terms
+2. 配置OHPM路径到环境变量OHPM_HOME，下载地址：[Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)
 
-For example, when installed from GitHub (as opposed to from a prepackaged
-archive), the Flutter tool will download the Dart SDK from Google servers
-immediately when first run, as it is used to execute the `flutter` tool itself.
-This will also occur when Flutter is upgraded (e.g. by running the `flutter
-upgrade` command).
+3. 配置签名工具,key为SIGN_TOOL_HOME,下载地址：https://gitee.com/openharmony/developtools_hapsigner
 
-## About Flutter
+签名工具配置流程：
+  * 按照readme.md，编译得到 hap-sign-tool.jar ，确保其在目录下：./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar
+  * 进入autosign文件夹，新增profile_tmp.json文件，编辑如下：
+  ```json
+  {
+    "version-name": "2.0.0",
+    "version-code": 2,
+    "app-distribution-type": "os_integration",
+    "uuid": "5027b99e-5f9e-465d-9508-a9e0134ffe18",
+    "validity": {
+        "not-before": 1594865258,
+        "not-after": 1689473258
+    },
+    "type": "release",
+    "bundle-info": {
+        "developer-id": "OpenHarmony",
+        "distribution-certificate": "-----BEGIN CERTIFICATE-----\nMIICSTCCAc+gAwIBAgIFAJV7uNUwCgYIKoZIzj0EAwIwYzELMAkGA1UEBhMCQ04x\nFDASBgNVBAoMC09wZW5IYXJtb255MRkwFwYDVQQLDBBPcGVuSGFybW9ueSBUZWFt\nMSMwIQYDVQQDDBpPcGVuSGFybW9ueSBBcHBsaWNhdGlvbiBDQTAeFw0yMjAxMjkw\nNTU0MTRaFw0yMzAxMjkwNTU0MTRaMGgxCzAJBgNVBAYTAkNOMRQwEgYDVQQKDAtP\ncGVuSGFybW9ueTEZMBcGA1UECwwQT3Blbkhhcm1vbnkgVGVhbTEoMCYGA1UEAwwf\nT3Blbkhhcm1vbnkgQXBwbGljYXRpb24gUmVsZWFzZTBZMBMGByqGSM49AgEGCCqG\nSM49AwEHA0IABAW8pFu7tHGUuWtddD5wvazc1qN8ts9UPZH4pecbb/bSFWKh7X7R\n/eTVaRrCTSSdovI1dhoV5GjuFsKW+jT2TwSjazBpMB0GA1UdDgQWBBScyywAaAMj\nI7HcuIS42lvZx0Lj+zAJBgNVHRMEAjAAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUE\nDDAKBggrBgEFBQcDAzAYBgwrBgEEAY9bAoJ4AQMECDAGAgEBCgEAMAoGCCqGSM49\nBAMCA2gAMGUCMFfNidGo6uK6KGT9zT1T5bY1NCHTH3P3muy5X1xudOgxWoOqIbnk\ntmQYB78dxWEHLQIxANfApAlXAD/0hnyNC8RDzfLOPEeay6jU9FXJj3AoR90rwZpR\noN9sYD6Oks4VGRw6yQ==\n-----END CERTIFICATE-----\n",
+        "bundle-name": "{{ohosId}}",
+        "apl": "normal",
+        "app-feature": "hos_normal_app"
+    },
+    "acls": {
+        "allowed-acls": [
+            ""
+        ]
+    },
+    "permissions": {
+        "restricted-permissions": []
+    },
+    "issuer": "pki_internal"
+}
+  ```
+  其中ohosId替换为待调试应用id（下一个pr将会修改为自动替换）;
+编辑autosign.config和createAppCertAndProfile.config，编辑值：sign.profile.inFile=profile_tmp.json
 
-We think Flutter will help you create beautiful, fast apps, with a productive,
-extensible and open development model, whether you're targeting iOS or Android,
-web, Windows, macOS, Linux or embedding it as the UI toolkit for a platform of
-your choice.
+  * 配置环境变量SIGN_TOOL_HOME，值为\<developtools_hapsigner目录\>/autosign
 
-### Beautiful user experiences
+4. 配置\<当前项目目录\>/bin，到环境变量PATH，确保which flutter能找到\<flutter sdk\>/bin/flutter位置；
 
-We want to enable designers to deliver their full creative vision without being
-forced to water it down due to limitations of the underlying framework.
-Flutter's [layered architecture] gives you control over every pixel on the
-screen and its powerful compositing capabilities let you overlay and animate
-graphics, video, text, and controls without limitation. Flutter includes a full
-[set of widgets][widget catalog] that deliver pixel-perfect experiences whether
-you're building for iOS ([Cupertino]) or other platforms ([Material]), along with
-support for customizing or creating entirely new visual components.
+5. 运行flutter docker，检查环境变量配置是否都正确；
 
-<p align="center"><img src="https://github.com/flutter/website/blob/main/src/assets/images/docs/homepage/reflectly-hero-600px.png?raw=true" alt="Reflectly hero image"></p>
+6. 打开vscode，安装好flutter插件，如果flutter sdk配置正确，可发现OpenHarmony连接设备，可在vscode上运行和调试应用。
 
-### Fast results
 
-Flutter is fast. It's powered by the same hardware-accelerated 2D graphics
-library that underpins Chrome and Android: [Skia]. We architected Flutter to
-support glitch-free, jank-free graphics at the native speed of your device.
-Flutter code is powered by the world-class [Dart platform], which enables
-compilation to 32-bit and 64-bit ARM machine code for iOS and Android, as well
-as JavaScript for the web and Intel x64 for desktop devices.
 
-<p align="center"><img src="https://github.com/flutter/website/blob/main/src/assets/images/docs/homepage/dart-diagram-small.png?raw=true" alt="Dart diagram"></p>
-
-### Productive development
-
-Flutter offers [stateful hot reload][Hot reload], allowing you to make changes to your code
-and see the results instantly without restarting your app or losing its state.
-
-[![Hot reload animation][]][Hot reload]
-
-### Extensible and open model
-
-Flutter works with any development tool (or none at all), and also includes
-editor plug-ins for both [Visual Studio Code] and [IntelliJ / Android Studio].
-Flutter provides [tens of thousands of packages][Flutter packages] to speed your
-development, regardless of your target platform. And accessing other native code
-is easy, with support for both FFI ([on Android][Android FFI], [on iOS][iOS FFI],
-[on macOS][macOS FFI], and [on Windows][Windows FFI]) as well as
-[platform-specific APIs][platform channels].
-
-Flutter is a fully open-source project, and we welcome contributions.
-Information on how to get started can be found in our
-[contributor guide](CONTRIBUTING.md).
-
-[flutter.dev]: https://flutter.dev
-[Build Status - Cirrus]: https://api.cirrus-ci.com/github/flutter/flutter.svg
-[Build status]: https://cirrus-ci.com/github/flutter/flutter/master
-[Discord instructions]: https://github.com/flutter/flutter/wiki/Chat
-[Discord badge]: https://img.shields.io/discord/608014603317936148
-[Twitter handle]: https://img.shields.io/twitter/follow/flutterdev.svg?style=social&label=Follow
-[Twitter badge]: https://twitter.com/intent/follow?screen_name=flutterdev
-[layered architecture]: https://docs.flutter.dev/resources/inside-flutter
-[architectural overview]: https://docs.flutter.dev/resources/architectural-overview
-[widget catalog]: https://flutter.dev/widgets/
-[Cupertino]: https://docs.flutter.dev/development/ui/widgets/cupertino
-[Material]: https://docs.flutter.dev/development/ui/widgets/material
-[Skia]: https://skia.org/
-[Dart platform]: https://dart.dev/
-[Hot reload animation]: https://github.com/flutter/website/blob/main/src/assets/images/docs/tools/android-studio/hot-reload.gif?raw=true
-[Hot reload]: https://docs.flutter.dev/development/tools/hot-reload
-[Visual Studio Code]: https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter
-[IntelliJ / Android Studio]: https://plugins.jetbrains.com/plugin/9212-flutter
-[Flutter packages]: https://pub.dev/flutter
-[Android FFI]: https://docs.flutter.dev/development/platform-integration/android/c-interop
-[iOS FFI]: https://docs.flutter.dev/development/platform-integration/ios/c-interop
-[macOS FFI]: https://docs.flutter.dev/development/platform-integration/macos/c-interop
-[Windows FFI]: https://docs.flutter.dev/development/platform-integration/windows/building#integrating-with-windows
-[platform channels]: https://docs.flutter.dev/development/platform-integration/platform-channels
-[interop example]: https://github.com/flutter/flutter/tree/master/examples/platform_channel
+## 已兼容OpenHarmony开发的指令列表：
+| 指令名称 | 指令描述 | 使用说明 |
+| ------- | ------- | ------- | 
+| doctor | 环境检测 | flutter doctor |    
+| config | 环境配置 | flutter config --\<key\> \<value\> |
+| create | 创建新项目 | flutter create --platforms ohos,android --org \<org\> \<appName\> |
+| devices | 已连接设备查找 | flutter devices |
+| install | 应用安装 | flutter install |
+| assemble | 资源打包 | flutter assemble |
+| build | 应用构建 | flutter build hap --target-platform ohos-arm --debug true |
+| run | 应用运行 | flutter run |
+| attach | 调试模式 | flutter attach |
