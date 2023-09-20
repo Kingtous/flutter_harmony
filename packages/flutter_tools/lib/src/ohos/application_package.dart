@@ -77,16 +77,19 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
   }
 }
 
+/// OpenHarmony的构建信息
 class OhosBuildData {
-  OhosBuildData(this.appInfo, this.modeInfo);
+  OhosBuildData(this.appInfo, this.modeInfo, this.apiVersion);
 
   late AppInfo appInfo;
   late ModuleInfo modeInfo;
+  late int apiVersion;
 
   static OhosBuildData parseOhosBuildData(
-      OhosProject ohosProject, Logger logger) {
+      OhosProject ohosProject, Logger? logger) {
     late AppInfo appInfo;
     late ModuleInfo moduleInfo;
+    late int apiVersion;
     try {
       final File appJson = ohosProject.getAppJsonFile();
       final String json = appJson.readAsStringSync();
@@ -96,11 +99,18 @@ class OhosBuildData {
       final String moduleStr = moduleJson.readAsStringSync();
       final dynamic module = JSON5.parse(moduleStr);
       moduleInfo = ModuleInfo.getModuleInfo(module);
+      apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
     } on Exception catch (err) {
       throwToolExit('parse ohos project build data exception! $err');
     }
-    return OhosBuildData(appInfo, moduleInfo);
+    return OhosBuildData(appInfo, moduleInfo, apiVersion);
   }
+}
+
+int getApiVersion(File buildProfile) {
+  final String buildProfileConfig = buildProfile.readAsStringSync();
+  final dynamic obj = JSON5.parse(buildProfileConfig);
+  return obj['app']['compileSdkVersion'] as int;
 }
 
 class AppInfo {

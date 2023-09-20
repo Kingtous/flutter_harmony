@@ -15,17 +15,19 @@ Flutter SDK 仓库
 依赖[flutter engine](https://github.com/flutter/engine)构建产物，请在flutter tools指令运行参数中添加：--local-engine=\<engine产物目录\>
 
 * 构建步骤：
-1. 配置OpenHarmony sdk路径到环境变量OHOS_SDK_HOME，
-请先下载：[Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，然后参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 下载OpenHarmony sdk。
+1. 请先下载[Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)；
+
+2. 在Command Line Tools下载目录中，找到sdkmanager， 参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 下载OpenHarmony sdk。
 （PS:api 10需要从[每日构建](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component)下载ohos-full-sdk）
+ 配置OpenHarmony sdk路径到环境变量OHOS_SDK_HOME，例如:~/.bashrc新增配置export OHOS_SDK_HOME=\<sdk路径\>（路径的根目录下，包含9或者10命名api文件夹）；
 
-2. 配置OHPM路径到环境变量OHPM_HOME，下载地址：[Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)
+3. 在Command Line Tools下载目录中，ohpm文件夹路径配置成环境变量OHPM_HOME，例如：export OHPM_HOME=\<父路径\>/oh-command-line-tools/ohpm，参照指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3),执行ohpm/bin/init命令安装ohpm；
 
-3. 配置签名工具,key为SIGN_TOOL_HOME,下载地址：https://gitee.com/openharmony/developtools_hapsigner
+4. 配置签名工具环境变量SIGN_TOOL_HOME,例如：export SIGN_TOOL_HOME=\<developtools_hapsigner目录\>/autosign，下载地址：https://gitee.com/openharmony/developtools_hapsigner
 
-签名工具配置流程：
-  * 按照readme.md，编译得到 hap-sign-tool.jar ，确保其在目录下：./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar
-  * 进入autosign文件夹，新增profile_tmp.json文件，编辑如下：
+签名工具还需进行下列配置：
+  * 参照developtools_hapsigner的readme，编译得到 hap-sign-tool.jar ，确保其在目录下：./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar
+  * 进入autosign文件夹，执行命令chmod 777 *.sh，并且新增profile_tmp_template.json文件，编辑如下：
   ```json
   {
     "version-name": "2.0.0",
@@ -55,28 +57,25 @@ Flutter SDK 仓库
     "issuer": "pki_internal"
 }
   ```
-  其中ohosId替换为待调试应用id（下一个pr将会修改为自动替换）;
-编辑autosign.config和createAppCertAndProfile.config，编辑值：sign.profile.inFile=profile_tmp.json
+  * 编辑autosign.config和createAppCertAndProfile.config，修改值：sign.profile.inFile=profile_tmp.json
 
-  * 配置环境变量SIGN_TOOL_HOME，值为\<developtools_hapsigner目录\>/autosign
+5. 配置\<当前项目目录\>/bin，到环境变量PATH，确保which flutter能找到\<flutter sdk\>/bin/flutter位置；
 
-4. 配置\<当前项目目录\>/bin，到环境变量PATH，确保which flutter能找到\<flutter sdk\>/bin/flutter位置；
+6. 运行flutter docker，检查环境变量配置是否都正确；
 
-5. 运行flutter docker，检查环境变量配置是否都正确；
-
-6. 打开vscode，安装好flutter插件，如果flutter sdk配置正确，可发现OpenHarmony连接设备，可在vscode上运行和调试应用。
+7. 打开vscode，安装好flutter插件，如果flutter sdk配置正确，可发现OpenHarmony连接设备，可在vscode上运行和调试应用。
 
 
 
 ## 已兼容OpenHarmony开发的指令列表：
-| 指令名称 | 指令描述 | 使用说明 |
-| ------- | ------- | ------- | 
-| doctor | 环境检测 | flutter doctor |    
-| config | 环境配置 | flutter config --\<key\> \<value\> |
+| 指令名称 | 指令描述 | 使用说明                                                              |
+| ------- | ------- |-------------------------------------------------------------------| 
+| doctor | 环境检测 | flutter doctor                                                    |    
+| config | 环境配置 | flutter config --\<key\> \<value\>                                |
 | create | 创建新项目 | flutter create --platforms ohos,android --org \<org\> \<appName\> |
-| devices | 已连接设备查找 | flutter devices |
-| install | 应用安装 | flutter install |
-| assemble | 资源打包 | flutter assemble |
-| build | 应用构建 | flutter build hap --target-platform ohos-arm --debug true |
-| run | 应用运行 | flutter run |
-| attach | 调试模式 | flutter attach |
+| devices | 已连接设备查找 | flutter devices                                                   |
+| install | 应用安装 | flutter install                                                   |
+| assemble | 资源打包 | flutter assemble                                                  |
+| build | 应用构建 | flutter build hap --target-platform ohos-arm --debug true --local-engine=\<兼容ohos的engine产物路径\>         |
+| run | 应用运行 | flutter run --local-engine=\<兼容ohos的engine产物路径\>                  |
+| attach | 调试模式 | flutter attach                                                    |
