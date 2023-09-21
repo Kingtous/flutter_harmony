@@ -12,20 +12,22 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
 Currently, the flutter tools command only supports use under Linux.
 
 * Build dependencies:
-To build products relying on [flutter engine](https://github.com/flutter/engine), please add: --local-engine=\<engine product directory\> in the running parameters of the flutter tools command.
+To build products relying on [flutter engine](https://github.com/flutter/engine), please add: --local-engine=\<engine product directory\> to the running parameters of the flutter tools command.
 
 *Building steps:
-1. Configure the OpenHarmony sdk path to the environment variable OHOS_SDK_HOME,
-Please download first: [Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli), and then refer to [ohsdkmgr usage guide](https://developer.harmonyos.com /cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) Download OpenHarmony sdk.
+1. Please download [Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli) first;
+
+2. In the Command Line Tools download directory, find sdkmanager, refer to [ohsdkmgr usage guide](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr- 0000001545647965-V3) Download OpenHarmony sdk.
 (PS: API 10 needs to download ohos-full-sdk from [Daily Build](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component))
+  Configure the OpenHarmony sdk path to the environment variable OHOS_SDK_HOME, for example: ~/.bashrc Add a new configuration export OHOS_SDK_HOME=\<sdk path\> (the root directory of the path contains 9 or 10 named api folders);
 
-2. Configure the OHPM path to the environment variable OHPM_HOME, download address: [Command Line Tools for OpenHarmony](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli), guidance document: [ohpm usage guide] (https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)
+3. In the Command Line Tools download directory, configure the ohpm folder path as the environment variable OHPM_HOME, for example: export OHPM_HOME=\<parent path\>/oh-command-line-tools/ohpm, refer to the guidance document: [ohpm usage guide ](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3), execute the ohpm/bin/init command to install ohpm;
 
-3. Configure the signature tool, the key is SIGN_TOOL_HOME, download address: https://gitee.com/openharmony/developtools_hapsigner
+4. Configure the signature tool environment variable SIGN_TOOL_HOME, for example: export SIGN_TOOL_HOME=\<developtools_hapsigner directory\>/autosign, download address: https://gitee.com/openharmony/developtools_hapsigner
 
-Signature tool configuration process:
-   * Compile according to readme.md to get hap-sign-tool.jar, make sure it is in the directory: ./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar
-   * Enter the autosign folder, add the profile_tmp.json file, and edit it as follows:
+The signing tool also requires the following configuration:
+   * Refer to the readme of developtools_hapsigner, compile to get hap-sign-tool.jar, and make sure it is in the directory: ./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar
+   * Enter the autosign folder, execute the command chmod 777 *.sh, and add the profile_tmp_template.json file, edit it as follows:
    ```json
    {
      "version-name": "2.0.0",
@@ -55,28 +57,25 @@ Signature tool configuration process:
      "issuer": "pki_internal"
 }
    ```
-   The ohosId is replaced with the application id to be debugged (the next pr will be modified to automatically replace);
-Edit autosign.config and createAppCertAndProfile.config, edit the value: sign.profile.inFile=profile_tmp.json
+   * Edit autosign.config and createAppCertAndProfile.config, modify the value: sign.profile.inFile=profile_tmp.json
 
-   * Configure the environment variable SIGN_TOOL_HOME, the value is \<developtools_hapsigner directory\>/autosign
+5. Configure \<current project directory\>/bin, go to the environment variable PATH, and ensure which flutter can find the \<flutter sdk\>/bin/flutter location;
 
-4. Configure \<current project directory\>/bin, go to the environment variable PATH, and ensure that which flutter can find the \<flutter sdk\>/bin/flutter location;
+6. Run flutter docker and check whether the environment variables are configured correctly;
 
-5. Run flutter docker and check whether the environment variables are configured correctly;
-
-6. Open vscode and install the flutter plug-in. If the flutter sdk is configured correctly, you can find the OpenHarmony connection device and run and debug the application on vscode.
+7. Open vscode and install the flutter plug-in. If the flutter sdk is configured correctly, you can find the OpenHarmony connection device and run and debug the application on vscode.
 
 
 
 ## Compatible command list developed by OpenHarmony:
 | Command name | Command description | Instructions for use |
-| ------- | ------- | ------- |
+| ------- | ------- |--------------------------------------------------------------------|
 | doctor | environment detection | flutter doctor |
 | config | environment configuration | flutter config --\<key\> \<value\> |
 | create | Create a new project | flutter create --platforms ohos,android --org \<org\> \<appName\> |
 | devices | Connected device discovery | flutter devices |
 | install | application installation | flutter install |
 | assemble | resource packaging | flutter assemble |
-| build | application build | flutter build hap --target-platform ohos-arm --debug true |
-| run | application run | flutter run |
+| build | Application build | flutter build hap --target-platform ohos-arm --debug true --local-engine=\<ohos-compatible engine product path\> |
+| run | application run | flutter run --local-engine=\<ohos-compatible engine product path\> |
 | attach | debug mode | flutter attach |

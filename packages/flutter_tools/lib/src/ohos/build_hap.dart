@@ -28,10 +28,10 @@ import '../build_system/build_system.dart';
 import '../build_system/targets/ohos.dart';
 import '../cache.dart';
 import '../compile.dart';
+import '../convert.dart';
 import '../globals.dart' as globals;
 import '../project.dart';
-import 'build_env.dart';
-import '../convert.dart';
+import 'application_package.dart';
 
 /// if this constant set true , must config platform environment PUB_HOSTED_URL and FLUTTER_STORAGE_BASE_URL
 const bool NEED_PUB_CN = true;
@@ -261,8 +261,14 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
     }
   }
 
+  final OhosProject ohosProject = flutterProject.ohos;
+  final OhosBuildData ohosBuildData =
+      OhosBuildData.parseOhosBuildData(ohosProject, logger);
+  final int apiVersion = ohosBuildData.apiVersion;
+
   //copy har
-  final String suffix = buildInfo.isDebug ? 'debug' : 'release';
+  final String suffix =
+      '${buildInfo.isDebug ? 'debug' : 'release'}.$apiVersion';
   final String originHarPath =
       globals.fs.path.join(ohosRootPath, 'har', '$HAR_FILE_NAME.$suffix');
   final String desHarPath =
@@ -287,33 +293,88 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
   operatingSystemUtils.chmod(file, '755');
 
   /// last ,invoke hvigow task generate hap file.
-  await assembleHap(
+  final int errorCode = await assembleHap(
       processManager: globals.processManager,
       ohosRootPath: ohosRootPath,
       hvigorwPath: hvigorwPath,
       logger: logger);
+  if (errorCode != 0) {
+    throwToolExit('assembleHap error! please check log.');
+  }
 
   /// signer hap , this part should throw to ide
-  String signToolHome = Platform.environment['SIGN_TOOL_HOME'] ??
-      '/home/xc/sdk/developtools_hapsigner/autosign';
+  final String signToolHome = Platform.environment['SIGN_TOOL_HOME'] ?? '';
+  if (signToolHome == '') {
+    throwToolExit("can't find environment SIGN_TOOL_HOME");
+  }
 
-  // todo change bundleName
   final String unsignedFile = globals.fs.path.join(ohosRootPath,
       'entry/build/default/outputs/default', 'entry-default-unsigned.hap');
-  final String desFile =
+
+  /// 进行签名
+  final String signedFile = await signHap(localFileSystem, unsignedFile,
+      signToolHome, logger, ohosBuildData.appInfo.bundleName);
+
+  /// 拷贝已签名文件到构建目录
+  final String desSignedFile = globals.fs.path.join(ohosRootPath,
+      'entry/build/default/outputs/default', 'entry-default-signed.hap');
+  final File signedHap = localFileSystem.file(signedFile);
+  signedHap.copySync(desSignedFile);
+
+  return;
+}
+
+/// 签名
+Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
+    String signToolHome, Logger? logger, String bundleName) async {
+  const String PROFILE_TEMPLATE = 'profile_tmp_template.json';
+  const String PROFILE_TARGET = 'profile_tmp.json';
+  const String BUNDLE_NAME_KEY = '{{ohosId}}';
+  //修改HarmonyAppProvision配置文件
+  final String provisionTemplatePath =
+      globals.fs.path.join(signToolHome, PROFILE_TEMPLATE);
+  final File provisionTemplateFile =
+      localFileSystem.file(provisionTemplatePath);
+  if (!provisionTemplateFile.existsSync()) {
+    throwToolExit(
+        '$PROFILE_TEMPLATE is not found,Please refer to the readme to create the file.');
+  }
+  final String provisionTargetPath =
+      globals.fs.path.join(signToolHome, PROFILE_TARGET);
+  final File provisionTargetFile = localFileSystem.file(provisionTargetPath);
+  if (provisionTargetFile.existsSync()) {
+    provisionTargetFile.deleteSync();
+  }
+  replaceKey(
+      provisionTemplateFile, provisionTargetFile, BUNDLE_NAME_KEY, bundleName);
+
+  //拷贝待签名文件
+  final String desFilePath =
       globals.fs.path.join(signToolHome, 'app1-unsigned.hap');
   final File unsignedHap = localFileSystem.file(unsignedFile);
-  unsignedHap.copySync(desFile);
+  final File desFile = localFileSystem.file(desFilePath);
+  if (desFile.existsSync()) {
+    desFile.deleteSync();
+  }
+  unsignedHap.copySync(desFilePath);
 
-  // first delete cache ,and copy backup
-  Directory cache =
+  //执行create_appcert_sign_profile时，result需要是初始状态，所以备份和管理result
+  final Directory result =
       localFileSystem.directory(globals.fs.path.join(signToolHome, 'result'));
-  cache.deleteSync(recursive: true);
-  Directory cacheBackup = localFileSystem
+  if (!result.existsSync()) {
+    throwToolExit('请还原autosign/result目录到初始状态');
+  }
+  final Directory resultBackup = localFileSystem
       .directory(globals.fs.path.join(signToolHome, 'result.bak'));
-  copyDirectory(cacheBackup, cache);
+  //如果result.bak不存在，代表是第一次构建，拷贝result.bak。 以后每一次result，都从result.bak还原
+  if (!resultBackup.existsSync()) {
+    copyDirectory(result, resultBackup);
+  } else {
+    result.deleteSync(recursive: true);
+    copyDirectory(resultBackup, result);
+  }
 
-  String signtool =
+  final String signtool =
       globals.fs.path.join(signToolHome, 'create_appcert_sign_profile.sh');
   final List<String> command = <String>[signtool];
   await invokeCmd(
@@ -322,22 +383,16 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
       processManager: globals.processManager,
       logger: logger);
 
-  String signtool2 = globals.fs.path.join(signToolHome, 'sign_hap.sh');
+  final String signtool2 = globals.fs.path.join(signToolHome, 'sign_hap.sh');
   final List<String> command2 = <String>[signtool2];
   await invokeCmd(
       command: command2,
       workDirectory: signToolHome,
       processManager: globals.processManager,
       logger: logger);
-
-  String signedFile =
+  final String signedFile =
       globals.fs.path.join(signToolHome, 'result', 'app1-signed.hap');
-  String desSignedFile = globals.fs.path.join(ohosRootPath,
-      'entry/build/default/outputs/default', 'entry-default-signed.hap');
-  final File signedHap = localFileSystem.file(signedFile);
-  signedHap.copySync(desSignedFile);
-
-  return;
+  return signedFile;
 }
 
 String getAbsolutePath(FlutterProject flutterProject, String path) {
@@ -358,22 +413,26 @@ Future<void> invokeCmd(
       await processManager.start(command, workingDirectory: workDirectory);
 
   server.stderr.transform<String>(utf8.decoder).listen(logger?.printError);
-  final StdoutHandler stdoutHandler =
-      StdoutHandler(logger: logger!, fileSystem: globals.localFileSystem);
   server.stdout
       .transform<String>(utf8.decoder)
       .transform<String>(const LineSplitter())
-      .listen(stdoutHandler.handler);
+      .listen((String line) {
+    if (line.contains('error')) {
+      throwToolExit('command {$command} invoke error!:$line');
+    } else {
+      logger?.printStatus(line);
+    }
+  });
   final int exitCode = await server.exitCode;
   if (exitCode == 0) {
-    logger.printStatus('$cmd invoke success.');
+    logger?.printStatus('$cmd invoke success.');
   } else {
-    logger.printError('$cmd invoke error.');
+    logger?.printError('$cmd invoke error.');
   }
   return;
 }
 
-///TODO(xuchang) ohpm init first
+/// ohpm should init first
 Future<void> ohpmInstall(
     {required ProcessManager processManager,
     required String ohpmHome,
@@ -404,7 +463,14 @@ Future<void> ohpmInstall(
   return;
 }
 
-Future<void> assembleHap(
+/// 根据来源，替换关键字，输出target文件
+void replaceKey(File file, File target, String key, String value) {
+  String content = file.readAsStringSync();
+  content = content.replaceAll(key, value);
+  target.writeAsStringSync(content);
+}
+
+Future<int> assembleHap(
     {required ProcessManager processManager,
     required String ohosRootPath,
     required String hvigorwPath,
@@ -414,6 +480,7 @@ Future<void> assembleHap(
     hvigorwPath,
     'clean',
     'assembleHap',
+    '--no-daemon',
   ];
 
   logger?.printTrace(command.join(' '));
@@ -433,5 +500,5 @@ Future<void> assembleHap(
   } else {
     logger.printError('assembleHap error.');
   }
-  return;
+  return exitCode;
 }
