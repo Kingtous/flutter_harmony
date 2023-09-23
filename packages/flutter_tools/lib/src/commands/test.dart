@@ -255,6 +255,7 @@ class TestCommand extends FlutterCommand with DeviceBasedDevelopmentArtifacts {
 
   @override
   Future<FlutterCommandResult> verifyThenRunCommand(String? commandPath) {
+    throwToolExit('It will be supported later.', exitCode: 1);
     _testFiles = argResults!.rest.map<String>(globals.fs.path.absolute).toList();
     if (_testFiles.isEmpty) {
       // We don't scan the entire package, only the test/ subdirectory, so that

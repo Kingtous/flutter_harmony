@@ -39,6 +39,7 @@ class EmulatorsCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     if (globals.doctor!.workflows.every((Workflow w) => !w.canListEmulators)) {
       throwToolExit(
           'Unable to find any emulator sources. Please ensure you have some\n'

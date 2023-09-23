@@ -205,6 +205,7 @@ class DriveCommand extends RunCommandBase {
 
   @override
   Future<void> validateCommand() async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     if (userIdentifier != null) {
       final Device? device = await findTargetDevice();
       if (device is! AndroidDevice) {

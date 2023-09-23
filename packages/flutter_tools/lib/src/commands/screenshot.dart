@@ -70,6 +70,7 @@ class ScreenshotCommand extends FlutterCommand {
   Device? device;
 
   Future<void> _validateOptions(String? screenshotType, String? observatoryUrl) async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     switch (screenshotType) {
       case _kDeviceType:
         if (observatoryUrl != null) {

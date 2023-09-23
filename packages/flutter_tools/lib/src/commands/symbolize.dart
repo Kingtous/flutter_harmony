@@ -65,6 +65,7 @@ class SymbolizeCommand extends FlutterCommand {
 
   @override
   Future<void> validateCommand() {
+    throwToolExit('It will be supported later.', exitCode: 1);
     if (argResults?.wasParsed('debug-info') != true) {
       throwToolExit('"--debug-info" is required to symbolize stack traces.');
     }
