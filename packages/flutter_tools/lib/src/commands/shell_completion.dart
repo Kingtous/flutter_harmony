@@ -42,6 +42,7 @@ class ShellCompletionCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     final List<String> rest = argResults?.rest ?? <String>[];
     if (rest.length > 1) {
       throwToolExit('Too many arguments given to bash-completion command.', exitCode: 1);
@@ -57,7 +58,7 @@ class ShellCompletionCommand extends FlutterCommand {
     if (outputFile.existsSync() && !boolArgDeprecated('overwrite')) {
       throwToolExit(
         'Output file ${outputFile.path} already exists, will not overwrite. '
-            'Use --overwrite to force overwriting existing output file.',
+        'Use --overwrite to force overwriting existing output file.',
         exitCode: 1,
       );
     }

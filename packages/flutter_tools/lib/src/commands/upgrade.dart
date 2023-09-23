@@ -71,6 +71,7 @@ class UpgradeCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() {
+    throwToolExit('It will be supported later.', exitCode: 1);
     _commandRunner.workingDirectory = stringArgDeprecated('working-directory') ?? Cache.flutterRoot!;
     return _commandRunner.runCommand(
       force: boolArgDeprecated('force'),

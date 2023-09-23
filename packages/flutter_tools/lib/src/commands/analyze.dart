@@ -144,6 +144,7 @@ class AnalyzeCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     final bool? suggestionFlag = boolArg('suggestions');
     final bool machineFlag = boolArg('machine') ?? false;
     if (suggestionFlag != null && suggestionFlag == true) {

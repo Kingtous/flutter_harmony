@@ -131,6 +131,7 @@ class PrecacheCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
+    throwToolExit('It will be supported later.', exitCode: 1);
     // Re-lock the cache.
     if (_platform.environment['FLUTTER_ALREADY_LOCKED'] != 'true') {
       await _cache.lock();
