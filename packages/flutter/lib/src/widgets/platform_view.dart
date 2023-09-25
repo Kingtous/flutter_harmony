@@ -198,6 +198,157 @@ class AndroidView extends StatefulWidget {
   State<AndroidView> createState() => _AndroidViewState();
 }
 
+class OhosView extends StatefulWidget {
+  /// Creates a widget that embeds an iOS view.
+  ///
+  /// {@macro flutter.widgets.AndroidView.constructorArgs}
+  const OhosView({
+    super.key,
+    required this.viewType,
+    this.onPlatformViewCreated,
+    this.hitTestBehavior = PlatformViewHitTestBehavior.opaque,
+    this.creationParams,
+    this.creationParamsCodec,
+    this.gestureRecognizers,
+  }) : assert(viewType != null),
+        assert(hitTestBehavior != null),
+        assert(creationParams == null || creationParamsCodec != null);
+
+  final String viewType;
+
+  final PlatformViewCreatedCallback? onPlatformViewCreated;
+
+  final PlatformViewHitTestBehavior hitTestBehavior;
+
+  final dynamic creationParams;
+
+  final MessageCodec<dynamic>? creationParamsCodec;
+
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+
+  @override
+  State<OhosView> createState() => _OhosViewState();
+}
+
+class _OhosViewState extends State<OhosView> {
+  OhosViewController? _controller;
+  bool _initialized = false;
+  late FocusNode _focusNode;
+
+  static final Set<Factory<OneSequenceGestureRecognizer>> _emptyRecognizersSet =
+  <Factory<OneSequenceGestureRecognizer>>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final OhosViewController? controller = _controller;
+    if (controller == null) {
+      return const SizedBox.expand();
+    }
+    return Focus(
+      focusNode: _focusNode,
+      onFocusChange: (bool isFocused) => _onFocusChange(isFocused, controller),
+      child: _OhosPlatformView(
+        controller: _controller!,
+        hitTestBehavior: widget.hitTestBehavior,
+        gestureRecognizers: widget.gestureRecognizers ?? _emptyRecognizersSet,
+      ),
+    );
+  }
+
+  void _initializeOnce() {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+    _createNewOhosView();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeOnce();
+  }
+
+  @override
+  void didUpdateWidget(OhosView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.viewType != oldWidget.viewType) {
+      _controller?.dispose();
+      _createNewOhosView();
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createNewOhosView() async {
+    final int id = platformViewsRegistry.getNextPlatformViewId();
+    final OhosViewController controller = await PlatformViewsService.initOhosView(
+        id: id,
+        viewType: widget.viewType,
+        creationParams: widget.creationParams,
+        creationParamsCodec: widget.creationParamsCodec,
+        onFocus: () {
+          _focusNode.requestFocus();
+        }
+    );
+    if (!mounted) {
+      controller.dispose();
+      return;
+    }
+    widget.onPlatformViewCreated?.call(id);
+    setState(() {
+      _controller = controller;
+      _focusNode = FocusNode(debugLabel: 'OhosView(id: $id)');
+    });
+  }
+
+  void _onFocusChange(bool isFocused, OhosViewController controller) {
+    if (!isFocused) {
+      return;
+    }
+    SystemChannels.textInput.invokeMethod<void>(
+      'TextInput.setPlatformViewClient',
+      <String, dynamic>{'platformViewId': controller.id},
+    );
+  }
+}
+
+class _OhosPlatformView extends LeafRenderObjectWidget {
+  const _OhosPlatformView({
+    required this.controller,
+    required this.hitTestBehavior,
+    required this.gestureRecognizers,
+  }) : assert(controller != null),
+        assert(hitTestBehavior != null),
+        assert(gestureRecognizers != null);
+
+  final OhosViewController controller;
+  final PlatformViewHitTestBehavior hitTestBehavior;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return RenderOhosView(
+      viewController: controller,
+      hitTestBehavior: hitTestBehavior,
+      gestureRecognizers: gestureRecognizers,
+    );
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, RenderOhosView renderObject) {
+    renderObject.viewController = controller;
+    renderObject.hitTestBehavior = hitTestBehavior;
+    renderObject.updateGestureRecognizers(gestureRecognizers);
+  }
+}
+
 // TODO(amirh): describe the embedding mechanism.
 // TODO(ychris): remove the documentation for conic path not supported once https://github.com/flutter/flutter/issues/35062 is resolved.
 /// Embeds an iOS view in the Widget hierarchy.
