@@ -246,6 +246,36 @@ class PlatformViewsService {
     }
     return UiKitViewController._(id, layoutDirection);
   }
+
+  static Future<OhosViewController> initOhosView({
+    required int id,
+    required String viewType,
+    dynamic creationParams,
+    MessageCodec<dynamic>? creationParamsCodec,
+    VoidCallback? onFocus,
+  }) async {
+    assert(id != null);
+    assert(viewType != null);
+    assert(creationParams == null || creationParamsCodec != null);
+
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+      'viewType': viewType,
+    };
+    if (creationParams != null) {
+      final ByteData paramsByteData = creationParamsCodec!.encodeMessage(creationParams)!;
+      args['params'] = Uint8List.view(
+        paramsByteData.buffer,
+        0,
+        paramsByteData.lengthInBytes,
+      );
+    }
+    await SystemChannels.platform_views.invokeMethod<void>('create', args);
+    if (onFocus != null) {
+      _instance._focusCallbacks[id] = onFocus;
+    }
+    return OhosViewController._(id);
+  }
 }
 
 /// Properties of an Android pointer.
@@ -1422,6 +1452,86 @@ class UiKitViewController {
   Future<void> dispose() async {
     _debugDisposed = true;
     await SystemChannels.platform_views.invokeMethod<void>('dispose', id);
+  }
+}
+
+class OhosViewController {
+  OhosViewController._(
+    this.id
+  ) : assert(id != null);
+
+  final int id;
+
+  bool _debugDisposed = false;
+
+  /// The current offset of the platform view.
+  Offset _offset = Offset.zero;
+
+  Future<void> acceptGesture() {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+    };
+    return SystemChannels.platform_views.invokeMethod('acceptGesture', args);
+  }
+
+  Future<void> rejectGesture() {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+    };
+    return SystemChannels.platform_views.invokeMethod('rejectGesture', args);
+  }
+
+  Future<void> dispose() async {
+    _debugDisposed = true;
+    await SystemChannels.platform_views.invokeMethod<void>('dispose', id);
+  }
+
+  Future<void> setOffset(Offset offset) async {
+    if (offset == _offset) {
+      return;
+    }
+
+    _debugDisposed = true;
+    _offset = offset;
+
+    await SystemChannels.platform_views.invokeMethod<void>(
+      'offset',
+      <String, dynamic>{
+        'id': id,
+        'top': offset.dy,
+        'left': offset.dx,
+      },
+    );
+  }
+
+  Future<void> _sendResizeMessage(Size size) async {
+    assert(!size.isEmpty);
+    await SystemChannels.platform_views.invokeMapMethod<Object?, Object?>(
+      'resize',
+      <String, dynamic>{
+        'id': id,
+        'width': size.width,
+        'height': size.height,
+      },
+    );
+  }
+
+  /// Sizes the Android View.
+  ///
+  /// [size] is the view's new size in logical pixel, it must not be null and must
+  /// be bigger than zero.
+  ///
+  /// The first time a size is set triggers the creation of the Android view.
+  ///
+  /// Returns the buffer size in logical pixel that backs the texture where the platform
+  /// view pixels are written to.
+  ///
+  /// The buffer size may or may not be the same as [size].
+  ///
+  /// As a result, consumers are expected to clip the texture using [size], while using
+  /// the return value to size the texture.
+  Future<void> setSize(Size size) async {
+    _sendResizeMessage(size);
   }
 }
 
