@@ -34,6 +34,7 @@ import '../project.dart';
 import '../protocol_discovery.dart';
 import 'application_package.dart';
 import 'build_hap.dart';
+import 'hdc_server.dart';
 import 'ohos_sdk.dart';
 
 class OhosDevice extends Device {
@@ -452,19 +453,7 @@ class OhosDevice extends Device {
   }
 
   List<String> hdcCommandForDevice(List<String> args) {
-    if (_platform.isLinux) {
-      final List<String> hdcServerCommand =
-          _hdcServer == null ? <String>[] : <String>['-s', _hdcServer!];
-      return <String>[
-        _ohosSdk.hdcPath!,
-        '-t',
-        id,
-        ...hdcServerCommand,
-        ...args
-      ];
-    } else {
-      return <String>[_ohosSdk.hdcPath!, '-t', id, ...args];
-    }
+    return getHdcCommandCompat(_ohosSdk, id, args);
   }
 
   Future<RunResult> runHdcCheckedAsync(

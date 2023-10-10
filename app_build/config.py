@@ -13,6 +13,12 @@
 
 #!/usr/bin/python
 import sys
+import platform
+
+ARCH=platform.machine()
+
+if (ARCH=='x86_64'):
+    ARCH='x64'
 
 # 请在release.py或者debug.py第一个命令行参数中，定义
 project_root = "not defined"
@@ -37,8 +43,8 @@ release_out_root = "../../src/out/ohos_release_arm64"
 
 
 
-release_x86_out_root = release_out_root + "/clang_x64"
-gen_snapshot = release_x86_out_root + "/gen_snapshot"
+host_out_root = release_out_root + "/clang_" + ARCH
+gen_snapshot = 	host_out_root + "/gen_snapshot"
 
 
 def getOutRoot(isDebug=True):
@@ -73,7 +79,8 @@ resource_sdk_path_debug = './resource/dart-sdk-debug'
 resource_sdk_path_release = './resource/dart-sdk-release'
 
 # 下面是构建所需文件
-dart_path = flutter_root + "/bin/cache/dart-sdk/bin/dart"
+dart_path = "../../src/out/ohos_release_arm64/clang_" + ARCH + "/dart"
+
 flutter_path = flutter_root + "/bin/flutter"
 
 # package，和project_root相关的路径，都要临时获取

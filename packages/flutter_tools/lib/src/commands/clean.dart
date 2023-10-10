@@ -2,20 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:meta/meta.dart';
-import 'package:process/process.dart';
 
 import '../../src/macos/xcode.dart';
-import '../base/common.dart';
 import '../base/file_system.dart';
 import '../base/logger.dart';
-import '../base/os.dart';
 import '../build_info.dart';
-import '../build_system/build_system.dart';
-import '../compile.dart';
-import '../convert.dart';
 import '../globals.dart' as globals;
 import '../ios/xcodeproj.dart';
 import '../project.dart';
@@ -75,7 +67,7 @@ class CleanCommand extends FlutterCommand {
     deleteFile(flutterProject.flutterPluginsDependenciesFile);
     deleteFile(flutterProject.flutterPluginsFile);
 
-    await cleanHap(logger: globals.logger);
+    deleteFile(flutterProject.ohos.ohModules);
 
     return const FlutterCommandResult(ExitStatus.success);
   }
@@ -132,41 +124,4 @@ class CleanCommand extends FlutterCommand {
       deletionStatus.stop();
     }
   }
-}
-
-const String HVIGORW_FILE = 'hvigorw';
-
-String getHvigorwPath(String ohosRootPath) {
-  return globals.fs.path.join(ohosRootPath, HVIGORW_FILE);
-}
-
-Future<int> cleanHap({Logger? logger}) async {
-  final FlutterProject flutterProject = FlutterProject.current();
-  final ProcessManager processManager = globals.processManager;
-  final String ohosRootPath =
-      globals.fs.path.join(flutterProject.directory.path, 'ohos');
-  final String hvigorwPath = getHvigorwPath(ohosRootPath);
-  final List<String> command = <String>[
-    hvigorwPath,
-    'clean',
-  ];
-
-  logger?.printTrace(command.join(' '));
-  final Process server =
-      await processManager.start(command, workingDirectory: ohosRootPath);
-
-  server.stderr.transform<String>(utf8.decoder).listen(logger?.printError);
-  final StdoutHandler stdoutHandler =
-      StdoutHandler(logger: logger!, fileSystem: globals.localFileSystem);
-  server.stdout
-      .transform<String>(utf8.decoder)
-      .transform<String>(const LineSplitter())
-      .listen(stdoutHandler.handler);
-  final int exitCode = await server.exitCode;
-  if (exitCode == 0) {
-    logger.printStatus('cleanHap success.');
-  } else {
-    logger.printError('cleanHap error.');
-  }
-  return exitCode;
 }
