@@ -154,7 +154,7 @@
         "templates/app_shared/ohos.tmpl/entry/hvigorfile.ts.tmpl",
         "templates/app_shared/ohos.tmpl/entry/oh-package.json5.tmpl",
         "templates/app_shared/ohos.tmpl/entry/src/main/module.json5",
-        "templates/app_shared/ohos.tmpl/entry/src/main/ets/entryability/EntryAbility.ts.tmpl",
+        "templates/app_shared/ohos.tmpl/entry/src/main/ets/entryability/EntryAbility.ets.tmpl",
         "templates/app_shared/ohos.tmpl/entry/src/main/ets/pages/Index.ets.tmpl",
         "templates/app_shared/ohos.tmpl/entry/src/main/resources/base/element/color.json",
         "templates/app_shared/ohos.tmpl/entry/src/main/resources/base/element/string.json",
