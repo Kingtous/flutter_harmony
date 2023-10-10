@@ -15,6 +15,8 @@
 
 import 'dart:io';
 
+import 'ohos_sdk.dart';
+
 const String HDC_SERVER_KEY = 'HDC_SERVER';
 const String HDC_SERVER_PORT_KEY = 'HDC_SERVER_PORT';
 
@@ -30,7 +32,7 @@ String? getHdcServer() {
   if (hdcServerPort == null) {
     return null;
   }
-  return hdcServer + hdcServerPort;
+  return '$hdcServer:$hdcServerPort';
 }
 
 String? getHdcServerHost() {
@@ -47,4 +49,12 @@ String? getHdcServerPort() {
     return null;
   }
   return hdcServerPort;
+}
+
+List<String> getHdcCommandCompat(
+    OhosSdk ohosSdk, String id, List<String> args) {
+  final String? hdcServer = getHdcServer();
+  final List<String> hdcServerCommand =
+      hdcServer == null ? <String>['-t', id] : <String>['-s', hdcServer];
+  return <String>[ohosSdk.hdcPath!, ...hdcServerCommand, ...args];
 }

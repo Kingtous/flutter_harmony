@@ -72,17 +72,8 @@ class OhosDevices extends PollingDeviceDiscovery {
     }
     String text;
 
-    List<String> cmd = <String>[_ohosSdk!.hdcPath!, 'list', 'targets'];
+    final List<String> cmd = getHdcCommandCompat(_ohosSdk!, '', <String>['list', 'targets']);
 
-    /// if your host is virtual machine linux, need hdc server on wins to hdc connect ohos device.
-    if (_platform.isLinux) {
-      final String? hdcServer = getHdcServer();
-      if (hdcServer != null) {
-        cmd = <String>[_ohosSdk!.hdcPath!, '-s', hdcServer, 'list', 'targets'];
-      } else {
-        cmd = <String>[_ohosSdk!.hdcPath!, 'list', 'targets'];
-      }
-    }
     try {
       text = (await _processUtils.run(
         cmd,

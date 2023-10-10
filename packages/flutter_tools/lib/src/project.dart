@@ -847,6 +847,9 @@ class OhosProject extends FlutterProjectPlatform {
 
   Directory ohosRootPath() => parent.directory.childDirectory('ohos');
 
+  Directory get ohModules => ohosRootPath().childDirectory('entry')
+      .childDirectory('oh_modules');
+
   File getAppJsonFile() =>
       ohosRootPath().childDirectory('AppScope').childFile('app.json5');
 
