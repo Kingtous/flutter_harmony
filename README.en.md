@@ -89,7 +89,7 @@ export PATH=$PATH:$FLUTTER_HOME/bin:$HDC_HOME
 #flutter env end <===
 ```
 
-7. Run flutter docker and check whether the environment variables are configured correctly;
+7. Run `flutter doctor -v`  and check whether the environment variables are configured correctly;
 
 8. Open vscode and install the flutter plug-in. If the flutter sdk is configured correctly, you can find the OpenHarmony connection device and run and debug the application on vscode.
 
