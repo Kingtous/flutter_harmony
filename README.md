@@ -89,7 +89,7 @@ export PATH=$PATH:$FLUTTER_HOME/bin:$HDC_HOME
 #flutter env end <===
 ```
 
-7. 运行flutter docker，检查环境变量配置是否都正确；
+7. 运行 `flutter doctor -v` ，检查环境变量配置是否都正确；
 
 8. 打开vscode，安装好flutter插件，如果flutter sdk配置正确，可发现OpenHarmony连接设备，可在vscode上运行和调试应用。
 
