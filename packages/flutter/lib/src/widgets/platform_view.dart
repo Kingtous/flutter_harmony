@@ -207,6 +207,7 @@ class OhosView extends StatefulWidget {
     required this.viewType,
     this.onPlatformViewCreated,
     this.hitTestBehavior = PlatformViewHitTestBehavior.opaque,
+    this.layoutDirection,
     this.creationParams,
     this.creationParamsCodec,
     this.gestureRecognizers,
@@ -220,6 +221,8 @@ class OhosView extends StatefulWidget {
 
   final PlatformViewHitTestBehavior hitTestBehavior;
 
+  final TextDirection? layoutDirection;
+
   final dynamic creationParams;
 
   final MessageCodec<dynamic>? creationParamsCodec;
@@ -231,7 +234,9 @@ class OhosView extends StatefulWidget {
 }
 
 class _OhosViewState extends State<OhosView> {
-  OhosViewController? _controller;
+  int? _id;
+  late OhosViewController _controller;
+  TextDirection? _layoutDirection;
   bool _initialized = false;
   late FocusNode _focusNode;
 
@@ -248,7 +253,7 @@ class _OhosViewState extends State<OhosView> {
       focusNode: _focusNode,
       onFocusChange: (bool isFocused) => _onFocusChange(isFocused, controller),
       child: _OhosPlatformView(
-        controller: _controller!,
+        controller: _controller,
         hitTestBehavior: widget.hitTestBehavior,
         gestureRecognizers: widget.gestureRecognizers ?? _emptyRecognizersSet,
       ),
@@ -261,51 +266,74 @@ class _OhosViewState extends State<OhosView> {
     }
     _initialized = true;
     _createNewOhosView();
+    _focusNode = FocusNode(debugLabel: 'OhosView(id: $_id)');
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final TextDirection newLayoutDirection = _findLayoutDirection();
+    final bool didChangeLayoutDirection =
+        _layoutDirection != newLayoutDirection;
+    _layoutDirection = newLayoutDirection;
+
     _initializeOnce();
+    if (didChangeLayoutDirection) {
+      // The native view will update asynchronously, in the meantime we don't want
+      // to block the framework. (so this is intentionally not awaiting).
+      _controller.setLayoutDirection(_layoutDirection!);
+    }
   }
 
   @override
   void didUpdateWidget(OhosView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    final TextDirection newLayoutDirection = _findLayoutDirection();
+    final bool didChangeLayoutDirection =
+        _layoutDirection != newLayoutDirection;
+    _layoutDirection = newLayoutDirection;
+
     if (widget.viewType != oldWidget.viewType) {
-      _controller?.dispose();
+      _controller.dispose();
       _createNewOhosView();
       return;
     }
+
+    if (didChangeLayoutDirection) {
+      _controller.setLayoutDirection(_layoutDirection!);
+    }
+  }
+
+  TextDirection _findLayoutDirection() {
+    assert(
+        widget.layoutDirection != null || debugCheckHasDirectionality(context));
+    return widget.layoutDirection ?? Directionality.of(context);
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _createNewOhosView() async {
-    final int id = platformViewsRegistry.getNextPlatformViewId();
-    final OhosViewController controller = await PlatformViewsService.initOhosView(
-        id: id,
+  void _createNewOhosView() {
+    _id = platformViewsRegistry.getNextPlatformViewId();
+    _controller = PlatformViewsService.initOhosView(
+        id: _id!,
         viewType: widget.viewType,
+        layoutDirection: _layoutDirection!,
         creationParams: widget.creationParams,
         creationParamsCodec: widget.creationParamsCodec,
         onFocus: () {
           _focusNode.requestFocus();
         }
     );
-    if (!mounted) {
-      controller.dispose();
-      return;
+
+    if (widget.onPlatformViewCreated != null) {
+      _controller
+          .addOnPlatformViewCreatedListener(widget.onPlatformViewCreated!);
     }
-    widget.onPlatformViewCreated?.call(id);
-    setState(() {
-      _controller = controller;
-      _focusNode = FocusNode(debugLabel: 'OhosView(id: $id)');
-    });
   }
 
   void _onFocusChange(bool isFocused, OhosViewController controller) {
