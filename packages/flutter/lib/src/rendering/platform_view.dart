@@ -522,9 +522,11 @@ class RenderOhosView extends RenderBox {
         assert(gestureRecognizers != null),
         _viewController = viewController {
     updateGestureRecognizers(gestureRecognizers);
+    _viewController.addOnPlatformViewCreatedListener(_onPlatformViewCreated);
     _setOffset();
   }
 
+  _PlatformViewState _state = _PlatformViewState.uninitialized;
   OhosViewController get viewController => _viewController;
   OhosViewController _viewController;
   set viewController(OhosViewController value) {
@@ -532,16 +534,24 @@ class RenderOhosView extends RenderBox {
     if (_viewController == value) {
       return;
     }
+    _viewController.removeOnPlatformViewCreatedListener(_onPlatformViewCreated);
     final bool needsSemanticsUpdate = _viewController.id != value.id;
     _viewController = value;
+    _sizePlatformView();
     markNeedsPaint();
     if (needsSemanticsUpdate) {
       markNeedsSemanticsUpdate();
     }
-    _sizePlatformView();
+    _viewController.addOnPlatformViewCreatedListener(_onPlatformViewCreated);
+  }
+
+  void _onPlatformViewCreated(int id) {
+    markNeedsSemanticsUpdate();
   }
 
   PlatformViewHitTestBehavior hitTestBehavior;
+
+  Size? _currentTextureSize;
 
   void updateGestureRecognizers(Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers) {
     assert(gestureRecognizers != null);
@@ -642,6 +652,12 @@ class RenderOhosView extends RenderBox {
     super.detach();
   }
 
+  @override
+  void dispose() {
+    _viewController.removeOnPlatformViewCreatedListener(_onPlatformViewCreated);
+    super.dispose();
+  }
+
   // Sets the offset of the underlying platform view on the platform side.
   //
   // This allows the Android native view to draw the a11y highlights in the same
@@ -666,16 +682,22 @@ class RenderOhosView extends RenderBox {
   }
 
   Future<void> _sizePlatformView() async {
-    // Android virtual displays cannot have a zero size.
-    // Trying to size it to 0 crashes the app, which was happening when starting the app
-    // with a locked screen (see: https://github.com/flutter/flutter/issues/20456).
-    if (size.isEmpty) {
+    if (_state == _PlatformViewState.resizing || size.isEmpty) {
       return;
     }
+  
+    _state = _PlatformViewState.resizing;
+
+    markNeedsPaint();
 
     Size targetSize;
-    targetSize = size;
-    await _viewController.setSize(targetSize);
+    do {
+      targetSize = size;
+      _currentTextureSize = await _viewController.setSize(targetSize);
+    } while (size != targetSize);
+
+    _state = _PlatformViewState.ready;
+    markNeedsPaint();
   }
 }
 
@@ -716,7 +738,7 @@ class _OhosViewGestureRecognizer extends OneSequenceGestureRecognizer {
   }
 
   @override
-  String get debugDescription => 'UIKit view';
+  String get debugDescription => 'Ohos view';
 
   @override
   void didStopTrackingLastPointer(int pointer) { }
