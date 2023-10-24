@@ -110,7 +110,9 @@ class OhosBuildData {
 int getApiVersion(File buildProfile) {
   final String buildProfileConfig = buildProfile.readAsStringSync();
   final dynamic obj = JSON5.parse(buildProfileConfig);
-  return obj['app']['compileSdkVersion'] as int;
+  String verStr = obj['app']['products'][0]['compatibleSdkVersion'] as String;
+  RegExp exp = new RegExp(r'\d{2}');
+  return int.parse(exp.stringMatch(verStr) as String);
 }
 
 class AppInfo {
