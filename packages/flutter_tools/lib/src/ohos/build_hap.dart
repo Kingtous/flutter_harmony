@@ -153,6 +153,9 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
   late String targetName;
   if (buildInfo.isDebug) {
     targetName = 'debug_ohos_application';
+  } else if (buildInfo.isProfile) {
+    // eg:ohos_aot_bundle_profile_ohos-arm64
+    targetName = 'ohos_aot_bundle_profile_${getNameForTargetPlatform(targetPlatform)}';
   } else {
     // eg:ohos_aot_bundle_release_ohos-arm64
     targetName =
@@ -238,7 +241,7 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
 
 
   final String desAppSoPath = getAppSoPath(ohosRootPath, targetPlatform);
-  if (buildInfo.isRelease) {
+  if (buildInfo.isRelease || buildInfo.isProfile) {
     // copy app.so
     final String appSoPath = globals.fs.path
         .join(output, getArchPath(targetPlatform), APP_SO_ORIGIN);
@@ -256,9 +259,14 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
       OhosBuildData.parseOhosBuildData(ohosProject, logger);
   final int apiVersion = ohosBuildData.apiVersion;
 
-  final String suffix =
-      '${buildInfo.isDebug ? 'debug' : 'release'}.$apiVersion';
+  // delete directory ohos/entry/oh_modules
+  final Directory ohModulesFile = ohosProject.ohModules;
+  if (ohModulesFile.existsSync()) {
+    ohModulesFile.deleteSync(recursive: true);
+  }
   //copy har
+  final String suffix = '${buildInfo.isDebug ? 'debug' : 
+    buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
   final String originHarPath =
       globals.fs.path.join(ohosRootPath, 'har', '$HAR_FILE_NAME.$suffix');
   final String desHarPath =

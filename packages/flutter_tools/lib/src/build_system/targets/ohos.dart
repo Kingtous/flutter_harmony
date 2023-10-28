@@ -55,11 +55,17 @@ class DebugOhosApplication extends OhosAssetBundle {
 const OhosAotBundle ohosArmReleaseBundle = OhosAotBundle(ohosArmRelease);
 const OhosAotBundle ohosArm64ReleaseBundle = OhosAotBundle(ohosArm64Release);
 const OhosAotBundle ohosX64ReleaseBundle = OhosAotBundle(ohosX64Release);
+const OhosAotBundle ohosArmProfileBundle = OhosAotBundle(OhosAot(TargetPlatform.ohos_arm, BuildMode.profile));
+const OhosAotBundle ohosArm64ProfileBundle = OhosAotBundle(OhosAot(TargetPlatform.ohos_arm64, BuildMode.profile));
+const OhosAotBundle ohosX64ProfileBundle = OhosAotBundle(OhosAot(TargetPlatform.ohos_x64, BuildMode.profile));
 
 List<Target> ohosTargets = <Target>[
   ohosArmReleaseBundle,
   ohosArm64ReleaseBundle,
   ohosX64ReleaseBundle,
+  ohosArmProfileBundle,
+  ohosArm64ProfileBundle,
+  ohosX64ProfileBundle,
   const DebugOhosApplication(),
 ];
 

@@ -731,12 +731,12 @@ class HdcLogReader extends DeviceLogReader {
     }));
   }
 
-  // 'W/ActivityManager(pid): '
-  static final RegExp _logFormat = RegExp(r'^[VDIWEF]\/.*?\(\s*(\d+)\):\s');
+  // 10-27 19:57:53.779  1195  2885 I Thread:528202332952  [INFO:ohos_main.cpp(140)] flutter The Dart VM service is listening on http://0.0.0.0:34063/nBIFd7ZPwk0=/
+  static final RegExp _logFormat = RegExp(r'^[\d-:. ]{30,40}[VDIWEF][^:]+:');
 
   static final List<RegExp> _allowedTags = <RegExp>[
-    RegExp(r'^[VDIWEF]\/flutter[^:]*:\s+', caseSensitive: false),
-    RegExp(r'^[IE]\/DartVM[^:]*:\s+'),
+    RegExp(r'^[\d-:. ]{30,40}[VDIWEF][^:]flutter[^:]+:', caseSensitive: false),
+    RegExp(r'^[\d-:. ]{30,40}[IE].*Dart VM\s+'),
     RegExp(r'^[WEF]\/System\.err:\s+'),
     RegExp(r'^[F]\/[\S^:]+:\s+'),
   ];
@@ -788,13 +788,6 @@ class HdcLogReader extends DeviceLogReader {
             // Hit crash terminator, stop logging the crash info
             _fatalCrash = false;
           }
-        }
-      } else if (appPid != null && int.parse(logMatch.group(1)!) == appPid) {
-        acceptLine = true;
-
-        if (_fatalLog.hasMatch(line)) {
-          // Hit fatal signal, app is now crashing
-          _fatalCrash = true;
         }
       } else {
         // Filter on approved names and levels.
