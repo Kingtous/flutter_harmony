@@ -24,7 +24,7 @@ Flutter SDK 仓库
      export PATH=$PATH:$OHPM_HOME/bin
      ```
 
-  2. 下载sdk并配置环境变量，可参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 使用命令下载OpenHarmony sdk（API9以下），AP10需要从[每日构建](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component)下载ohos-full-sdk，请保持sdk目录结构如下。
+  2. 下载sdk并配置环境变量，可参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 使用命令下载OpenHarmony sdk（API9以下），AP10需要从[每日构建](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component)下载ohos-full-sdk，请保持sdk目录结构如下。(mac环境编译，请下载mac-sdk-full或者mac-sdk-m1-full)
 
      ```
      export OHOS_SDK_HOME=/home/<user>/env/sdk
@@ -174,7 +174,7 @@ export PATH=$NODE_HOME/bin:$PATH
    flutter build hap --local-engine-src-path /home/<user>/ohos/engine/src --local-engine ohos_release_arm64
    ```
 
-3. flutter devices发现ohos设备之后，使用 `hdc -d <deviceId> install <hap file path>`进行安装。
+3. flutter devices发现ohos设备之后，使用 `hdc -t <deviceId> install <hap file path>`进行安装。
 
 ## 关于windows下linux虚拟机如何连接和调试OpenHarmony设备
 
@@ -199,7 +199,7 @@ HDC_SERVER_PORT=8710
 | config | 环境配置 | flutter config --\<key\> \<value\>                                |
 | create | 创建新项目 | flutter create --platforms ohos,android --org \<org\> \<appName\> |
 | devices | 已连接设备查找 | flutter devices                                                   |
-| install | 应用安装 | flutter install -d \<deviceId\> \<hap文件路径\>                                                   |
+| install | 应用安装 | flutter install -t \<deviceId\> \<hap文件路径\>                                                   |
 | assemble | 资源打包 | flutter assemble                                                  |
 | build | 测试应用构建 | flutter build hap --target-platform ohos-arm64 --debug --local-engine=\<兼容ohos的debug engine产物路径\>         |
 | build | 正式应用构建 | flutter build hap --target-platform ohos-arm64 --release --local-engine=\<兼容ohos的release engine产物路径\>         |
@@ -216,7 +216,6 @@ HDC_SERVER_PORT=8710
    ./ohsdkmgr install ets:9 js:9 native:9 previewer:9 toolchains:9 --sdk-directory='/home/xc/code/sdk/ohos-sdk/' --accept-license
    ```
 
-
 3. 切换debug和release编译模式后，可能运行报错，可尝试删除oh_modules缓存文件，重新编译。
 
 4. 如果`flutter docker -v`提示ohpm无法找到，但是检测环境变量无误，请确保已执行`ohpm/bin/init`命令安装ohpm后再次检查。
@@ -226,3 +225,5 @@ HDC_SERVER_PORT=8710
    ```
    sudo update-alternatives --config java
    ```
+
+6. 如果你使用的是DevEco Studio的Beta版本，编译工程时遇到“must have required property 'compatibleSdkVersion', location: demo/ohos/build-profile.json5:17:11"错误，请参考《DevEco Studio环境配置指导.docx》中的‘6 创建工程和运行Hello World’【配置插件】章节修改 hvigor/hvigor-config.json5文件。
