@@ -177,6 +177,7 @@
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.debug.9",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.release.9",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.debug.10",
+        "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.profile.10",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.release.10",
         "templates/app_shared/ohos.tmpl/har/libflutter.so.debug.10",
         "templates/app_shared/ohos.tmpl/har/libflutter.so.release.10",
