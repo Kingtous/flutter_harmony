@@ -208,6 +208,7 @@ After the configuration is completed, the flutter sdk can complete the device co
 | build | Formal application build | flutter build hap --target-platform ohos-arm64 --release --local-engine=\<ohos-compatible release engine product path\> |
 | run | application run | flutter run --local-engine=\<ohos-compatible engine product path\> |
 | attach | debug mode | flutter attach |
+| screenshot | catch screen | flutter screenshot                    |
 
 ## common problem:
 
