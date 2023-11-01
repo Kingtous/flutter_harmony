@@ -31,7 +31,7 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
       export HDC_HOME=/home/<user>/env/sdk/10/toolchains
       export PATH=$PATH:$HDC_HOME
 	  # for HarmonyOS sdk
-	  export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
+      export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
       ```
 
       ```

@@ -31,8 +31,8 @@ Flutter SDK 仓库
      export HDC_HOME=/home/<user>/env/sdk/10/toolchains
      export PATH=$PATH:$HDC_HOME
 
-	 # 配置HarmonyOS sdk
-	 export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
+     # 配置HarmonyOS sdk
+     export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
      ```
 
      ```

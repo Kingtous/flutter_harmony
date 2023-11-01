@@ -272,8 +272,8 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
       globals.fs.path.join(ohosRootPath, 'har', '$FLUTTER_ENGINE_SO.$suffix');
     final String desEnginePath =
       globals.fs.path.join(ohosRootPath, 'entry/libs/arm64-v8a', FLUTTER_ENGINE_SO);
-    final File originHarFile = localFileSystem.file(originEnginePath);
-    originHarFile.copySync(desEnginePath);
+    final File flutterEngineSoFile = localFileSystem.file(originEnginePath);
+    flutterEngineSoFile.copySync(desEnginePath);
   } else {
     final String? flutterEngineSoPath =
       globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
@@ -391,7 +391,8 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   }
 
   final String signtool =
-      globals.fs.path.join(signToolHome, isWindows ? 'create_appcert_sign_profile.bat' : 'create_appcert_sign_profile.sh');
+      globals.fs.path.join(signToolHome, isWindows ?
+	 'create_appcert_sign_profile.bat' : 'create_appcert_sign_profile.sh');
   final List<String> command = <String>[signtool];
   await invokeCmd(
       command: command,
@@ -399,7 +400,8 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
       processManager: globals.processManager,
       logger: logger);
 
-  final String signtool2 = globals.fs.path.join(signToolHome, isWindows ? 'sign_hap.bat' : 'sign_hap.sh');
+  final String signtool2 = globals.fs.path.join(signToolHome, isWindows ? 
+	'sign_hap.bat' : 'sign_hap.sh');
   final List<String> command2 = <String>[signtool2];
   await invokeCmd(
       command: command2,
