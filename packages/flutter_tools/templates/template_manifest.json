@@ -178,6 +178,8 @@
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.release.9",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.debug.10",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.release.10",
+        "templates/app_shared/ohos.tmpl/har/libflutter.so.debug.10",
+        "templates/app_shared/ohos.tmpl/har/libflutter.so.release.10",
         "templates/app_shared/ohos.tmpl/local.properties.tmpl",
         "templates/app_shared/ohos.tmpl/dta/icudtl.dat",
         "templates/app_shared/ohos.tmpl/entry/libs/arm64-v8a/libc++_shared.so",

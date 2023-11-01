@@ -24,6 +24,7 @@ import '../base/platform.dart';
 import '../base/user_messages.dart';
 import '../base/version.dart';
 import '../doctor_validator.dart';
+import '../globals.dart' as globals;
 import 'ohos_sdk.dart';
 
 OhosValidator? get ohosValidator => context.get<OhosValidator>();
@@ -78,8 +79,7 @@ class OhosValidator extends DoctorValidator {
   final ProcessManager _processManager;
   final UserMessages _userMessages;
 
-  static const String ohpmBinary = 'ohpm';
-  static const String hdcBinary = 'hdc';
+  final bool isWindows = globals.platform.isWindows;
 
   @override
   Future<ValidationResult> validate() async {
@@ -91,7 +91,7 @@ class OhosValidator extends DoctorValidator {
       messages.add(ValidationMessage(_userMessages.ohosSdkVersion(_ohosSdk!)));
 
       /// check hdc
-      final _VersionInfo? hdcVersion = await _getBinaryVersion(hdcBinary);
+      final _VersionInfo? hdcVersion = await _getBinaryVersion(isWindows ? 'hdc.exe' : 'hdc');
       if (hdcVersion == null) {
         validationType = ValidationType.missing;
         messages.add(ValidationMessage.error(_userMessages.hdcMissing()));
@@ -113,7 +113,7 @@ class OhosValidator extends DoctorValidator {
     final Ohpm? ohpm = Ohpm.local();
     String? ohpmVersionString;
     if (ohpm != null && ohpm.getOhpmBinPath() != null) {
-      final String ohpmPath = ohpm.getOhpmBinPath() ?? ohpmBinary;
+      final String ohpmPath = ohpm.getOhpmBinPath() ?? (isWindows ? 'ohpm.bat' : 'ohpm');
       final _VersionInfo? ohpmVersion = await _getBinaryVersion(ohpmPath);
       if (ohpmVersion != null) {
         ohpmVersionString = ohpmVersion.number.toString();

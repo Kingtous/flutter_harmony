@@ -109,6 +109,20 @@ class OhosDevice extends Device {
   }
 
   @override
+  bool get supportsScreenshot => true;
+
+  @override
+  Future<void> takeScreenshot(File outputFile) async {
+    const String remotePath = '/data/local/tmp/flutter_screenshot.jpeg';
+    await runHdcCheckedAsync(<String>['shell', 'snapshot_display', '-f', remotePath]);
+    await _processUtils.run(
+      hdcCommandForDevice(<String>['file recv', remotePath, outputFile.path]),
+      throwOnError: true,
+    );
+    await runHdcCheckedAsync(<String>['shell', 'rm', remotePath]);
+  }
+
+  @override
   Future<bool> installApp(covariant ApplicationPackage app,
       {String? userIdentifier}) async {
     if (app is! OhosHap) {

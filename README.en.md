@@ -30,6 +30,8 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
       export OHOS_SDK_HOME=/home/<user>/env/sdk
       export HDC_HOME=/home/<user>/env/sdk/10/toolchains
       export PATH=$PATH:$HDC_HOME
+	  # for HarmonyOS sdk
+      export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
       ```
 
       ```
@@ -147,6 +149,8 @@ export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
 export OHOS_SDK_HOME=/home/<user>/env/sdk
 export HDC_HOME=/home/<user>/env/sdk/10/toolchains
 export PATH=$PATH:$HDC_HOME
+# for HarmonyOS sdk
+export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 
 # Signature tool
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign

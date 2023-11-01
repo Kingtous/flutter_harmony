@@ -454,12 +454,13 @@ class CachedArtifacts implements Artifacts {
       case TargetPlatform.fuchsia_arm64:
       case TargetPlatform.fuchsia_x64:
         return _getFuchsiaArtifactPath(artifact, platform!, mode!);
-      case TargetPlatform.tester:
-      case TargetPlatform.web_javascript:
       case TargetPlatform.ohos:
       case TargetPlatform.ohos_arm:
       case TargetPlatform.ohos_arm64:
       case TargetPlatform.ohos_x64:
+        return _getOhosArtifactPath(artifact, platform ?? _currentHostPlatform(_platform, _operatingSystemUtils), mode!);
+      case TargetPlatform.tester:
+      case TargetPlatform.web_javascript:
       case null:
         return _getHostArtifactPath(artifact, platform ?? _currentHostPlatform(_platform, _operatingSystemUtils), mode);
     }
@@ -580,6 +581,35 @@ class CachedArtifacts implements Artifacts {
       case Artifact.isolateSnapshotData:
       case Artifact.linuxDesktopPath:
       case Artifact.linuxHeaders:
+      case Artifact.platformLibrariesJson:
+      case Artifact.skyEnginePath:
+      case Artifact.vmSnapshotData:
+      case Artifact.windowsCppClientWrapper:
+      case Artifact.windowsDesktopPath:
+      case Artifact.flutterEngineSo:
+        return _getHostArtifactPath(artifact, platform, mode);
+    }
+  }
+
+  String _getOhosArtifactPath(Artifact artifact, TargetPlatform platform, BuildMode mode) {
+    final String engineDir = _getEngineArtifactsPath(platform, mode)!;
+    switch (artifact) {
+      case Artifact.genSnapshot:
+      case Artifact.frontendServerSnapshotForEngineDartSdk:
+      case Artifact.constFinder:
+      case Artifact.flutterFramework:
+      case Artifact.flutterMacOSFramework:
+      case Artifact.flutterPatchedSdkPath:
+      case Artifact.flutterTester:
+      case Artifact.flutterXcframework:
+      case Artifact.fontSubset:
+      case Artifact.fuchsiaFlutterRunner:
+      case Artifact.fuchsiaKernelCompiler:
+      case Artifact.icuData:
+      case Artifact.isolateSnapshotData:
+      case Artifact.linuxDesktopPath:
+      case Artifact.linuxHeaders:
+      case Artifact.platformKernelDill:
       case Artifact.platformLibrariesJson:
       case Artifact.skyEnginePath:
       case Artifact.vmSnapshotData:
