@@ -210,6 +210,7 @@ HDC_SERVER_PORT=8710
 | build | 正式应用构建 | flutter build hap --target-platform ohos-arm64 --release --local-engine=\<兼容ohos的release engine产物路径\>         |
 | run | 应用运行 | flutter run --local-engine=\<兼容ohos的engine产物路径\>                  |
 | attach | 调试模式 | flutter attach                                                    |
+| screenshot | 截屏 | flutter screenshot                                                 |
 
 ## 常见问题：
 
