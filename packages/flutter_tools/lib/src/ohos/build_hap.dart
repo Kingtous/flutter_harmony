@@ -50,6 +50,8 @@ const String HAR_FILE_NAME = 'flutter_embedding.har';
 
 const String HVIGORW_FILE = 'hvigorw';
 
+final bool isWindows = globals.platform.isWindows;
+
 void checkPlatformEnvironment(String environment, Logger? logger) {
   final String? environmentConfig = Platform.environment[environment];
   if (environmentConfig == null) {
@@ -233,19 +235,7 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
   final String copyDes = getDatPath(ohosRootPath);
   ohosDta.copySync(copyDes);
 
-  //copy ohos engine so
-  final String? flutterEngineSoPath =
-      globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
-  if (flutterEngineSoPath == null) {
-    throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
-  }
-  final File flutterEngineSoFile = localFileSystem.file(flutterEngineSoPath);
-  final String enginCopyDes = getEngineSoPath(ohosRootPath, targetPlatform);
-  final Directory directory = localFileSystem.file(enginCopyDes).parent;
-  if (!directory.existsSync()) {
-    directory.createSync(recursive: true);
-  }
-  flutterEngineSoFile.copySync(enginCopyDes);
+
 
   final String desAppSoPath = getAppSoPath(ohosRootPath, targetPlatform);
   if (buildInfo.isRelease) {
@@ -266,15 +256,40 @@ Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
       OhosBuildData.parseOhosBuildData(ohosProject, logger);
   final int apiVersion = ohosBuildData.apiVersion;
 
-  //copy har
   final String suffix =
       '${buildInfo.isDebug ? 'debug' : 'release'}.$apiVersion';
+  //copy har
   final String originHarPath =
       globals.fs.path.join(ohosRootPath, 'har', '$HAR_FILE_NAME.$suffix');
   final String desHarPath =
       globals.fs.path.join(ohosRootPath, 'har', HAR_FILE_NAME);
   final File originHarFile = localFileSystem.file(originHarPath);
   originHarFile.copySync(desHarPath);
+
+    //copy ohos engine so
+  if (isWindows) {
+    final String originEnginePath =
+      globals.fs.path.join(ohosRootPath, 'har', '$FLUTTER_ENGINE_SO.$suffix');
+    final String desEnginePath =
+      globals.fs.path.join(ohosRootPath, 'entry/libs/arm64-v8a', FLUTTER_ENGINE_SO);
+    final File originHarFile = localFileSystem.file(originEnginePath);
+    originHarFile.copySync(desEnginePath);
+  } else {
+    final String? flutterEngineSoPath =
+      globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
+    if (flutterEngineSoPath == null) {
+      throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
+    }
+    logger?.printStatus("flutterEngineSoPath:" + flutterEngineSoPath.toString());
+    final File flutterEngineSoFile = localFileSystem.file(flutterEngineSoPath);
+    
+    final String enginCopyDes = getEngineSoPath(ohosRootPath, targetPlatform);
+    final Directory directory = localFileSystem.file(enginCopyDes).parent;
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    flutterEngineSoFile.copySync(enginCopyDes);
+  }
 
   logger?.printStatus('copy flutter assets to project end');
 
@@ -330,6 +345,7 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   const String PROFILE_TEMPLATE = 'profile_tmp_template.json';
   const String PROFILE_TARGET = 'profile_tmp.json';
   const String BUNDLE_NAME_KEY = '{{ohosId}}';
+  logger?.printWarning("ohosId bundleName: $bundleName");
   //修改HarmonyAppProvision配置文件
   final String provisionTemplatePath =
       globals.fs.path.join(signToolHome, PROFILE_TEMPLATE);
@@ -375,7 +391,7 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   }
 
   final String signtool =
-      globals.fs.path.join(signToolHome, 'create_appcert_sign_profile.sh');
+      globals.fs.path.join(signToolHome, isWindows ? 'create_appcert_sign_profile.bat' : 'create_appcert_sign_profile.sh');
   final List<String> command = <String>[signtool];
   await invokeCmd(
       command: command,
@@ -383,7 +399,7 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
       processManager: globals.processManager,
       logger: logger);
 
-  final String signtool2 = globals.fs.path.join(signToolHome, 'sign_hap.sh');
+  final String signtool2 = globals.fs.path.join(signToolHome, isWindows ? 'sign_hap.bat' : 'sign_hap.sh');
   final List<String> command2 = <String>[signtool2];
   await invokeCmd(
       command: command2,

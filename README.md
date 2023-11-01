@@ -30,6 +30,9 @@ Flutter SDK 仓库
      export OHOS_SDK_HOME=/home/<user>/env/sdk
      export HDC_HOME=/home/<user>/env/sdk/10/toolchains
      export PATH=$PATH:$HDC_HOME
+
+	 # 配置HarmonyOS sdk
+	 export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
      ```
 
      ```
@@ -148,6 +151,8 @@ export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
 export OHOS_SDK_HOME=/home/<user>/env/sdk
 export HDC_HOME=/home/<user>/env/sdk/10/toolchains
 export PATH=$PATH:$HDC_HOME
+# 配置HarmonyOS sdk
+export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 
 # 签名工具
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign

@@ -76,8 +76,9 @@ class OhosSdk {
 
   static String? getHdcPath(String sdkPath) {
     for (final String folder in supportSdkVersion) {
+      final bool isWindows = globals.platform.isWindows;
       final File file = globals.fs
-          .file(globals.fs.path.join(sdkPath, folder, 'toolchains', 'hdc'));
+          .file(globals.fs.path.join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
