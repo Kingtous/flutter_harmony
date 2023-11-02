@@ -16,6 +16,8 @@ Flutter SDK 仓库
 
 * 构建步骤：
 
+   !!! Info  Windows环境请通过编辑Windows下的“环境变量”页面设置环境变量
+
   1. 下载[命令行工具](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，并配置环境变量ohpm与sdkmanager，下载完成后执行`ohpm/bin/init`安装ohpm。参照指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)。
 
      ```
@@ -84,7 +86,7 @@ Flutter SDK 仓库
        sign.profile.inFile=profile_tmp.json
        ```
 
-     - 在autosign目录下，执行命令`chmod 777 *.sh`，并且新增`profile_tmp_template.json`文件，编辑如下：
+     - 在autosign目录下，执行命令`chmod 777 *.sh` (Windows环境下无需执行此命令)，新增`profile_tmp_template.json`文件，编辑如下：
 
        ```
        {
@@ -116,7 +118,7 @@ Flutter SDK 仓库
        }
        ```
 
-  6. 若`/home/<user>/`目录下未创建`.npmrc`配置，构建hap时可能报错：Error: The hvigor depends on the npmrc file. Configure the npmrc file first，届时请在用户目录`/home/<user>/`下创建文件`.npmrc`，该配置也可参考[官方文档](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/environment_config-0000001052902427-V3)，编辑内容如下：
+  6. 若`~/`目录下未创建`.npmrc`配置，构建hap时可能报错：Error: The hvigor depends on the npmrc file. Configure the npmrc file first，届时请在用户目录`~`下创建文件`.npmrc`，该配置也可参考[官方文档](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/environment_config-0000001052902427-V3)，编辑内容如下：
 
      ```
      registry=https://repo.huaweicloud.com/repository/npm/
@@ -124,7 +126,7 @@ Flutter SDK 仓库
      ```
 
 
-上述所有环境变量的配置，可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
+上述所有环境变量的配置，可参考下面的示例（其中user和具体代码路径请替换成实际路径，Windows环境请通过编辑Windows下的“环境变量”页面配置环境变量）：
 
 ```
 #flutter env start ===>
