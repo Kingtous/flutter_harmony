@@ -9,7 +9,7 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
 ## Build instructions:
 
 * Build environment:
-   Currently, the flutter tools command supports use on Linux and Mac.
+   The flutter tools command supports use on Linux/Mac/Windows.
 
 * Build dependencies:
    Depend on [flutter engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`, please add: `--local-engine=\<engine product in the running parameters of the flutter tools command Directory\>`

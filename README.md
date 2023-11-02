@@ -9,7 +9,7 @@ Flutter SDK 仓库
 ## 构建说明：
 
 * 构建环境：
-  目前flutter tools指令支持Linux与Mac下使用。
+  flutter tools指令支持Linux、Mac和Windows下使用。
 
 * 构建依赖：
   依赖[flutter engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在flutter tools指令运行参数中添加：`--local-engine=\<engine产物目录\>`
