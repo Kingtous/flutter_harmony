@@ -180,6 +180,7 @@
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.profile.10",
         "templates/app_shared/ohos.tmpl/har/flutter_embedding.har.release.10",
         "templates/app_shared/ohos.tmpl/har/libflutter.so.debug.10",
+        "templates/app_shared/ohos.tmpl/har/libflutter.so.profile.10",
         "templates/app_shared/ohos.tmpl/har/libflutter.so.release.10",
         "templates/app_shared/ohos.tmpl/local.properties.tmpl",
         "templates/app_shared/ohos.tmpl/dta/icudtl.dat",
