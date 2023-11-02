@@ -14,7 +14,9 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
 * Build dependencies:
    Depend on [flutter engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`, please add: `--local-engine=\<engine product in the running parameters of the flutter tools command Directory\>`
 
-*Building steps:
+* Building steps:
+
+   !!! Info  For Windows environment, please set environment variables in Environment Variables Dialog
 
    1. Download [command line tool](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli), and configure the environment variables ohpm and sdkmanager. After the download is complete, execute `ohpm/bin/init` to install ohpm. Refer to the guidance document: [ohpm usage guide](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3).
 
@@ -83,7 +85,7 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
         sign.profile.inFile=profile_tmp.json
         ```
 
-      - In the autosign directory, execute the command `chmod 777 *.sh`, and add the `profile_tmp_template.json` file, edit it as follows:
+      - In the autosign directory, execute the command `chmod 777 *.sh`（There is no need to execute this command in Windows environment）, and add the `profile_tmp_template.json` file, edit it as follows:
 
         ```
         {
@@ -115,14 +117,14 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
         }
         ```
 
-   6. If the `.npmrc` configuration is not created in the `/home/<user>/` directory, an error may be reported when building hap: Error: The hvigor depends on the npmrc file. Configure the npmrc file first. Please configure the npmrc file first in the user directory` Create the file `.npmrc` under /home/<user>/`. For this configuration, you can also refer to [Official Documentation](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/environment_config- 0000001052902427-V3), the edited content is as follows:
+   6. If the `.npmrc` configuration is not created in the `~/` directory, an error may be reported when building hap: Error: The hvigor depends on the npmrc file. Configure the npmrc file first. Please configure the npmrc file first in the user directory` Create the file `.npmrc` under ~/`. For this configuration, you can also refer to [Official Documentation](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/environment_config- 0000001052902427-V3), the edited content is as follows:
 
       ```
       registry=https://repo.huaweicloud.com/repository/npm/
       @ohos:registry=https://repo.harmonyos.com/npm/
       ```
    
-   For the configuration of all the above environment variables, please refer to the following example (please replace user and specific code path with the actual path):
+   For the configuration of all the above environment variables, please refer to the following example (Please replace user and specific code path with the actual path. For Windows environment, please set environment variables in Environment Variables Dialog):
 
 ```
 #flutter env start ===>
