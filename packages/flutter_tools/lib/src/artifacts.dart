@@ -592,7 +592,7 @@ class CachedArtifacts implements Artifacts {
   }
 
   String _getOhosArtifactPath(Artifact artifact, TargetPlatform platform, BuildMode mode) {
-    final String engineDir = _getEngineArtifactsPath(platform, mode)!;
+    final String? engineDir = _getEngineArtifactsPath(platform, mode);
     switch (artifact) {
       case Artifact.genSnapshot:
       case Artifact.frontendServerSnapshotForEngineDartSdk:
