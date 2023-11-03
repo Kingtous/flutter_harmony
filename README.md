@@ -16,7 +16,7 @@ Flutter SDK 仓库
 
 * 构建步骤：
 
-   !!! Info  Windows环境请通过编辑Windows下的“环境变量”页面设置环境变量
+   **Windows环境请通过编辑Windows下的“环境变量”页面设置环境变量**
 
   1. 下载[命令行工具](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，并配置环境变量ohpm与sdkmanager，下载完成后执行`ohpm/bin/init`安装ohpm。参照指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)。
 
