@@ -16,7 +16,7 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
 
 * Building steps:
 
-   !!! Info  For Windows environment, please set environment variables in Environment Variables Dialog
+   **For Windows environment, please set environment variables in Environment Variables Dialog**
 
    1. Download [command line tool](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli), and configure the environment variables ohpm and sdkmanager. After the download is complete, execute `ohpm/bin/init` to install ohpm. Refer to the guidance document: [ohpm usage guide](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3).
 
