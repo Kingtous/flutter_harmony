@@ -235,3 +235,9 @@ HDC_SERVER_PORT=8710
    ```
 
 6. 如果你使用的是DevEco Studio的Beta版本，编译工程时遇到“must have required property 'compatibleSdkVersion', location: demo/ohos/build-profile.json5:17:11"错误，请参考《DevEco Studio环境配置指导.docx》中的‘6 创建工程和运行Hello World’【配置插件】章节修改 hvigor/hvigor-config.json5文件。
+
+7. 若提示安装报错：`fail to verify pkcs7 file` 请执行指令
+
+   ```
+   hdc shell param set persist.bms.ohCert.verify true
+   ```

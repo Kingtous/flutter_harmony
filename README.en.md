@@ -233,3 +233,9 @@ After the configuration is completed, the flutter sdk can complete the device co
     ```
 
 6. If you are using the Beta version of DevEco Studio and encounter the error "must have required property 'compatibleSdkVersion', location: demo/ohos/build-profile.json5:17:11" when compiling the project, please refer to "DevEco Studio" Modify the hvigor/hvigor-config.json5 file in the '6 Creating Projects and Running Hello World' [Configuration Plug-in] chapter in "Environment Configuration Guide.docx".
+
+7. If an installation error is prompted: `fail to verify pkcs7 file`, please execute 
+
+   ```
+   hdc shell param set persist.bms.ohCert.verify true
+   ```
