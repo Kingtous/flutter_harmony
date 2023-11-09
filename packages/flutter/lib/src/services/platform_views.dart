@@ -1534,8 +1534,13 @@ class OhosViewController {
     _debugDisposed = true;
 
     if (_state == _AndroidViewState.creating ||
-        _state == _AndroidViewState.created) {
-      await SystemChannels.platform_views.invokeMethod<void>('dispose', id);
+      _state == _AndroidViewState.created) {
+      await SystemChannels.platform_views.invokeMethod<void>('dispose', 
+        <String, dynamic>{
+          'id': id,
+          'hybrid': false,
+        }
+      );
     }
 
     _platformViewCreatedCallbacks.clear();
