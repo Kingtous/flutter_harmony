@@ -24,6 +24,9 @@ class BuildHapCommand extends BuildSubCommand {
   BuildHapCommand({required super.logger, bool verboseHelp = false})
       : super(verboseHelp: verboseHelp) {
     const String defaultTargetPlatform = 'ohos-arm64';
+    addDartObfuscationOption();
+    addSplitDebugInfoOption();
+    usesExtraDartFlagOptions(verboseHelp: verboseHelp);
     argParser.addOption(
       'target-platform',
       defaultsTo: defaultTargetPlatform,

@@ -176,17 +176,16 @@ List<FlutterCommand> generateCommands({
   ChannelCommand(verboseHelp: verboseHelp),
   CleanCommand(verbose: verbose),
   ConfigCommand(verboseHelp: verboseHelp),
-  // CustomDevicesCommand(
-  //   customDevicesConfig: globals.customDevicesConfig,
-  //   operatingSystemUtils: globals.os,
-  //   terminal: globals.terminal,
-  //   platform: globals.platform,
-  //   featureFlags: featureFlags,
-  //   processManager: globals.processManager,
-  //   fileSystem: globals.fs,
-  //   logger: globals.logger
-  // ),
-  CustomDevicesNotSupportCommand(),
+  CustomDevicesCommand(
+    customDevicesConfig: globals.customDevicesConfig,
+    operatingSystemUtils: globals.os,
+    terminal: globals.terminal,
+    platform: globals.platform,
+    featureFlags: featureFlags,
+    processManager: globals.processManager,
+    fileSystem: globals.fs,
+    logger: globals.logger
+  ),
   CreateCommand(verboseHelp: verboseHelp),
   DaemonCommand(hidden: !verboseHelp),
   DebugAdapterCommand(verboseHelp: verboseHelp),

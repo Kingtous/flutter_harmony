@@ -42,7 +42,6 @@ class ShellCompletionCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
-    throwToolExit('It will be supported later.', exitCode: 1);
     final List<String> rest = argResults?.rest ?? <String>[];
     if (rest.length > 1) {
       throwToolExit('Too many arguments given to bash-completion command.', exitCode: 1);

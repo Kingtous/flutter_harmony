@@ -223,7 +223,6 @@ class GenerateLocalizationsCommand extends FlutterCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
-    throwToolExit('It will be supported later.');
     List<String> outputFileList;
 
     bool format = boolArg('format') ?? false;

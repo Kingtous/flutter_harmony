@@ -42,7 +42,6 @@ class OhosWorkflow implements Workflow {
       appliesToHostPlatform && _ohosSdk != null && _ohosSdk?.hdcPath != null;
 
   @override
-  bool get canListEmulators => canListDevices
-      // && _ohosSdk?.emulatorPath != null
-      ;
+  bool get canListEmulators => canListDevices;
+      //&& _ohosSdk?.emulatorPath != null;
 }

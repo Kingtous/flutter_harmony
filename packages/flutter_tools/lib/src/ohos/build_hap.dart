@@ -398,21 +398,24 @@ Future<String> signHap(LocalFileSystem localFileSystem, String unsignedFile,
     copyDirectory(resultBackup, result);
   }
 
-  final String signtool =
-      globals.fs.path.join(signToolHome, isWindows ?
-	 'create_appcert_sign_profile.bat' : 'create_appcert_sign_profile.sh');
-  final List<String> command = <String>[signtool];
+  final List<String> cmdCreateCertAndProfile = <String>[];
+  cmdCreateCertAndProfile.add('python3');
+  cmdCreateCertAndProfile.add(globals.fs.path.join(signToolHome, 'autosign.py'));
+  cmdCreateCertAndProfile.add('createAppCertAndProfile');
+
   await invokeCmd(
-      command: command,
+      command: cmdCreateCertAndProfile,
       workDirectory: signToolHome,
       processManager: globals.processManager,
       logger: logger);
 
-  final String signtool2 = globals.fs.path.join(signToolHome, isWindows ? 
-	'sign_hap.bat' : 'sign_hap.sh');
-  final List<String> command2 = <String>[signtool2];
+  final List<String> cmdSignHap = <String>[];
+  cmdSignHap.add('python3');
+  cmdSignHap.add(globals.fs.path.join(signToolHome, 'autosign.py'));
+  cmdSignHap.add('signHap');
+
   await invokeCmd(
-      command: command2,
+      command: cmdSignHap,
       workDirectory: signToolHome,
       processManager: globals.processManager,
       logger: logger);
