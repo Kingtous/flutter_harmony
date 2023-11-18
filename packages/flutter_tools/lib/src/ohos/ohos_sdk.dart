@@ -16,10 +16,13 @@
 import '../base/file_system.dart';
 import '../globals.dart' as globals;
 
+// OpenHarmony SDK
 const String kOhosHome = 'OHOS_HOME';
 const String kOhosSdkRoot = 'OHOS_SDK_HOME';
+// HarmonyOS SDK
+const String kHmosHome = 'HOS_SDK_HOME';
 
-const List<String> supportSdkVersion = ['8', '9', '10'];
+const List<String> supportSdkVersion = <String>['8', '9', '10'];
 
 class OhosSdk {
   OhosSdk(this._sdkDir) {
@@ -77,8 +80,8 @@ class OhosSdk {
   static String? getHdcPath(String sdkPath) {
     for (final String folder in supportSdkVersion) {
       final bool isWindows = globals.platform.isWindows;
-      final File file = globals.fs
-          .file(globals.fs.path.join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+      final File file = globals.fs.file(globals.fs.path
+          .join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
@@ -101,6 +104,48 @@ class OhosSdk {
   void init() {
     hdcPath = getHdcPath(_sdkDir.path);
     apiAvailable = getAvailableApi();
+  }
+}
+
+class HmosSdk {
+  HmosSdk(this._sdkDir);
+
+  final Directory _sdkDir;
+
+  String get sdkPath => _sdkDir.path;
+
+  static HmosSdk? localHmosSdk() {
+    String? findHmosHomeDir() {
+      String? hmosHomeDir;
+      if (globals.config.containsKey('hmos-sdk')) {
+        hmosHomeDir = globals.config.getValue('hmos-sdk') as String?;
+      } else if (globals.platform.environment.containsKey(kHmosHome)) {
+        hmosHomeDir = globals.platform.environment[kHmosHome];
+      }
+
+      if (hmosHomeDir != null) {
+        if (validSdkDirectory(hmosHomeDir)) {
+          return hmosHomeDir;
+        }
+      }
+      return null;
+    }
+
+    final String? hmosHomeDir = findHmosHomeDir();
+    if (hmosHomeDir == null) {
+      // No dice.
+      globals.printTrace('Unable to locate an Hmos SDK.');
+      return null;
+    }
+
+    return HmosSdk(globals.fs.directory(hmosHomeDir));
+  }
+
+  //harmonyOsSdk，包含目录hmscore和openharmony
+  static bool validSdkDirectory(String hmosHomeDir) {
+    final Directory directory = globals.fs.directory(hmosHomeDir);
+    return directory.childDirectory('hmscore').existsSync() &&
+        directory.childDirectory('openharmony').existsSync();
   }
 }
 

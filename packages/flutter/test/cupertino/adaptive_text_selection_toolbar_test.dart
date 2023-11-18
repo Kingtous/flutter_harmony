@@ -62,6 +62,7 @@ void main() {
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoTextSelectionToolbar), findsNothing);
         expect(find.byType(CupertinoDesktopTextSelectionToolbar), findsOneWidget);
@@ -147,6 +148,7 @@ void main() {
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsOneWidget);
         break;
@@ -188,6 +190,7 @@ void main() {
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsNWidgets(4));
         break;
@@ -234,6 +237,7 @@ void main() {
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoTextSelectionToolbarButton), findsNothing);
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsOneWidget);

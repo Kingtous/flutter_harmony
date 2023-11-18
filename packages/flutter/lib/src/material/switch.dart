@@ -543,6 +543,7 @@ class Switch extends StatelessWidget {
           case TargetPlatform.fuchsia:
           case TargetPlatform.linux:
           case TargetPlatform.windows:
+          case TargetPlatform.ohos:
             return _buildMaterialSwitch(context);
           case TargetPlatform.iOS:
           case TargetPlatform.macOS:

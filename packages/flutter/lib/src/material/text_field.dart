@@ -82,6 +82,7 @@ class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDete
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           Feedback.forLongPress(_state.context);
           break;
       }
@@ -1098,6 +1099,7 @@ class _TextFieldState extends State<TextField> with RestorationMixin implements 
       case TargetPlatform.windows:
       case TargetPlatform.fuchsia:
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
         if (cause == SelectionChangedCause.longPress
             || cause == SelectionChangedCause.drag) {
           _editableText?.bringIntoView(selection.extent);
@@ -1109,6 +1111,7 @@ class _TextFieldState extends State<TextField> with RestorationMixin implements 
       case TargetPlatform.iOS:
       case TargetPlatform.fuchsia:
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
@@ -1246,7 +1249,7 @@ class _TextFieldState extends State<TextField> with RestorationMixin implements 
         cursorColor = widget.cursorColor ?? selectionStyle.cursorColor ?? theme.colorScheme.primary;
         selectionColor = selectionStyle.selectionColor ?? theme.colorScheme.primary.withOpacity(0.40);
         break;
-
+      case TargetPlatform.ohos:
       case TargetPlatform.linux:
         forcePressEnabled = false;
         textSelectionControls ??= desktopTextSelectionHandleControls;

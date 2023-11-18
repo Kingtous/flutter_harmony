@@ -184,6 +184,7 @@ class CupertinoAdaptiveTextSelectionToolbar extends StatelessWidget {
             buttonItem: buttonItem,
           );
         });
+      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
       case TargetPlatform.macOS:
@@ -217,6 +218,7 @@ class CupertinoAdaptiveTextSelectionToolbar extends StatelessWidget {
       case TargetPlatform.linux:
       case TargetPlatform.windows:
       case TargetPlatform.macOS:
+      case TargetPlatform.ohos:
         return CupertinoDesktopTextSelectionToolbar(
           anchor: anchors.primaryAnchor,
           children: resultChildren,

@@ -55,6 +55,9 @@ import 'macos/macos_workflow.dart';
 import 'macos/xcdevice.dart';
 import 'macos/xcode.dart';
 import 'mdns_discovery.dart';
+import 'ohos/hvigor.dart';
+import 'ohos/hvigor_utils.dart';
+import 'ohos/ohos_builder.dart';
 import 'ohos/ohos_doctor.dart';
 import 'ohos/ohos_sdk.dart';
 import 'ohos/ohos_workflow.dart';
@@ -111,6 +114,16 @@ Future<T> runInContext<T>(
       ),
       AndroidSdk: AndroidSdk.locateAndroidSdk,
       OhosSdk: OhosSdk.localOhosSdk,
+      HmosSdk: HmosSdk.localHmosSdk,
+      OhosBuilder:()=> OhosHvigorBuilder(
+        logger: globals.logger,
+        processManager: globals.processManager,
+        fileSystem: globals.fs,
+        artifacts: globals.artifacts!,
+        usage: globals.flutterUsage,
+        hvigorUtils: globals.hvigorUtils!,
+        platform: globals.platform,
+      ),
       AndroidStudio: AndroidStudio.latestValid,
       AndroidValidator: () => AndroidValidator(
         androidStudio: globals.androidStudio,
@@ -260,6 +273,7 @@ Future<T> runInContext<T>(
         platform: globals.platform,
         cache: globals.cache,
       ),
+      HvigorUtils:() => HvigorUtils(),
       HotRunnerConfig: () => HotRunnerConfig(),
       IOSSimulatorUtils: () => IOSSimulatorUtils(
         logger: globals.logger,

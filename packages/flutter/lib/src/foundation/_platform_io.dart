@@ -23,6 +23,8 @@ platform.TargetPlatform get defaultTargetPlatform {
     result = platform.TargetPlatform.macOS;
   } else if (Platform.isWindows) {
     result = platform.TargetPlatform.windows;
+  } else if (Platform.isOhos) {
+    result = platform.TargetPlatform.ohos;
   }
   assert(() {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {

@@ -351,6 +351,7 @@ class _ReorderableListViewState extends State<ReorderableListView> {
       switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
         case TargetPlatform.macOS:
           switch (widget.scrollDirection) {
             case Axis.horizontal:

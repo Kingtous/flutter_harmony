@@ -867,6 +867,7 @@ class CupertinoTextField extends StatefulWidget {
       );
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
         return null;
@@ -1021,6 +1022,7 @@ class _CupertinoTextFieldState extends State<CupertinoTextField> with Restoratio
       case TargetPlatform.windows:
       case TargetPlatform.fuchsia:
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
         if (cause == SelectionChangedCause.longPress
             || cause == SelectionChangedCause.drag) {
           _editableText.bringIntoView(selection.extent);
@@ -1035,6 +1037,7 @@ class _CupertinoTextFieldState extends State<CupertinoTextField> with Restoratio
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         if (cause == SelectionChangedCause.drag) {
           _editableText.hideToolbar();
@@ -1208,6 +1211,7 @@ class _CupertinoTextFieldState extends State<CupertinoTextField> with Restoratio
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
+      case TargetPlatform.ohos:
         textSelectionControls ??= cupertinoTextSelectionHandleControls;
         break;
 
