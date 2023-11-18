@@ -185,6 +185,7 @@ class _FlexibleSpaceBarState extends State<FlexibleSpaceBar> {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
+      case TargetPlatform.ohos:
         return false;
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
@@ -299,6 +300,7 @@ class _FlexibleSpaceBarState extends State<FlexibleSpaceBar> {
             case TargetPlatform.fuchsia:
             case TargetPlatform.linux:
             case TargetPlatform.windows:
+            case TargetPlatform.ohos:
               title = Semantics(
                 namesRoute: true,
                 child: widget.title,

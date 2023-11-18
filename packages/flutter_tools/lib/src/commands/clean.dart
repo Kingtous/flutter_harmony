@@ -67,7 +67,7 @@ class CleanCommand extends FlutterCommand {
     deleteFile(flutterProject.flutterPluginsDependenciesFile);
     deleteFile(flutterProject.flutterPluginsFile);
 
-    deleteFile(flutterProject.ohos.ohModules);
+    flutterProject.ohos.deleteOhModulesCache();
 
     return const FlutterCommandResult(ExitStatus.success);
   }

@@ -21,7 +21,7 @@ abstract class FeatureFlags {
   const FeatureFlags();
 
   /// Whether flutter desktop for ohos is enabled.
-  bool get isOhosEnabled => false;
+  bool get isOhosEnabled => true;
 
   /// Whether flutter desktop for linux is enabled.
   bool get isLinuxEnabled => false;

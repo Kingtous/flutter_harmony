@@ -1771,6 +1771,7 @@ class EditableText extends StatefulWidget {
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           break;
       }
     }
@@ -2028,6 +2029,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
+      case TargetPlatform.ohos:
         return textEditingValue.text.isNotEmpty
            && !(textEditingValue.selection.start == 0
                && textEditingValue.selection.end == textEditingValue.text.length);
@@ -2067,6 +2069,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
         case TargetPlatform.macOS:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           break;
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
@@ -2174,6 +2177,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
         case TargetPlatform.macOS:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           hideToolbar();
       }
       switch (defaultTargetPlatform) {
@@ -2181,6 +2185,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           bringIntoView(textEditingValue.selection.extent);
           break;
         case TargetPlatform.macOS:
@@ -2404,7 +2409,8 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       }
     }
 
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android
+        && defaultTargetPlatform != TargetPlatform.ohos) {
       return;
     }
 
@@ -2419,7 +2425,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         hideToolbar(false);
       }
-      if (defaultTargetPlatform == TargetPlatform.android) {
+      if (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.ohos) {
         hideToolbar();
       }
     }
@@ -4128,6 +4134,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
             throw UnimplementedError('Unexpected pointer down event for trackpad');
         }
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
@@ -4290,7 +4297,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       // Newer verions of iOS (iOS 15+) no longer reveal the most recently
       // entered character.
       const Set<TargetPlatform> mobilePlatforms = <TargetPlatform> {
-        TargetPlatform.android, TargetPlatform.fuchsia,
+        TargetPlatform.android, TargetPlatform.fuchsia, TargetPlatform.ohos
       };
       final bool breiflyShowPassword = WidgetsBinding.instance.platformDispatcher.brieflyShowPassword
                                     && mobilePlatforms.contains(defaultTargetPlatform);
@@ -5169,6 +5176,7 @@ class _TextEditingHistoryState extends State<_TextEditingHistory> {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
+      case TargetPlatform.ohos:
         // Composing text is not counted in history coalescing.
         if (!widget.controller.value.composing.isCollapsed) {
           return;

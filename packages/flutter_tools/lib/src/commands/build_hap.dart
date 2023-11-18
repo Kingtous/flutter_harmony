@@ -15,7 +15,7 @@
 
 import '../build_info.dart';
 import '../globals.dart' as globals;
-import '../ohos/build_hap.dart';
+import '../ohos/ohos_builder.dart';
 import '../project.dart';
 import '../runner/flutter_command.dart';
 import 'build.dart';
@@ -47,7 +47,7 @@ class BuildHapCommand extends BuildSubCommand {
     final BuildInfo buildInfo = await getBuildInfo();
     final TargetPlatform targetPlatform =
         getTargetPlatformForName(stringArgDeprecated('target-platform')!);
-    await buildHap(
+    await ohosBuilder?.buildHap(
       FlutterProject.current(),
       buildInfo,
       targetPlatform: targetPlatform,

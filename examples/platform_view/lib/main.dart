@@ -53,6 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
         return const Text('Continue in Android view');
       case TargetPlatform.iOS:
         return const Text('Continue in iOS view');
+      case TargetPlatform.ohos:
+        return const Text('Continue in Ohos view');
       case TargetPlatform.windows:
         return const Text('Continue in Windows view');
       case TargetPlatform.macOS:

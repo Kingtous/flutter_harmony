@@ -64,6 +64,10 @@ flutter:
       android:
         ffiPlugin: true
 {{/android}}
+{{#ohos}}
+      ohos:
+        ffiPlugin: true
+{{/ohos}}
 {{#ios}}
       ios:
         ffiPlugin: true
@@ -99,6 +103,11 @@ flutter:
         package: {{androidIdentifier}}
         pluginClass: {{pluginClass}}
 {{/android}}
+{{#ohos}}
+      ohos:
+        package: {{ohosIdentifier}}
+        pluginClass: {{pluginClass}}
+{{/ohos}}
 {{#ios}}
       ios:
         pluginClass: {{pluginClass}}

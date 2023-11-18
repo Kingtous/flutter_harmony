@@ -33,8 +33,8 @@ import '../globals.dart' as globals;
 import '../project.dart';
 import '../protocol_discovery.dart';
 import 'application_package.dart';
-import 'build_hap.dart';
 import 'hdc_server.dart';
+import 'ohos_builder.dart';
 import 'ohos_sdk.dart';
 
 class OhosDevice extends Device {
@@ -301,7 +301,7 @@ class OhosDevice extends Device {
     if (!prebuiltApplication) {
       _logger.printTrace('Building Hap');
       final FlutterProject project = FlutterProject.current();
-      await buildHap(
+      await ohosBuilder?.buildHap(
         project,
         debuggingOptions.buildInfo,
         targetPlatform: devicePlatform,

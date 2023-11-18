@@ -236,6 +236,10 @@ class Typography with Diagnosticable {
         black ??= blackHelsinki;
         white ??= whiteHelsinki;
         break;
+      case TargetPlatform.ohos:
+        black ??= blackHelsinki;
+        white ??= whiteHelsinki;
+        break;
       case null:
         break;
     }

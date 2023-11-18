@@ -70,6 +70,9 @@ class DevelopmentShaderCompiler {
       case TargetPlatform.fuchsia_arm64:
       case TargetPlatform.fuchsia_x64:
       case TargetPlatform.tester:
+      case TargetPlatform.ohos_arm64:
+      case TargetPlatform.ohos_arm:
+      case TargetPlatform.ohos_x64:
         assert(!enableImpeller);
         _shaderTarget = ShaderTarget.sksl;
         break;

@@ -794,6 +794,7 @@ class AppBar extends StatefulWidget implements PreferredSizeWidget {
       assert(theme.platform != null);
       switch (theme.platform) {
         case TargetPlatform.android:
+        case TargetPlatform.ohos:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
@@ -1027,6 +1028,7 @@ class _AppBarState extends State<AppBar> {
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           namesRoute = true;
           break;
         case TargetPlatform.iOS:
@@ -2250,6 +2252,7 @@ class _ScrollUnderFlexibleSpace extends StatelessWidget {
           case TargetPlatform.fuchsia:
           case TargetPlatform.linux:
           case TargetPlatform.windows:
+          case TargetPlatform.ohos:
             return false;
           case TargetPlatform.iOS:
           case TargetPlatform.macOS:

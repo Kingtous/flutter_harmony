@@ -248,6 +248,8 @@ class DefaultTextEditingShortcuts extends StatelessWidget {
 
   static final Map<ShortcutActivator, Intent> _fuchsiaShortcuts = _androidShortcuts;
 
+  static final Map<ShortcutActivator, Intent> _ohosShortcuts = _androidShortcuts;
+
   static final Map<ShortcutActivator, Intent> _linuxShortcuts = <ShortcutActivator, Intent>{
     ..._commonShortcuts,
     const SingleActivator(LogicalKeyboardKey.home): const ExtendSelectionToLineBreakIntent(forward: false, collapseSelection: true),
@@ -482,6 +484,8 @@ class DefaultTextEditingShortcuts extends StatelessWidget {
         return _macShortcuts;
       case TargetPlatform.windows:
         return _windowsShortcuts;
+      case TargetPlatform.ohos:
+        return _ohosShortcuts; 
     }
   }
 
@@ -494,6 +498,7 @@ class DefaultTextEditingShortcuts extends StatelessWidget {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
+      case TargetPlatform.ohos:
         return null;
       case TargetPlatform.iOS:
         return _iOSDisablingTextShortcuts;

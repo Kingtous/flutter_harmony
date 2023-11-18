@@ -20,6 +20,7 @@ import '../project.dart';
 import '../reporting/reporting.dart';
 import '../runner/flutter_command.dart';
 import 'create_base.dart';
+import '../ohos/hvigor_utils.dart' as hvigor;
 
 const String kPlatformHelp =
   'The platforms supported by this project. '
@@ -47,7 +48,7 @@ class CreateCommand extends CreateBase {
             'Dart code.',
         flutterProjectTypeToString(FlutterProjectType.plugin): 'Generate a shareable Flutter project containing an API '
             'in Dart code with a platform-specific implementation through method channels for Android, iOS, '
-            'Linux, macOS, Windows, web, or any combination of these.',
+            'Linux, macOS, Windows, web, Ohos or any combination of these.',
         flutterProjectTypeToString(FlutterProjectType.ffiPlugin):
             'Generate a shareable Flutter project containing an API '
             'in Dart code with a platform-specific implementation through dart:ffi for Android, iOS, '
@@ -276,14 +277,14 @@ class CreateCommand extends CreateBase {
     final bool includeWindows;
     final bool includeOhos;
     if (template == FlutterProjectType.module) {
-      // The module template only supports iOS and Android.
+      // The module template only supports iOS 、Android And OpenHarmony
       includeIos = true;
       includeAndroid = true;
       includeWeb = false;
       includeLinux = false;
       includeMacos = false;
       includeWindows = false;
-      includeOhos = false;
+      includeOhos = true;
     } else {
       includeIos = featureFlags.isIOSEnabled && platforms.contains('ios');
       includeAndroid = featureFlags.isAndroidEnabled && platforms.contains('android');
@@ -427,6 +428,7 @@ class CreateCommand extends CreateBase {
         macOSPlatform: includeMacos,
         windowsPlatform: includeWindows,
         webPlatform: includeWeb,
+        ohosPlatform: includeOhos,
       );
     }
     if (sampleCode != null) {
@@ -586,12 +588,18 @@ Your $application code is in $relativeAppMain.
         project: project, requireAndroidSdk: false);
     }
 
+    final bool generateOhos = templateContext['ohos'] == true;
+    if (generateOhos) {
+      hvigor.updateLocalProperties(project: project);
+    }
+
     final String? projectName = templateContext['projectName'] as String?;
     final String organization = templateContext['organization']! as String; // Required to make the context.
     final String? androidPluginIdentifier = templateContext['androidIdentifier'] as String?;
     final String exampleProjectName = '${projectName}_example';
     templateContext['projectName'] = exampleProjectName;
     templateContext['androidIdentifier'] = CreateBase.createAndroidIdentifier(organization, exampleProjectName);
+    templateContext['ohosIdentifier'] = CreateBase.createAndroidIdentifier(organization, exampleProjectName);
     templateContext['iosIdentifier'] = CreateBase.createUTIIdentifier(organization, exampleProjectName);
     templateContext['macosIdentifier'] = CreateBase.createUTIIdentifier(organization, exampleProjectName);
     templateContext['windowsIdentifier'] = CreateBase.createWindowsIdentifier(organization, exampleProjectName);
