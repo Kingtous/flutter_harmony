@@ -194,7 +194,12 @@ Future<void> signHap(LocalFileSystem localFileSystem, String unsignedFile,
       logger: logger);
 
   final List<String> cmdSignHap = <String>[];
-  cmdSignHap.add('python3');
+  if (isWindows) {
+    cmdSignHap.add('py');
+    cmdSignHap.add('-3');
+  } else {
+    cmdSignHap.add('python3');
+  }
   cmdSignHap.add(globals.fs.path.join(signToolHome, 'autosign.py'));
   cmdSignHap.add('signHap');
 
