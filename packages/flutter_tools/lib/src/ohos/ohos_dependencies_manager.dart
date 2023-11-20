@@ -15,6 +15,7 @@
 
 import 'package:json5/json5.dart';
 
+import '../base/common.dart';
 import '../base/file_system.dart';
 import '../flutter_plugins.dart';
 import '../globals.dart' as globals;
@@ -68,8 +69,8 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
 }
 
 OhosDependence transform(OhosPlugin ohosPlugin) {
-  return OhosDependence('@ohos/${ohosPlugin.name}',
-      '../har/${ohosPlugin.name}.har', ohosPlugin.name);
+  return OhosDependence('@ohos/${ohosPlugin.name}', ohosPlugin.name,
+      '../har/${ohosPlugin.name}.har');
 }
 
 /// 从entry/oh-package.json5解析出所有依赖
@@ -99,7 +100,7 @@ Future<void> addDependencies(
 
   for (final OhosDependence dependence in list) {
     dependencies[dependence.moduleName] =
-        'file:../har/${dependence.baseModuleName}';
+        'file:../har/${dependence.baseModuleName}.har';
   }
   final String configNew = JSON5.stringify(obj, space: 2);
   flutterProject.ohos.mainModulePackageFile

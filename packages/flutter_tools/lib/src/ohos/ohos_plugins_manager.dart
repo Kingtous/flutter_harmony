@@ -21,6 +21,7 @@ import '../platform_plugins.dart';
 import '../plugins.dart';
 import '../project.dart';
 import 'hvigor.dart';
+import 'dart:io' as io;
 
 /// 检查plugins的har是否需要更新
 Future<void> checkPluginsHarUpdate(
@@ -35,11 +36,16 @@ Future<void> checkPluginsHarUpdate(
     return;
   }
 
+  if (!flutterProject.directory.childFile('.flutter-plugins').existsSync()) {
+    throwToolExit('please run "flutter pub get" in project first.');
+  }
+
   ///检查当前工程下har文件夹下已生成的har文件
   final List<String> harFiles = getProjectHarList(flutterProject);
 
   final List<OhosPlugin> toBeGenerateHarList = list
-      .where((OhosPlugin plugin) => !harFiles.contains('${plugin.name}.har'))
+      .where((OhosPlugin plugin) =>
+          !hasContainsStr(harFiles, '${plugin.name}.har'))
       .toList();
   if (toBeGenerateHarList.isEmpty) {
     globals.printStatus(
@@ -69,12 +75,23 @@ Future<void> checkPluginsHarUpdate(
   }
 }
 
+bool hasContainsStr(List<String> list, String name) {
+  for (final String element in list) {
+    if (element.contains(name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 List<String> getProjectHarList(FlutterProject flutterProject) {
   final Directory directory =
       flutterProject.ohos.ohosRoot.childDirectory('har');
   if (directory.existsSync()) {
     return directory
         .listSync()
+        .where((FileSystemEntity element) =>
+            io.FileSystemEntity.isFileSync(element.path))
         .map((FileSystemEntity file) => file.path)
         .toList();
   } else {
@@ -84,25 +101,25 @@ List<String> getProjectHarList(FlutterProject flutterProject) {
 }
 
 Future<String> pluginsHarGenerate(String pluginPath, String pluginName) async {
+  await ohpmInstall(
+      processManager: globals.processManager,
+      entryPath: globals.fs.path.join(pluginPath, pluginName),
+      logger: globals.logger);
   final String hvigorwPath = getHvigorwPath(pluginPath, checkMod: true);
   final int errorCode0 = await assembleHar(
       processManager: globals.processManager,
       workPath: pluginPath,
-      moduleName: 'ohos',
+      moduleName: pluginName,
       hvigorwPath: hvigorwPath,
       logger: globals.logger);
   if (errorCode0 != 0) {
     throwToolExit(
         'ohosPluginsManager: pluginPath:$pluginPath, assembleHar error! please check log.');
   }
-  final String originHarPath = getHarPath(pluginPath, 'ohos.har');
-  final File originHarFile = globals.fs.file(originHarPath);
-  final String newHarPath = getHarPath(pluginPath, '$pluginName.har');
-  originHarFile.renameSync(newHarPath);
-  return newHarPath;
+  return getHarPath(pluginPath, pluginName);
 }
 
-String getHarPath(String pluginPath, String fileName) {
-  return globals.fs.path.join(
-      pluginPath, 'ohos', 'build', 'default', 'outputs', 'default', fileName);
+String getHarPath(String pluginPath, String pluginName) {
+  return globals.fs.path.join(pluginPath, pluginName, 'build', 'default',
+      'outputs', 'default', '$pluginName.har');
 }
