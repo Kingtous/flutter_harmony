@@ -852,12 +852,10 @@ class OhosProject extends FlutterProjectPlatform {
   /// True if the parent Flutter project is a plugin.
   bool get isPlugin => parent.isPlugin;
 
-  Directory get hostAppRoot => parent.directory.childDirectory('ohos');
-
   /// The directory in the project that is managed by Flutter. As much as
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
-  Directory get managedDirectory => hostAppRoot.childDirectory('entry/src/main/ets/plugins');
+  Directory get managedDirectory => ohosRoot.childDirectory('entry/src/main/ets/plugins');
 
   /// 是否先编译.ohos/module下har，再运行hap
   bool get isRunWithModuleHar =>
