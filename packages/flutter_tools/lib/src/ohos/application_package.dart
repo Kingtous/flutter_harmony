@@ -23,6 +23,7 @@ import '../base/logger.dart';
 import '../base/process.dart';
 import '../base/user_messages.dart';
 import '../build_info.dart';
+import '../globals.dart' as globals;
 import '../project.dart';
 import 'ohos_sdk.dart';
 
@@ -57,7 +58,7 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
     /// parse the build data
     final OhosBuildData ohosBuildData =
         OhosBuildData.parseOhosBuildData(ohosProject, logger);
-    final String bundleName = ohosBuildData.appInfo.bundleName;
+    final String bundleName = ohosBuildData.appInfo!.bundleName;
     return OhosHap(
         id: bundleName,
         applicationPackage: ohosProject.getSignedHapFile(),
@@ -81,9 +82,11 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
 class OhosBuildData {
   OhosBuildData(this.appInfo, this.modeInfo, this.apiVersion);
 
-  late AppInfo appInfo;
+  late AppInfo? appInfo;
   late ModuleInfo modeInfo;
   late int apiVersion;
+
+  bool get hasEntryModule => false;
 
   static OhosBuildData parseOhosBuildData(
       OhosProject ohosProject, Logger? logger) {
@@ -92,13 +95,12 @@ class OhosBuildData {
     late int apiVersion;
     try {
       final File appJson = ohosProject.getAppJsonFile();
-      final String json = appJson.readAsStringSync();
-      final dynamic obj = JSON5.parse(json);
-      appInfo = AppInfo.getAppInfo(obj);
-      final File moduleJson = ohosProject.getModuleJsonFile();
-      final String moduleStr = moduleJson.readAsStringSync();
-      final dynamic module = JSON5.parse(moduleStr);
-      moduleInfo = ModuleInfo.getModuleInfo(module);
+      if (appJson.existsSync()) {
+        final String json = appJson.readAsStringSync();
+        final dynamic obj = JSON5.parse(json);
+        appInfo = AppInfo.getAppInfo(obj);
+      }
+      moduleInfo = ModuleInfo.getModuleInfo(ohosProject.ohosRoot.path);
       apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
     } on Exception catch (err) {
       throwToolExit('parse ohos project build data exception! $err');
@@ -110,7 +112,7 @@ class OhosBuildData {
 int getApiVersion(File buildProfile) {
   final String buildProfileConfig = buildProfile.readAsStringSync();
   final dynamic obj = JSON5.parse(buildProfileConfig);
-    dynamic sdkObj = obj['app']['compileSdkVersion'];
+  dynamic sdkObj = obj['app']['compileSdkVersion'];
   sdkObj ??= obj['app']['products'][0]['compileSdkVersion'];
   if (sdkObj is int) {
     return sdkObj;
@@ -122,6 +124,32 @@ int getApiVersion(File buildProfile) {
   }
 
   throwToolExit('Parse compileSdkVersion failed.');
+}
+
+List<String> getModuleListName(String ohosProjectPath) {
+  final Directory pluginPathDirectory = globals.fs.directory(ohosProjectPath);
+  final File buildProfileFile =
+      pluginPathDirectory.childFile('build-profile.json5');
+  if (!pluginPathDirectory.existsSync() || !buildProfileFile.existsSync()) {
+    throwToolExit('please check if ohosProjectPath:$ohosProjectPath exists !');
+  }
+
+  final List<String> moduleNames = List<String>.empty(growable: true);
+  try {
+    String build = buildProfileFile.readAsStringSync();
+    globals.printStatus('application_package: build = ${build}');
+
+    final dynamic moduleConfig =
+        JSON5.parse(buildProfileFile.readAsStringSync());
+    final List<dynamic> modules = moduleConfig['modules'] as List<dynamic>;
+    for (dynamic d in modules) {
+      moduleNames.add(d['name'] as String);
+    }
+  } on Exception catch (e) {
+    throwToolExit(
+        'parse build-profile.json5 error! path: ${buildProfileFile.path} ,error: ${e.toString()}');
+  }
+  return moduleNames;
 }
 
 class AppInfo {
@@ -140,12 +168,84 @@ class AppInfo {
 }
 
 class ModuleInfo {
-  ModuleInfo(this.mainElement);
+  ModuleInfo(this.moduleList);
 
-  late String mainElement;
+  List<OhosModule> moduleList;
 
-  static ModuleInfo getModuleInfo(dynamic module) {
-    final String mainElement = module['module']['mainElement'] as String;
-    return ModuleInfo(mainElement);
+  bool get hasEntryModule =>
+      moduleList.any((OhosModule element) => element.isEntry);
+
+  OhosModule? get entryModule => hasEntryModule
+      ? moduleList.firstWhere((OhosModule element) => element.isEntry)
+      : null;
+
+  String? get mainElement => entryModule?.mainElement;
+
+  /// 获取主要的module名，如果存在entry，返回entry类型的module，否则返回第一个module
+  String get mainModuleName =>
+      entryModule?.moduleName ?? moduleList.first.moduleName;
+
+  static ModuleInfo getModuleInfo(String ohosProjectPath) {
+    final List<OhosModule> moduleList =
+        OhosModule.fromOhosPath(ohosProjectPath);
+    return ModuleInfo(moduleList);
+  }
+}
+
+enum OhosModuleType {
+  entry,
+  har,
+  shared,
+  unknown;
+
+  static OhosModuleType fromName(String name) {
+    return OhosModuleType.values.firstWhere(
+        (OhosModuleType element) => element.name == name,
+        orElse: () => OhosModuleType.unknown);
+  }
+}
+
+class OhosModule {
+  OhosModule(this.moduleName, this.isEntry, this.mainElement, this.type);
+
+  String moduleName;
+  bool isEntry;
+  String? mainElement;
+  OhosModuleType type;
+
+  static List<OhosModule> fromOhosPath(String ohosProjectPath) {
+    final List<String> moduleNames = getModuleListName(ohosProjectPath);
+    final List<OhosModule> list = List<OhosModule>.empty(growable: true);
+    for (final String moduleName in moduleNames) {
+      final OhosModule ohosModule =
+          _fromModulePath(ohosProjectPath, moduleName);
+      list.add(ohosModule);
+    }
+    return list;
+  }
+
+  static OhosModule _fromModulePath(String ohosProjectPath, String moduleName) {
+    final String moduleJsonPath = globals.fs.path
+        .join(ohosProjectPath, moduleName, 'src', 'main', 'module.json5');
+    final File moduleJsonFile = globals.fs.file(moduleJsonPath);
+    if (!moduleJsonFile.existsSync()) {
+      throwToolExit('can not found module.json5 at $moduleJsonPath .');
+    }
+    try {
+      final dynamic moduleJson = JSON5.parse(moduleJsonFile.readAsStringSync());
+      final dynamic module = moduleJson['module'];
+      final String type = module['type'] as String;
+      final bool isEntry = type == OhosModuleType.entry.name;
+
+      globals.printStatus('application_package: moduleNamee = ${moduleName}');
+
+      return OhosModule(
+          moduleName,
+          isEntry,
+          isEntry ? module['mainElement'] as String : null,
+          OhosModuleType.fromName(type));
+    } on Exception catch (e) {
+      throwToolExit('parse module.json5 error , $moduleJsonPath . error: $e');
+    }
   }
 }

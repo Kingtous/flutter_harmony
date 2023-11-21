@@ -530,7 +530,7 @@ const String _arktsPluginRegistryTemplate = '''
 import { FlutterPlugin } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/FlutterPlugin';
 import List from '@ohos.util.List';
 {{#methodChannelPlugins}}
-import {{class}} from '@ohos/{{name}}/src/main/ets/components/plugin/{{class}}'
+import {{class}} from '@ohos/{{name}}'
 {{/methodChannelPlugins}}
 
 /**

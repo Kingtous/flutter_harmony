@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 
 import '../src/convert.dart';
 import 'android/gradle_utils.dart' as gradle;
+import 'ohos/application_package.dart';
 import 'ohos/hvigor_utils.dart' as hvigor;
 import 'base/common.dart';
 import 'base/error_handling_io.dart';
@@ -844,7 +845,16 @@ class FuchsiaProject {
 class OhosProject extends FlutterProjectPlatform {
   OhosProject._(this.parent);
 
+  OhosBuildData get _initOhosBuildData {
+    _ohosBuildDataIns = OhosBuildData.parseOhosBuildData(this, globals.logger);
+    return _ohosBuildDataIns!;
+  }
+
   final FlutterProject parent;
+
+  OhosBuildData? _ohosBuildDataIns;
+
+  OhosBuildData get ohosBuildData => _ohosBuildDataIns ?? _initOhosBuildData;
 
   /// True if the parent Flutter project is a module.
   bool get isModule => parent.isModule;
@@ -855,7 +865,8 @@ class OhosProject extends FlutterProjectPlatform {
   /// The directory in the project that is managed by Flutter. As much as
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
-  Directory get managedDirectory => ohosRoot.childDirectory('entry/src/main/ets/plugins');
+  Directory get managedDirectory =>
+      ohosRoot.childDirectory('entry/src/main/ets/plugins');
 
   /// 是否先编译.ohos/module下har，再运行hap
   bool get isRunWithModuleHar =>
@@ -887,10 +898,10 @@ class OhosProject extends FlutterProjectPlatform {
       parent.directory.childDirectory('ohos');
 
   /// flutter资源和运行环境，生成和打包的module
-  String get flutterModuleName => isModule ? 'flutter_module' : 'entry';
+  String get flutterModuleName => isModule ? 'flutter_module' : mainModuleName;
 
-  /// 主module，启动module
-  String get mainModuleName => 'entry';
+  /// 主module，entry存在的话，是entryModuleName，否则是其他module
+  String get mainModuleName => ohosBuildData.modeInfo.mainModuleName;
 
   Directory get flutterModuleDirectory => isModule
       ? ephemeralDirectory.childDirectory(flutterModuleName)
@@ -899,10 +910,12 @@ class OhosProject extends FlutterProjectPlatform {
   Directory get mainModuleDirectory => ohosRoot.childDirectory(mainModuleName);
 
   List<Directory> get moduleDirectorys {
-    final List<Directory> list = <Directory>[mainModuleDirectory];
-    if (isModule) {
-      list.add(flutterModuleDirectory);
-    }
+    final List<Directory> list = ohosBuildData.modeInfo.moduleList
+        .map((OhosModule e) => e.moduleName)
+        .map((String moduleName) =>
+            globals.fs.path.join(ohosRoot.path, moduleName))
+        .map((String path) => globals.fs.directory(path))
+        .toList();
     return list;
   }
 

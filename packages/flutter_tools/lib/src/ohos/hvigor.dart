@@ -263,7 +263,7 @@ Future<void> ohpmInstall(
     ohpmPath,
     'install',
   ];
-  logger?.printTrace(command.join(' '));
+  logger?.printTrace('invoke at:$entryPath ,command: ${command.join(' ')}');
   final Process server =
       await processManager.start(command, workingDirectory: entryPath);
 
@@ -522,8 +522,8 @@ void cleanAndCopyFlutterRuntime(
 
   //copy ohos engine so
   if (isWindows) {
-    final String originEnginePath =
-        globals.fs.path.join(ohosRootPath, 'har', '$FLUTTER_ENGINE_SO.$suffix');
+    final String originEnginePath = globals.fs.path
+        .join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix');
     final String desEnginePath = globals.fs.path.join(
         ohosProject.flutterModuleDirectory.path,
         'libs',
@@ -602,6 +602,11 @@ class OhosHvigorBuilder implements OhosBuilder {
       Logger? logger}) async {
     logger?.printStatus('start hap build...');
 
+    if (!flutterProject.ohos.ohosBuildData.modeInfo.hasEntryModule) {
+      throwToolExit(
+          "this ohos project don't have a entry module , can't build to a hap file.");
+    }
+
     parseData(flutterProject, logger);
 
     /// 检查plugin的har构建
@@ -668,7 +673,7 @@ class OhosHvigorBuilder implements OhosBuilder {
         'entry-default-signed.hap');
 
     await signHap(globals.localFileSystem, unsignedFile, desSignedFile, logger,
-        ohosBuildData.appInfo.bundleName);
+        ohosBuildData.appInfo!.bundleName);
   }
 
   Future<void> flutterBuildPre(
