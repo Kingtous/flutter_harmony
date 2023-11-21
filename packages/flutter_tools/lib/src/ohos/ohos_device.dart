@@ -114,7 +114,8 @@ class OhosDevice extends Device {
   @override
   Future<void> takeScreenshot(File outputFile) async {
     const String remotePath = '/data/local/tmp/flutter_screenshot.jpeg';
-    await runHdcCheckedAsync(<String>['shell', 'snapshot_display', '-f', remotePath]);
+    await runHdcCheckedAsync(
+        <String>['shell', 'snapshot_display', '-f', remotePath]);
     await _processUtils.run(
       hdcCommandForDevice(<String>['file recv', remotePath, outputFile.path]),
       throwOnError: true,
@@ -351,15 +352,14 @@ class OhosDevice extends Device {
         logger: _logger,
       );
     }
-
     final List<String> cmd = <String>[
       'shell',
       'aa',
       'start',
       '-a',
-      builtPackage.ohosBuildData.modeInfo.mainElement,
+      builtPackage.ohosBuildData.modeInfo.mainElement!,
       '-b',
-      builtPackage.ohosBuildData.appInfo.bundleName,
+      builtPackage.ohosBuildData.appInfo!.bundleName,
     ];
     final String result = (await runHdcCheckedAsync(cmd)).stdout;
     // This invocation returns 0 even when it fails.

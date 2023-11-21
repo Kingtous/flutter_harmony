@@ -13,6 +13,10 @@
 * limitations under the License.
 */
 
+import 'dart:io' as io;
+
+import 'package:json5/json5.dart';
+
 import '../base/common.dart';
 import '../base/file_system.dart';
 import '../flutter_plugins.dart';
@@ -20,8 +24,8 @@ import '../globals.dart' as globals;
 import '../platform_plugins.dart';
 import '../plugins.dart';
 import '../project.dart';
+import 'application_package.dart';
 import 'hvigor.dart';
-import 'dart:io' as io;
 
 /// 检查plugins的har是否需要更新
 Future<void> checkPluginsHarUpdate(
@@ -56,8 +60,10 @@ Future<void> checkPluginsHarUpdate(
   /// 每一个待生成的har工程，执行assembleHar
   final List<String> harPaths =
       await Future.wait(toBeGenerateHarList.map((OhosPlugin element) async {
+    final String pluginOhosPath = getOhosProjectPath(element.pluginPath);
+    final ModuleInfo moduleInfo = ModuleInfo.getModuleInfo(pluginOhosPath);
     final String path = await pluginsHarGenerate(
-        globals.fs.path.join(element.pluginPath, 'ohos'), element.name);
+        pluginOhosPath, element.name, moduleInfo.mainModuleName);
     return path;
   }).toList());
 
@@ -69,10 +75,8 @@ Future<void> checkPluginsHarUpdate(
         originFile.basename);
     originFile.copySync(descPath);
   }
-  if (toBeGenerateHarList.isEmpty) {
-    globals.printStatus(
-        'ohosPluginsManager: ohos plugins har files update success!');
-  }
+  globals.printStatus(
+      'ohosPluginsManager: ohos plugins har files update success!');
 }
 
 bool hasContainsStr(List<String> list, String name) {
@@ -100,26 +104,52 @@ List<String> getProjectHarList(FlutterProject flutterProject) {
   }
 }
 
-Future<String> pluginsHarGenerate(String pluginPath, String pluginName) async {
+Future<String> pluginsHarGenerate(
+    String ohosPath, String pluginName, String moduleName) async {
+  final String modulePath = globals.fs.path.join(ohosPath, moduleName);
   await ohpmInstall(
       processManager: globals.processManager,
-      entryPath: globals.fs.path.join(pluginPath, pluginName),
+      entryPath: modulePath,
       logger: globals.logger);
-  final String hvigorwPath = getHvigorwPath(pluginPath, checkMod: true);
+  final String hvigorwPath = getHvigorwPath(ohosPath, checkMod: true);
   final int errorCode0 = await assembleHar(
       processManager: globals.processManager,
-      workPath: pluginPath,
-      moduleName: pluginName,
+      workPath: ohosPath,
+      moduleName: moduleName,
       hvigorwPath: hvigorwPath,
       logger: globals.logger);
   if (errorCode0 != 0) {
     throwToolExit(
-        'ohosPluginsManager: pluginPath:$pluginPath, assembleHar error! please check log.');
+        'ohosPluginsManager: ohosProjectPath:$ohosPath, assembleHar error! please check log.');
   }
-  return getHarPath(pluginPath, pluginName);
+  return getHarPath(ohosPath, pluginName, moduleName);
 }
 
-String getHarPath(String pluginPath, String pluginName) {
-  return globals.fs.path.join(pluginPath, pluginName, 'build', 'default',
-      'outputs', 'default', '$pluginName.har');
+/// 插件中ohos目录
+String getOhosProjectPath(String pluginPath) {
+  final Directory pluginPathDirectory = globals.fs.directory(pluginPath);
+  final Directory ohosProject = pluginPathDirectory.childDirectory('ohos');
+  if (!ohosProject.existsSync() ||
+      !ohosProject.childFile('oh-package.json5').existsSync()) {
+    throwToolExit('can not found ohos project on pluginPath: $pluginPath');
+  }
+  return ohosProject.path;
+}
+
+String getHarPath(String pluginPath, String pluginName, String moduleName) {
+  final String harPath = globals.fs.path.join(pluginPath, moduleName, 'build',
+      'default', 'outputs', 'default', '$moduleName.har');
+  final File harFile = globals.fs.file(harPath);
+  if (!harFile.existsSync()) {
+    throwToolExit('har file has not found. harPath: $harPath');
+  }
+  if (pluginName == moduleName) {
+    return harPath;
+  } else {
+    /// 如果module名和插件名不一致，需要更新har为插件名har
+    final String renamePath = globals.fs.path.join(pluginPath, moduleName,
+        'build', 'default', 'outputs', 'default', '$pluginName.har');
+    harFile.renameSync(renamePath);
+    return renamePath;
+  }
 }
