@@ -497,11 +497,8 @@ void cleanAndCopyFlutterRuntime(
   final String copyDes = getDatPath(ohosRootPath, ohosProject);
   ohosDta.copySync(copyDes);
 
-  final int apiVersion = ohosBuildData.apiVersion;
-
   //copy har
-  final String suffix =
-      '${buildInfo.isDebug ? 'debug' : buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
+  final String suffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
   final String harPath =
       ohosProject.isModule ? 'har_product' : 'har/har_product';
   final String originHarPath = globals.fs.path.join(
@@ -557,6 +554,12 @@ void ensureParentExists(String path) {
   }
 }
 
+String getEmbeddingHarFileSuffix(
+    BuildInfo buildInfo, OhosBuildData ohosBuildData) {
+  final int apiVersion = ohosBuildData.apiVersion;
+  return '${buildInfo.isDebug ? 'debug' : buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
+}
+
 class OhosHvigorBuilder implements OhosBuilder {
   OhosHvigorBuilder({
     required Logger logger,
@@ -610,7 +613,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     parseData(flutterProject, logger);
 
     /// 检查plugin的har构建
-    await checkPluginsHarUpdate(flutterProject);
+    await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
 
     await flutterBuildPre(flutterProject, buildInfo,
         targetPlatform: targetPlatform, logger: logger);

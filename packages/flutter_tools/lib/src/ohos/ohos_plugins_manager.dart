@@ -19,6 +19,8 @@ import 'package:json5/json5.dart';
 
 import '../base/common.dart';
 import '../base/file_system.dart';
+import '../build_info.dart';
+import '../cache.dart';
 import '../flutter_plugins.dart';
 import '../globals.dart' as globals;
 import '../platform_plugins.dart';
@@ -26,11 +28,11 @@ import '../plugins.dart';
 import '../project.dart';
 import 'application_package.dart';
 import 'hvigor.dart';
+import 'ohos_dependencies_manager.dart';
 
 /// 检查plugins的har是否需要更新
-Future<void> checkPluginsHarUpdate(
-  FlutterProject flutterProject,
-) async {
+Future<void> checkPluginsHarUpdate(FlutterProject flutterProject,
+    BuildInfo buildInfo, OhosBuildData ohosBuildData) async {
   final List<OhosPlugin> list = (await findPlugins(flutterProject))
       .where((Plugin p) => p.platforms.containsKey(OhosPlugin.kConfigKey))
       .map((Plugin p) => p.platforms[OhosPlugin.kConfigKey]! as OhosPlugin)
@@ -41,7 +43,8 @@ Future<void> checkPluginsHarUpdate(
   }
 
   if (!flutterProject.directory.childFile('.flutter-plugins').existsSync()) {
-    throwToolExit('please run "flutter pub get" in project first.');
+    throwToolExit(
+        'ohos_plugins_manager: please run "flutter pub get" in project first.');
   }
 
   ///检查当前工程下har文件夹下已生成的har文件
@@ -62,8 +65,8 @@ Future<void> checkPluginsHarUpdate(
       await Future.wait(toBeGenerateHarList.map((OhosPlugin element) async {
     final String pluginOhosPath = getOhosProjectPath(element.pluginPath);
     final ModuleInfo moduleInfo = ModuleInfo.getModuleInfo(pluginOhosPath);
-    final String path = await pluginsHarGenerate(
-        pluginOhosPath, element.name, moduleInfo.mainModuleName);
+    final String path = await pluginsHarGenerate(pluginOhosPath, element.name,
+        moduleInfo.mainModuleName, buildInfo, ohosBuildData);
     return path;
   }).toList());
 
@@ -104,9 +107,10 @@ List<String> getProjectHarList(FlutterProject flutterProject) {
   }
 }
 
-Future<String> pluginsHarGenerate(
-    String ohosPath, String pluginName, String moduleName) async {
+Future<String> pluginsHarGenerate(String ohosPath, String pluginName,
+    String moduleName, BuildInfo buildInfo, OhosBuildData ohosBuildData) async {
   final String modulePath = globals.fs.path.join(ohosPath, moduleName);
+  checkDevDependencies(modulePath, buildInfo, ohosBuildData);
   await ohpmInstall(
       processManager: globals.processManager,
       entryPath: modulePath,
@@ -125,13 +129,67 @@ Future<String> pluginsHarGenerate(
   return getHarPath(ohosPath, pluginName, moduleName);
 }
 
+/// 检查module的devDependencies，如果存在 "@ohos/flutter_ohos": "file:./libs/flutter_ohos.har" ， 拷贝har文件到module目录
+void checkDevDependencies(
+    String modulePath, BuildInfo buildInfo, OhosBuildData ohosBuildData) {
+  final Directory moduleDirectory = globals.fs.directory(modulePath);
+  final File packageConfigFile = moduleDirectory.childFile('oh-package.json5');
+  final List<OhosDependence> devDependencies =
+      getOhosDependenciesListFromPackageFile(packageConfigFile,
+          dependenceType: DependenceType.dev);
+
+  /// 如果包含@ohos/flutter_ohos，每次构建，都需要重新拷贝har文件，确保flutter_embedding.har文件的正确性
+  if (devDependencies.any(
+      (OhosDependence element) => element.moduleName == '@ohos/flutter_ohos')) {
+    final OhosDependence flutterOhosDepence = devDependencies.firstWhere(
+        (OhosDependence element) => element.moduleName == '@ohos/flutter_ohos');
+    copyOhosEmbeddingHarToModule(
+        modulePath, flutterOhosDepence, buildInfo, ohosBuildData);
+  }
+}
+
+void copyOhosEmbeddingHarToModule(
+    String modulePath,
+    OhosDependence flutterOhosDepence,
+    BuildInfo buildInfo,
+    OhosBuildData ohosBuildData) {
+  /// 目标路径
+  final String desFilePath = globals.fs.path.join(
+      modulePath, flutterOhosDepence.modulePath.replaceAll('file:', ''));
+  final File desFile = globals.fs.file(desFilePath);
+  if (!desFile.parent.existsSync()) {
+    desFile.parent.createSync(recursive: true);
+  }
+
+  /// 来源har
+  final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
+  // packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl
+  final String harPath = globals.fs.path.join(
+      flutterSdk,
+      'packages',
+      'flutter_tools',
+      'templates',
+      'app_shared',
+      'ohos.tmpl',
+      'har',
+      'har_product.tmpl');
+  final String fileSuffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
+  final String harFileName = '$HAR_FILE_NAME.$fileSuffix';
+  final String harFilePath = globals.fs.path.join(harPath, harFileName);
+  final File originHar = globals.fs.file(harFilePath);
+  globals.printStatus(
+      'ohos_plugins_manager: copy har from "$harFilePath" to "$desFilePath"');
+  originHar.copySync(desFilePath);
+}
+
 /// 插件中ohos目录
 String getOhosProjectPath(String pluginPath) {
   final Directory pluginPathDirectory = globals.fs.directory(pluginPath);
   final Directory ohosProject = pluginPathDirectory.childDirectory('ohos');
   if (!ohosProject.existsSync() ||
       !ohosProject.childFile('oh-package.json5').existsSync()) {
-    throwToolExit('can not found ohos project on pluginPath: $pluginPath');
+    throwToolExit(
+        'ohos_plugins_manager: can not found ohos project on pluginPath: $pluginPath');
   }
   return ohosProject.path;
 }
@@ -141,7 +199,8 @@ String getHarPath(String pluginPath, String pluginName, String moduleName) {
       'default', 'outputs', 'default', '$moduleName.har');
   final File harFile = globals.fs.file(harPath);
   if (!harFile.existsSync()) {
-    throwToolExit('har file has not found. harPath: $harPath');
+    throwToolExit(
+        'ohos_plugins_manager: har file has not found. harPath: $harPath');
   }
   if (pluginName == moduleName) {
     return harPath;

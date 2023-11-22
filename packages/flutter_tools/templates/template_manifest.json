@@ -392,7 +392,6 @@
         "templates/plugin/ohos.tmpl/dependencies/rollup.tgz",
         "templates/plugin/ohos.tmpl/hvigor/hvigor-config.json5.tmpl",
         "templates/plugin/ohos.tmpl/hvigor/hvigor-wrapper.js.tmpl",
-        "templates/plugin/ohos.tmpl/projectName.tmpl/libs/flutter_ohos.har",
         "templates/plugin/ohos.tmpl/projectName.tmpl/src/main/ets/components/plugin/pluginClass.ets.tmpl",
         "templates/plugin/ohos.tmpl/projectName.tmpl/src/main/resources/base/element/string.json",
         "templates/plugin/ohos.tmpl/projectName.tmpl/src/main/resources/en_US/element/string.json",
