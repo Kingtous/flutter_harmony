@@ -136,9 +136,6 @@ List<String> getModuleListName(String ohosProjectPath) {
 
   final List<String> moduleNames = List<String>.empty(growable: true);
   try {
-    String build = buildProfileFile.readAsStringSync();
-    globals.printStatus('application_package: build = ${build}');
-
     final dynamic moduleConfig =
         JSON5.parse(buildProfileFile.readAsStringSync());
     final List<dynamic> modules = moduleConfig['modules'] as List<dynamic>;
@@ -236,8 +233,6 @@ class OhosModule {
       final dynamic module = moduleJson['module'];
       final String type = module['type'] as String;
       final bool isEntry = type == OhosModuleType.entry.name;
-
-      globals.printStatus('application_package: moduleNamee = ${moduleName}');
 
       return OhosModule(
           moduleName,
