@@ -47,6 +47,8 @@ const String FLUTTER_ASSETS_PATH = 'flutter_assets';
 
 const String FLUTTER_ENGINE_SO = 'libflutter.so';
 
+const String VMSERVICE_SNAPSHOT_SO = 'libvmservice_snapshot.so';
+
 const String APP_SO_ORIGIN = 'app.so';
 
 const String APP_SO = 'libapp.so';
@@ -93,6 +95,14 @@ String getEngineSoPath(String ohosRootPath, TargetPlatform targetPlatform,
   return globals.fs.path.join(
       getProjectArchPath(ohosRootPath, targetPlatform, ohosProject),
       FLUTTER_ENGINE_SO);
+}
+
+/// eg:entry/libs/arm64-v8a/libvmservice_snapshot.so
+String getVmServiceSoDest(String ohosRootPath, TargetPlatform targetPlatform,
+    OhosProject ohosProject) {
+  return globals.fs.path.join(
+      getProjectArchPath(ohosRootPath, targetPlatform, ohosProject),
+      VMSERVICE_SNAPSHOT_SO);
 }
 
 /// eg:entry/libs/arm64-v8a/libapp.so
@@ -518,32 +528,34 @@ void cleanAndCopyFlutterRuntime(
   originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
-  if (isWindows) {
-    final String originEnginePath = globals.fs.path
-        .join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix');
-    final String desEnginePath = globals.fs.path.join(
-        ohosProject.flutterModuleDirectory.path,
-        'libs',
-        'arm64-v8a',
-        FLUTTER_ENGINE_SO);
-    final File flutterEngineSoFile =
-        globals.localFileSystem.file(originEnginePath);
-    flutterEngineSoFile.copySync(desEnginePath);
-  } else {
-    final String? flutterEngineSoPath =
-        globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
-    if (flutterEngineSoPath == null) {
-      throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
-    }
-    logger?.printStatus('flutterEngineSoPath:$flutterEngineSoPath');
-    final File flutterEngineSoFile =
-        globals.localFileSystem.file(flutterEngineSoPath);
-
-    final String enginCopyDes =
-        getEngineSoPath(ohosRootPath, targetPlatform, ohosProject);
-    ensureParentExists(enginCopyDes);
-    flutterEngineSoFile.copySync(enginCopyDes);
+  final String? originEngineSoPath = isWindows
+      ? globals.fs.path.join(ohosRootPath, 'har', '$FLUTTER_ENGINE_SO.$suffix')
+      : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
+  if (originEngineSoPath == null) {
+    throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
   }
+  logger?.printStatus('flutterEngineSoPath: $originEngineSoPath');
+
+  final String destEngineSoPath = getEngineSoPath(ohosRootPath, targetPlatform, ohosProject);
+  ensureParentExists(destEngineSoPath);
+  final File flutterEngineSoFile = globals.localFileSystem.file(originEngineSoPath);
+  flutterEngineSoFile.copySync(destEngineSoPath);
+
+  final String vmServiceSoDest = getVmServiceSoDest(ohosRootPath, targetPlatform, ohosProject);
+  final File vmServiceSoDestFile = globals.localFileSystem.file(vmServiceSoDest);
+  if (buildInfo.isProfile) {
+    // copy libvmservice_snapshot.so
+    final String vmserviceSoSrc = isWindows
+        ? globals.fs.path.join(ohosRootPath, 'har', '$VMSERVICE_SNAPSHOT_SO.$suffix')
+        : globals.fs.path.join(flutterEngineSoFile.parent.path, VMSERVICE_SNAPSHOT_SO);
+    final File vmserviceSoSrcFile = globals.localFileSystem.file(vmserviceSoSrc);
+    vmserviceSoSrcFile.copySync(vmServiceSoDest);
+  } else {
+    if (vmServiceSoDestFile.existsSync()) {
+      vmServiceSoDestFile.deleteSync();
+    }
+  }
+
   logger?.printStatus('copy flutter runtime to project end');
 }
 
