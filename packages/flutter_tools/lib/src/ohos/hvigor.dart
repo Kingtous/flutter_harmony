@@ -518,7 +518,7 @@ void cleanAndCopyFlutterRuntime(
   originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
-  if (isWindows) {
+  if (isWindows || globals.platform.isMacOS) {
     final String originEnginePath = globals.fs.path
         .join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix');
     final String desEnginePath = globals.fs.path.join(

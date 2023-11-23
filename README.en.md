@@ -212,6 +212,8 @@ After the configuration is completed, the flutter sdk can complete the device co
 | attach | debug mode | flutter attach |
 | screenshot | catch screen | flutter screenshot                    |
 
+Prompt: [Flutter third-party library adaptation plan](https://docs.qq.com/sheet/DVVJDWWt1V09zUFN2)
+
 ## common problem:
 
 1. Recommended ohos sdk version: `4.0.10.3`, which can be downloaded around August 20 when it is built daily. If there are problems related to the SDK version during the compilation process, you can try to replace this version of the SDK.
