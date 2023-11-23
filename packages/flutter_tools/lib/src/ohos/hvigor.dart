@@ -528,8 +528,8 @@ void cleanAndCopyFlutterRuntime(
   originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
-  final String? originEngineSoPath = isWindows
-      ? globals.fs.path.join(ohosRootPath, 'har', '$FLUTTER_ENGINE_SO.$suffix')
+  final String? originEngineSoPath = isWindows || globals.platform.isMacOS
+      ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
       : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
   if (originEngineSoPath == null) {
     throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
@@ -545,8 +545,8 @@ void cleanAndCopyFlutterRuntime(
   final File vmServiceSoDestFile = globals.localFileSystem.file(vmServiceSoDest);
   if (buildInfo.isProfile) {
     // copy libvmservice_snapshot.so
-    final String vmserviceSoSrc = isWindows
-        ? globals.fs.path.join(ohosRootPath, 'har', '$VMSERVICE_SNAPSHOT_SO.$suffix')
+    final String vmserviceSoSrc = isWindows || globals.platform.isMacOS
+        ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$VMSERVICE_SNAPSHOT_SO.$suffix')
         : globals.fs.path.join(flutterEngineSoFile.parent.path, VMSERVICE_SNAPSHOT_SO);
     final File vmserviceSoSrcFile = globals.localFileSystem.file(vmserviceSoSrc);
     vmserviceSoSrcFile.copySync(vmServiceSoDest);
