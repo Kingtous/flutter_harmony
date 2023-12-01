@@ -66,7 +66,7 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
 
   /// 查询所有的normal依赖
   final List<OhosDependence> list = getOhosDependenciesListFromPackageFile(
-      flutterProject.ohos.mainModulePackageFile,
+      flutterProject.ohos.flutterModulePackageFile,
       dependenceType: DependenceType.normal);
   final List<String> hasInstallPlugin =
       list.map((OhosDependence e) => e.baseModuleName).toList();
@@ -86,7 +86,7 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
 
 OhosDependence transform(OhosPlugin ohosPlugin, DependenceType dependenceType) {
   return OhosDependence('@ohos/${ohosPlugin.name}', ohosPlugin.name,
-      '../har/${ohosPlugin.name}.har', dependenceType);
+      './har/${ohosPlugin.name}.har', dependenceType);
 }
 
 /// 解析dependence列表，dependenceType为空时，返回normal和dev的合集。
@@ -126,16 +126,16 @@ List<OhosDependence> parseDependenciesFromType(
 Future<void> addDependencies(
     FlutterProject flutterProject, List<OhosDependence> list) async {
   final dynamic config =
-      parsePakcageConfig(flutterProject.ohos.mainModulePackageFile);
+      parsePakcageConfig(flutterProject.ohos.flutterModulePackageFile);
   final Map<String, dynamic> dependencies =
       config['dependencies'] as Map<String, dynamic>;
 
   for (final OhosDependence dependence in list) {
     dependencies[dependence.moduleName] =
-        'file:../har/${dependence.baseModuleName}.har';
+        'file:./har/${dependence.baseModuleName}.har';
   }
   final String configNew = JSON5.stringify(config, space: 2);
-  flutterProject.ohos.mainModulePackageFile
+  flutterProject.ohos.flutterModulePackageFile
       .writeAsStringSync(configNew, flush: true);
 }
 

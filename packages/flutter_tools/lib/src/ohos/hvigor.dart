@@ -758,6 +758,10 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('current project is not module or has not pub get');
     }
     parseData(flutterProject, logger);
+
+    /// 检查plugin的har构建
+    await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
+
     await flutterBuildPre(flutterProject, buildInfo, target,
         targetPlatform: targetPlatform, logger: logger);
 
