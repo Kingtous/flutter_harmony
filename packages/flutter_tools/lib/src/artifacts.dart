@@ -52,6 +52,9 @@ enum Artifact {
 
   /// the flutter engine runtime
   flutterEngineSo,
+
+  /// The dart binary used to execute any of the required snapshots.
+  engineDartBinary,
 }
 
 /// A subset of [Artifact]s that are platform and build mode independent
@@ -215,6 +218,8 @@ String? _artifactToFileName(Artifact artifact, [ TargetPlatform? platform, Build
       return 'const_finder.dart.snapshot';
     case Artifact.flutterEngineSo:
       return 'libflutter.so';
+    case Artifact.engineDartBinary:
+      return 'dart$exe';
   }
 }
 
@@ -509,6 +514,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -542,6 +548,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -587,6 +594,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -616,6 +624,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -689,6 +698,10 @@ class CachedArtifacts implements Artifacts {
         return _cache.getArtifactDirectory('engine')
             .childFile(_artifactToFileName(artifact)!)
             .path;
+      case Artifact.engineDartBinary:
+        return _fileSystem.path.join(
+          _dartSdkPath(_cache), 'bin',
+          _artifactToFileName(artifact),);
     }
   }
 
@@ -981,6 +994,11 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
       case Artifact.frontendServerSnapshotForEngineDartSdk:
         return _fileSystem.path.join(
           _getDartSdkPath(), 'bin', 'snapshots', artifactFileName,
+        );
+      case Artifact.engineDartBinary:
+        final String clangName = getClangNameForHostPlatform(getCurrentHostPlatform());
+        return _fileSystem.path.join(
+          engineOutPath, clangName, artifactFileName,
         );
     }
   }
