@@ -15,6 +15,7 @@ import 'base/common.dart';
 import 'base/file_system.dart';
 import 'base/io.dart';
 import 'base/logger.dart';
+import 'base/os.dart';
 import 'base/platform.dart';
 import 'build_info.dart';
 import 'convert.dart';
@@ -284,7 +285,7 @@ class KernelCompiler {
         toMultiRootPath(dartPluginRegistrantFileUri, _fileSystemScheme, _fileSystemRoots, _fileSystem.path.separator == r'\');
     }
     String? engineDartBinary;
-    if (globals.platform.isMacOS) {
+    if (globals.os.hostPlatform == HostPlatform.darwin_arm64) {
       final Artifacts? artifacts = globals.artifacts;
       if (artifacts is LocalEngineArtifacts) {
         final LocalEngineArtifacts localEngineArtifacts = artifacts;
@@ -753,7 +754,7 @@ class DefaultResidentCompiler implements ResidentCompiler {
       Artifact.frontendServerSnapshotForEngineDartSdk
     );
     String? engineDartBinary;
-    if (globals.platform.isMacOS) {
+    if (globals.os.hostPlatform == HostPlatform.darwin_arm64) {
       final Artifacts? artifacts = globals.artifacts;
       if (artifacts is LocalEngineArtifacts) {
         final LocalEngineArtifacts localEngineArtifacts = artifacts;
