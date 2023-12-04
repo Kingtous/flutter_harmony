@@ -1070,7 +1070,7 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
     late List<String> clangDirs;
     if (isOhosPlatform(platform)) {
       // on ohos platform, clang_x64 has compatibility first
-      clangDirs = <String>['clang_x64', '.', 'clang_x86', 'clang_i386', 'clang_arm64'];
+      clangDirs = <String>['clang_x64', 'clang_arm64', '.', 'clang_x86', 'clang_i386'];
     } else {
       clangDirs = <String>['.', 'clang_x64', 'clang_x86', 'clang_i386', 'clang_arm64'];
     }
