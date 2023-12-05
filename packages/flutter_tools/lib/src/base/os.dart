@@ -624,3 +624,18 @@ String getNameForHostPlatform(HostPlatform platform) {
       return 'windows-x64';
   }
 }
+
+String getClangNameForHostPlatform(HostPlatform platform) {
+  switch (platform) {
+    case HostPlatform.darwin_x64:
+      return 'clang_x64';
+    case HostPlatform.darwin_arm64:
+      return 'clang_arm64';
+    case HostPlatform.linux_x64:
+      return 'clang_x64';
+    case HostPlatform.linux_arm64:
+      return 'clang_arm64';
+    case HostPlatform.windows_x64:
+      return 'clang_x64';
+  }
+}
