@@ -548,7 +548,7 @@ void cleanAndCopyFlutterRuntime(
     final String vmserviceSoSrc = isWindows || globals.platform.isMacOS
         ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$VMSERVICE_SNAPSHOT_SO.$suffix')
         : globals.fs.path.join(flutterEngineSoFile.parent.path,
-            'gen/flutter/shell/vmservice/ohos/libs/arm64',
+            'gen/flutter/shell/vmservice/ohos/libs',
             VMSERVICE_SNAPSHOT_SO);
     final File vmserviceSoSrcFile = globals.localFileSystem.file(vmserviceSoSrc);
     vmserviceSoSrcFile.copySync(vmServiceSoDest);
