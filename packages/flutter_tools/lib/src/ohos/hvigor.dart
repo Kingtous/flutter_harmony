@@ -173,25 +173,39 @@ Future<void> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   }
   final Directory resultBackup = localFileSystem
       .directory(globals.fs.path.join(signToolHome, 'result.bak'));
-  //如果result.bak不存在，代表是第一次构建，拷贝result.bak。 以后每一次result，都从result.bak还原
+
+  String projectHome = globals.fs.directory(getOhosBuildDirectory()).path;
+  final Directory projectSignHistory = localFileSystem
+      .directory(globals.fs.path.join(projectHome, 'signature'));
+
+  bool isNeedCopySignHistory = true;
+  // 如果result.bak不存在，代表是环境配置完成后第一次签名，拷贝result.bak。
   if (!resultBackup.existsSync()) {
     copyDirectory(result, resultBackup);
-  } else {
+  } else if (!projectSignHistory.existsSync()) {
+    // 如果projectSignHistory不存在，代表该工程从未进行过签名，此时从 result.bak 还原数据进行签名
     result.deleteSync(recursive: true);
     copyDirectory(resultBackup, result);
+  } else {
+    // 如果projectSignHistory存在，代表该工程之前进行过签名，此时拷贝历史签名数据进行签名
+    isNeedCopySignHistory = false;
+    copyDirectory(projectSignHistory, result);
   }
 
-  final List<String> cmdCreateCertAndProfile = <String>[];
-  cmdCreateCertAndProfile.add('python3');
-  cmdCreateCertAndProfile
-      .add(globals.fs.path.join(signToolHome, 'autosign.py'));
-  cmdCreateCertAndProfile.add('createAppCertAndProfile');
+  if (isNeedCopySignHistory) {
+    final List<String> cmdCreateCertAndProfile = <String>[];
+    cmdCreateCertAndProfile.add('python3');
+    cmdCreateCertAndProfile
+        .add(globals.fs.path.join(signToolHome, 'autosign.py'));
+    cmdCreateCertAndProfile.add('createAppCertAndProfile');
 
-  await invokeCmd(
-      command: cmdCreateCertAndProfile,
-      workDirectory: signToolHome,
-      processManager: globals.processManager,
-      logger: logger);
+    await invokeCmd(
+        command: cmdCreateCertAndProfile,
+        workDirectory: signToolHome,
+        processManager: globals.processManager,
+        logger: logger);
+    copyDirectory(result, projectSignHistory);    
+  }
 
   final List<String> cmdSignHap = <String>[];
   if (isWindows) {
