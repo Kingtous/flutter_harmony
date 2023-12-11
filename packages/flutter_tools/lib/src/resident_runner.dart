@@ -251,7 +251,7 @@ class FlutterDevice {
       // when on hdc server mode,the host is not local,change to hdc server
       final String? hdcServerHost = getHdcServerHost();
       if(hdcServerHost!=null){
-        const String localHost = '0.0.0.0';
+        const String localHost = '127.0.0.1';
         observatoryUri = Uri.parse(observatoryUri?.toString()?.replaceAll(localHost, hdcServerHost)??localHost);
       }
 

@@ -182,6 +182,7 @@
         "templates/app_shared/ohos.tmpl/har/har_product.tmpl/libflutter.so.debug.10",
         "templates/app_shared/ohos.tmpl/har/har_product.tmpl/libflutter.so.profile.10",
         "templates/app_shared/ohos.tmpl/har/har_product.tmpl/libflutter.so.release.10",
+        "templates/app_shared/ohos.tmpl/har/har_product.tmpl/libvmservice_snapshot.so.profile.10",
         "templates/app_shared/ohos.tmpl/local.properties.tmpl",
         "templates/app_shared/ohos.tmpl/dta/icudtl.dat",
         "templates/app_shared/ohos.tmpl/entry/libs/arm64-v8a/libc++_shared.so",
