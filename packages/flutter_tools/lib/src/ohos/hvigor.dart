@@ -47,6 +47,8 @@ const String FLUTTER_ASSETS_PATH = 'flutter_assets';
 
 const String FLUTTER_ENGINE_SO = 'libflutter.so';
 
+const String VMSERVICE_SNAPSHOT_SO = 'libvmservice_snapshot.so';
+
 const String APP_SO_ORIGIN = 'app.so';
 
 const String APP_SO = 'libapp.so';
@@ -93,6 +95,14 @@ String getEngineSoPath(String ohosRootPath, TargetPlatform targetPlatform,
   return globals.fs.path.join(
       getProjectArchPath(ohosRootPath, targetPlatform, ohosProject),
       FLUTTER_ENGINE_SO);
+}
+
+/// eg:entry/libs/arm64-v8a/libvmservice_snapshot.so
+String getVmServiceSoDest(String ohosRootPath, TargetPlatform targetPlatform,
+    OhosProject ohosProject) {
+  return globals.fs.path.join(
+      getProjectArchPath(ohosRootPath, targetPlatform, ohosProject),
+      VMSERVICE_SNAPSHOT_SO);
 }
 
 /// eg:entry/libs/arm64-v8a/libapp.so
@@ -173,25 +183,39 @@ Future<void> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   }
   final Directory resultBackup = localFileSystem
       .directory(globals.fs.path.join(signToolHome, 'result.bak'));
-  //如果result.bak不存在，代表是第一次构建，拷贝result.bak。 以后每一次result，都从result.bak还原
+
+  String projectHome = globals.fs.directory(getOhosBuildDirectory()).path;
+  final Directory projectSignHistory = localFileSystem
+      .directory(globals.fs.path.join(projectHome, 'signature'));
+
+  bool isNeedCopySignHistory = true;
+  // 如果result.bak不存在，代表是环境配置完成后第一次签名，拷贝result.bak。
   if (!resultBackup.existsSync()) {
     copyDirectory(result, resultBackup);
-  } else {
+  } else if (!projectSignHistory.existsSync()) {
+    // 如果projectSignHistory不存在，代表该工程从未进行过签名，此时从 result.bak 还原数据进行签名
     result.deleteSync(recursive: true);
     copyDirectory(resultBackup, result);
+  } else {
+    // 如果projectSignHistory存在，代表该工程之前进行过签名，此时拷贝历史签名数据进行签名
+    isNeedCopySignHistory = false;
+    copyDirectory(projectSignHistory, result);
   }
 
-  final List<String> cmdCreateCertAndProfile = <String>[];
-  cmdCreateCertAndProfile.add('python3');
-  cmdCreateCertAndProfile
-      .add(globals.fs.path.join(signToolHome, 'autosign.py'));
-  cmdCreateCertAndProfile.add('createAppCertAndProfile');
+  if (isNeedCopySignHistory) {
+    final List<String> cmdCreateCertAndProfile = <String>[];
+    cmdCreateCertAndProfile.add('python3');
+    cmdCreateCertAndProfile
+        .add(globals.fs.path.join(signToolHome, 'autosign.py'));
+    cmdCreateCertAndProfile.add('createAppCertAndProfile');
 
-  await invokeCmd(
-      command: cmdCreateCertAndProfile,
-      workDirectory: signToolHome,
-      processManager: globals.processManager,
-      logger: logger);
+    await invokeCmd(
+        command: cmdCreateCertAndProfile,
+        workDirectory: signToolHome,
+        processManager: globals.processManager,
+        logger: logger);
+    copyDirectory(result, projectSignHistory);    
+  }
 
   final List<String> cmdSignHap = <String>[];
   if (isWindows) {
@@ -518,32 +542,36 @@ void cleanAndCopyFlutterRuntime(
   originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
-  if (isWindows) {
-    final String originEnginePath = globals.fs.path
-        .join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix');
-    final String desEnginePath = globals.fs.path.join(
-        ohosProject.flutterModuleDirectory.path,
-        'libs',
-        'arm64-v8a',
-        FLUTTER_ENGINE_SO);
-    final File flutterEngineSoFile =
-        globals.localFileSystem.file(originEnginePath);
-    flutterEngineSoFile.copySync(desEnginePath);
-  } else {
-    final String? flutterEngineSoPath =
-        globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
-    if (flutterEngineSoPath == null) {
-      throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
-    }
-    logger?.printStatus('flutterEngineSoPath:$flutterEngineSoPath');
-    final File flutterEngineSoFile =
-        globals.localFileSystem.file(flutterEngineSoPath);
-
-    final String enginCopyDes =
-        getEngineSoPath(ohosRootPath, targetPlatform, ohosProject);
-    ensureParentExists(enginCopyDes);
-    flutterEngineSoFile.copySync(enginCopyDes);
+  final String? originEngineSoPath = isWindows
+      ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
+      : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
+  if (originEngineSoPath == null) {
+    throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
   }
+  logger?.printStatus('flutterEngineSoPath: $originEngineSoPath');
+
+  final String destEngineSoPath = getEngineSoPath(ohosRootPath, targetPlatform, ohosProject);
+  ensureParentExists(destEngineSoPath);
+  final File flutterEngineSoFile = globals.localFileSystem.file(originEngineSoPath);
+  flutterEngineSoFile.copySync(destEngineSoPath);
+
+  final String vmServiceSoDest = getVmServiceSoDest(ohosRootPath, targetPlatform, ohosProject);
+  final File vmServiceSoDestFile = globals.localFileSystem.file(vmServiceSoDest);
+  if (buildInfo.isProfile) {
+    // copy libvmservice_snapshot.so
+    final String vmserviceSoSrc = isWindows
+        ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$VMSERVICE_SNAPSHOT_SO.$suffix')
+        : globals.fs.path.join(flutterEngineSoFile.parent.path,
+            'gen/flutter/shell/vmservice/ohos/libs',
+            VMSERVICE_SNAPSHOT_SO);
+    final File vmserviceSoSrcFile = globals.localFileSystem.file(vmserviceSoSrc);
+    vmserviceSoSrcFile.copySync(vmServiceSoDest);
+  } else {
+    if (vmServiceSoDestFile.existsSync()) {
+      vmServiceSoDestFile.deleteSync();
+    }
+  }
+
   logger?.printStatus('copy flutter runtime to project end');
 }
 

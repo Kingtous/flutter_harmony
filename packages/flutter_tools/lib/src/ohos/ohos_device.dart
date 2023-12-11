@@ -735,7 +735,7 @@ class HdcLogReader extends DeviceLogReader {
   static final RegExp _logFormat = RegExp(r'^[\d-:. ]{30,40}[VDIWEF][^:]+:');
 
   static final List<RegExp> _allowedTags = <RegExp>[
-    RegExp(r'^[\d-:. ]{30,40}[VDIWEF][^:]flutter[^:]+:', caseSensitive: false),
+    RegExp(r'^[\d-:. ]{30,40}[VDIWEF]\s[^:]+Flutter[^:]+:\sflutter\s'),
     RegExp(r'^[\d-:. ]{30,40}[IE].*Dart VM\s+'),
     RegExp(r'^[WEF]\/System\.err:\s+'),
     RegExp(r'^[F]\/[\S^:]+:\s+'),
