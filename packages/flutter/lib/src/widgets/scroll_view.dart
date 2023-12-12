@@ -419,7 +419,7 @@ abstract class ScrollView extends StatelessWidget {
       axisDirection: axisDirection,
       controller: scrollController,
       physics: physics,
-      scrollBehavior: scrollBehavior,
+      scrollBehavior: ScrollConfiguration.of(context).copyWith(scrollbars:false),
       semanticChildCount: semanticChildCount,
       restorationId: restorationId,
       viewportBuilder: (BuildContext context, ViewportOffset offset) {
