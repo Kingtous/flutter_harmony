@@ -23,7 +23,7 @@ platform.TargetPlatform get defaultTargetPlatform {
     result = platform.TargetPlatform.macOS;
   } else if (Platform.isWindows) {
     result = platform.TargetPlatform.windows;
-  } else if (Platform.isOhos) {
+  } else if (Platform.operatingSystem == 'ohos') {
     result = platform.TargetPlatform.ohos;
   }
   assert(() {
