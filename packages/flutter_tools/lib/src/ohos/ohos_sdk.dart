@@ -22,7 +22,7 @@ const String kOhosSdkRoot = 'OHOS_SDK_HOME';
 // HarmonyOS SDK
 const String kHmosHome = 'HOS_SDK_HOME';
 
-const List<String> supportSdkVersion = <String>['8', '9', '10'];
+const List<String> supportSdkVersion = <String>['10', '11', '9'];
 
 class OhosSdk {
   OhosSdk(this._sdkDir) {
