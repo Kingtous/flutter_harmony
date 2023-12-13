@@ -12,7 +12,7 @@ Flutter SDK 仓库
   flutter tools指令支持Linux、Mac和Windows下使用。
 
 * 构建依赖：
-  依赖[flutter engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在flutter tools指令运行参数中添加：`--local-engine=\<engine产物目录\>`
+  依赖[flutter engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在flutter tools指令运行参数中添加：`--local-engine=&lt;engine产物目录&gt;`
 
 * 构建步骤：
 
@@ -49,11 +49,11 @@ Flutter SDK 仓库
      ...
      ```
 
-  3. 配置Gradle：下载 `gradle 7.1` 并解压，配置到环境变量中：
+  3. 配置Gradle：下载 `gradle 7.3` 并解压，配置到环境变量中：
 
      ```
      # grade
-     export PATH=/home/<user>/env/gradle-7.1/bin:$PATH
+     export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
      ```
 
   4. 下载Flutter，下载完成后配置环境：
@@ -160,7 +160,7 @@ export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
 
 # grade
-export PATH=/home/<user>/env/gradle-7.1/bin:$PATH
+export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
 # nodejs
 export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
 export PATH=$NODE_HOME/bin:$PATH
@@ -177,8 +177,9 @@ export PATH=$NODE_HOME/bin:$PATH
    ```
    # 创建工程
    flutter create --platforms ohos flutter_demo
-   # 进入工程根目录编译
-   flutter build hap --local-engine-src-path /home/<user>/ohos/engine/src --local-engine ohos_release_arm64
+   # 进入工程根目录编译，`--local-engine` 中的 `src/out` 需要保留
+   flutter build hap --local-engine=/home/<user>/ohos/engine/src/out/ohos_release_arm64 --release
+   flutter build hap --local-engine=/home/<user>/ohos/engine/src/out/ohos_debug_unopt_arm64 --debug
    ```
 
 3. flutter devices发现ohos设备之后，使用 `hdc -t <deviceId> install <hap file path>`进行安装。
@@ -200,19 +201,19 @@ HDC_SERVER_PORT=8710
 配置完成后flutter sdk可以通过hdc server完成设备连接，也可参考[官方指导](https://docs.openharmony.cn/pages/v4.0/zh-cn/device-dev/subsystems/subsys-toolchain-hdc-guide.md/#hdc-client%E5%A6%82%E4%BD%95%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AEhdc-server)
 
 ## 已兼容OpenHarmony开发的指令列表：
-| 指令名称 | 指令描述 | 使用说明                                                              |
-| ------- | ------- |-------------------------------------------------------------------|
-| doctor | 环境检测 | flutter doctor                                                    |
-| config | 环境配置 | flutter config --\<key\> \<value\>                                |
-| create | 创建新项目 | flutter create --platforms ohos,android --org \<org\> \<appName\> |
-| devices | 已连接设备查找 | flutter devices                                                   |
-| install | 应用安装 | flutter install -t \<deviceId\> \<hap文件路径\>                                                   |
-| assemble | 资源打包 | flutter assemble                                                  |
-| build | 测试应用构建 | flutter build hap --target-platform ohos-arm64 --debug --local-engine=\<兼容ohos的debug engine产物路径\>         |
-| build | 正式应用构建 | flutter build hap --target-platform ohos-arm64 --release --local-engine=\<兼容ohos的release engine产物路径\>         |
-| run | 应用运行 | flutter run --local-engine=\<兼容ohos的engine产物路径\>                  |
-| attach | 调试模式 | flutter attach                                                    |
-| screenshot | 截屏 | flutter screenshot                                                 |
+| 指令名称   | 指令描述       | 使用说明                                                                                                             |
+| ---------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| doctor     | 环境检测       | flutter doctor                                                                                                       |
+| config     | 环境配置       | flutter config --&lt;key&gt; &lt;value&gt;                                                                           |
+| create     | 创建新项目     | flutter create --platforms ohos,android --org &lt;org&gt; &lt;appName&gt;                                            |
+| devices    | 已连接设备查找 | flutter devices                                                                                                      |
+| install    | 应用安装       | flutter install -t &lt;deviceId&gt; &lt;hap文件路径&gt;                                                              |
+| assemble   | 资源打包       | flutter assemble                                                                                                     |
+| build      | 测试应用构建   | flutter build hap --debug --local-engine=&lt;兼容ohos的debug engine产物路径&gt; \[--target-platform ohos-arm64\]     |
+| build      | 正式应用构建   | flutter build hap --release --local-engine=&lt;兼容ohos的release engine产物路径&gt; \[--target-platform ohos-arm64\] |
+| run        | 应用运行       | flutter run --local-engine=&lt;兼容ohos的engine产物路径&gt;                                                          |
+| attach     | 调试模式       | flutter attach                                                                                                       |
+| screenshot | 截屏           | flutter screenshot                                                                                                   |
 
 附：[Flutter三方库适配计划](https://docs.qq.com/sheet/DVVJDWWt1V09zUFN2)
 
