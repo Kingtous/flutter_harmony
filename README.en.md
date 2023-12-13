@@ -12,7 +12,7 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
    The flutter tools command supports use on Linux/Mac/Windows.
 
 * Build dependencies:
-   Depend on [flutter engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`, please add: `--local-engine=\<engine product in the running parameters of the flutter tools command Directory\>`
+   Depend on [flutter engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`, please add: `--local-engine=&lt;engine product in the running parameters of the flutter tools command Directory&gt;`
 
 * Building steps:
 
@@ -48,11 +48,11 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
       ...
       ```
 
-   3. Configure Gradle: Download `gradle 7.1` and unzip it, configure it into environment variables:
+   3. Configure Gradle: Download `gradle 7.3` and unzip it, configure it into environment variables:
 
       ```
       # grade
-      export PATH=/home/<user>/env/gradle-7.1/bin:$PATH
+      export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
       ```
 
    4. Download Flutter and configure the environment after the download is complete:
@@ -158,7 +158,7 @@ export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
 
 # grade
-export PATH=/home/<user>/env/gradle-7.1/bin:$PATH
+export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
 #nodejs
 export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
 export PATH=$NODE_HOME/bin:$PATH
@@ -175,8 +175,9 @@ export PATH=$NODE_HOME/bin:$PATH
     ```
     # Create project
     flutter create --platforms ohos flutter_demo
-    # Enter the project root directory to compile
-    flutter build hap --local-engine-src-path /home/<user>/ohos/engine/src --local-engine ohos_release_arm64
+    # Enter the project root directory to compile, the `src/out` in `--local-engine` shoud be preserved.
+    flutter build hap --local-engine=/home/<user>/ohos/engine/src/out/ohos_release_arm64 --release
+    flutter build hap --local-engine=/home/<user>/ohos/engine/src/out/ohos_debug_unopt_arm64 --debug
     ```
 
 3. After flutter devices discover the ohos device, use `hdc -t <deviceId> install <hap file path>` to install it.
@@ -198,19 +199,19 @@ HDC_SERVER_PORT=8710
 After the configuration is completed, the flutter sdk can complete the device connection through the hdc server. You can also refer to [official guidance](https://docs.openharmony.cn/pages/v4.0/zh-cn/device-dev/subsystems/subsys-toolchain -hdc-guide.md/#hdc-client%E5%A6%82%E4%BD%95%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AEhdc-server)
 
 ## Compatible command list developed by OpenHarmony:
-| Command name | Command description | Instructions for use |
-| ------- | ------- |---------------------------------- ----------------------------------|
-| doctor | environment detection | flutter doctor |
-| config | environment configuration | flutter config --\<key\> \<value\> |
-| create | Create a new project | flutter create --platforms ohos,android --org \<org\> \<appName\> |
-| devices | Connected device discovery | flutter devices |
-| install | application installation | flutter install -t \<deviceId\> \<hap file path\> |
-| assemble | resource packaging | flutter assemble |
-| build | Test application build | flutter build hap --target-platform ohos-arm64 --debug --local-engine=\<debug engine product path compatible with ohos\> |
-| build | Formal application build | flutter build hap --target-platform ohos-arm64 --release --local-engine=\<ohos-compatible release engine product path\> |
-| run | application run | flutter run --local-engine=\<ohos-compatible engine product path\> |
-| attach | debug mode | flutter attach |
-| screenshot | catch screen | flutter screenshot                    |
+| Command name | Command description        | Instructions for use                                                                                                             |
+| ------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| doctor       | environment detection      | flutter doctor                                                                                                                   |
+| config       | environment configuration  | flutter config --&lt;key&gt; &lt;value&gt;                                                                                       |
+| create       | Create a new project       | flutter create --platforms ohos,android --org &lt;org&gt; &lt;appName&gt;                                                        |
+| devices      | Connected device discovery | flutter devices                                                                                                                  |
+| install      | application installation   | flutter install -t &lt;deviceId&gt; &lt;hap file path&gt;                                                                        |
+| assemble     | resource packaging         | flutter assemble                                                                                                                 |
+| build        | Test application build     | flutter build hap --debug --local-engine=&lt;debug engine product path compatible with ohos&gt; \[--target-platform ohos-arm64\] |
+| build        | Formal application build   | flutter build hap --release --local-engine=&lt;ohos-compatible release engine product path&gt;  \[--target-platform ohos-arm64\] |
+| run          | application run            | flutter run --local-engine=&lt;ohos-compatible engine product path&gt;                                                           |
+| attach       | debug mode                 | flutter attach                                                                                                                   |
+| screenshot   | catch screen               | flutter screenshot                                                                                                               |
 
 Prompt: [Flutter third-party library adaptation plan](https://docs.qq.com/sheet/DVVJDWWt1V09zUFN2)
 
