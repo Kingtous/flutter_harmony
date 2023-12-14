@@ -611,7 +611,6 @@ String? getLocalArtifactEmbeddingHarPath() {
         'flutter.har');
     final String outputEmbeddingHar = globals.fs.path.join(
         engineOutPath,
-        // harPath,
         '../../flutter/shell/platform/ohos/flutter_embedding/flutter/build/default/outputs/default',
         HAR_FILE_NAME);
     final String outputFlutterHarAbs =

@@ -175,7 +175,13 @@ void copyOhosEmbeddingHarToModule(
       'har_product.tmpl');
   final String fileSuffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
   final String harFileName = '$HAR_FILE_NAME.$fileSuffix';
-  final String harFilePath = globals.fs.path.join(harPath, harFileName);
+  String harFilePath = globals.fs.path.join(harPath, harFileName);
+
+  String? localHarFilePath = getLocalArtifactEmbeddingHarPath();
+  if (localHarFilePath != null) {
+    harFilePath = localHarFilePath;
+  }
+
   final File originHar = globals.fs.file(harFilePath);
   globals.printStatus(
       'ohos_plugins_manager: copy har from "$harFilePath" to "$desFilePath"');
