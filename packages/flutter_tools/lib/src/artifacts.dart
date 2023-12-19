@@ -1085,14 +1085,20 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
   }
 
   String _flutterTesterPath(TargetPlatform platform) {
-    if (_platform.isLinux) {
-      return _fileSystem.path.join(engineOutPath, _artifactToFileName(Artifact.flutterTester));
-    } else if (_platform.isMacOS) {
-      return _fileSystem.path.join(engineOutPath, 'flutter_tester');
-    } else if (_platform.isWindows) {
-      return _fileSystem.path.join(engineOutPath, 'flutter_tester.exe');
+    late List<String> clangDirs;
+    clangDirs = <String>['clang_x64', 'clang_arm64', '.', 'clang_x86', 'clang_i386'];
+    final String testerName = _artifactToFileName(Artifact.flutterTester)!;
+    if (_platform.isLinux || _platform.isMacOS || _platform.isWindows) {
+      for (final String clangDir in clangDirs) {
+        final String testerPath = _fileSystem.path.join(engineOutPath, clangDir, testerName);
+        if (_processManager.canRun(testerPath)) {
+          return testerPath;
+        }
+      }
+    } else {
+      throw Exception('Unsupported platform $platform.');
     }
-    throw Exception('Unsupported platform $platform.');
+    throw Exception('Unable to find $testerName');
   }
 
   @override
