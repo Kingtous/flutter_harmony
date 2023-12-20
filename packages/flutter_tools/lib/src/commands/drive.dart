@@ -435,8 +435,7 @@ class DriveCommand extends RunCommandBase {
     // be `test_driver/foo/bar_test.dart`.
     final String pathWithNoExtension = _fileSystem.path.withoutExtension(_fileSystem.path.joinAll(
       <String>[packageDir, 'test_driver', ...parts.skip(1)]));
-    // return '${pathWithNoExtension}_test${_fileSystem.path.extension(appFile)}';
-    return '$pathWithNoExtension${_fileSystem.path.extension(appFile)}';
+    return '${pathWithNoExtension}_test${_fileSystem.path.extension(appFile)}';
   }
 
   Future<void> _takeScreenshot(Device device) async {
