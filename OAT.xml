@@ -76,6 +76,9 @@
                 <filteritem type="filepath" name="packages/integration_test/ohos/hvigor/.*" desc="hvigor files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/hvigorw*" desc="hvigor files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/ohos/entry/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/ohos/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/ohos/hvigorw.bat" desc="hvigor files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/dependencies/.*" desc="dependencies files"/>
