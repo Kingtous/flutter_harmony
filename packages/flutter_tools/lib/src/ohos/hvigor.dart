@@ -142,7 +142,6 @@ Future<void> signHap(LocalFileSystem localFileSystem, String unsignedFile,
   const String PROFILE_TEMPLATE = 'profile_tmp_template.json';
   const String PROFILE_TARGET = 'profile_tmp.json';
   const String BUNDLE_NAME_KEY = '{{ohosId}}';
-  logger?.printWarning('ohosId bundleName: $bundleName');
   final String signToolHome = Platform.environment['SIGN_TOOL_HOME'] ?? '';
   if (signToolHome == '') {
     throwToolExit("can't find environment SIGN_TOOL_HOME");
@@ -394,8 +393,8 @@ void checkFlutterEnv(Logger? logger) {
 }
 
 /// flutter构建
-Future<String> flutetrAssemble(FlutterProject flutterProject,
-    BuildInfo buildInfo, TargetPlatform targetPlatform) async {
+Future<String> flutterAssemble(FlutterProject flutterProject,
+    BuildInfo buildInfo, TargetPlatform targetPlatform, String targetFile) async {
   late String targetName;
   if (buildInfo.isDebug) {
     targetName = 'debug_ohos_application';
@@ -417,6 +416,7 @@ Future<String> flutetrAssemble(FlutterProject flutterProject,
   }
   final Target target = selectTarget[0];
 
+
   final Status status =
       globals.logger.startProgress('Compiling $targetName for the Ohos...');
   String output = globals.fs.directory(getOhosBuildDirectory()).path;
@@ -432,7 +432,8 @@ Future<String> flutetrAssemble(FlutterProject flutterProject,
               .childDirectory('.dart_tool')
               .childDirectory('flutter_build'),
           defines: <String, String>{
-            kTargetPlatform: 'ohos',
+            kTargetFile: targetFile,
+            kTargetPlatform: getNameForTargetPlatform(TargetPlatform.ohos),
             ...buildInfo.toBuildSystemEnvironment(),
           },
           artifacts: globals.artifacts!,
@@ -539,7 +540,9 @@ void cleanAndCopyFlutterRuntime(
   }
   ensureParentExists(desHarPath);
   final File originHarFile = globals.localFileSystem.file(originHarPath);
-  originHarFile.copySync(desHarPath);
+  if (!globals.localFileSystem.file(desHarPath).existsSync()) {
+    originHarFile.copySync(desHarPath);
+  }
 
   //copy ohos engine so
   final String? originEngineSoPath = isWindows
@@ -643,7 +646,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     /// 检查plugin的har构建
     await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
 
-    await flutterBuildPre(flutterProject, buildInfo,
+    await flutterBuildPre(flutterProject, buildInfo, target,
         targetPlatform: targetPlatform, logger: logger);
 
     if (ohosProject.isRunWithModuleHar) {
@@ -708,7 +711,7 @@ class OhosHvigorBuilder implements OhosBuilder {
   }
 
   Future<void> flutterBuildPre(
-      FlutterProject flutterProject, BuildInfo buildInfo,
+      FlutterProject flutterProject, BuildInfo buildInfo, String target,
       {required TargetPlatform targetPlatform, Logger? logger}) async {
     /**
      * 0. checkEnv
@@ -720,7 +723,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     checkFlutterEnv(logger);
 
     final String output =
-        await flutetrAssemble(flutterProject, buildInfo, targetPlatform);
+        await flutterAssemble(flutterProject, buildInfo, targetPlatform, target);
 
     cleanAndCopyFlutterAssest(
         ohosProject, buildInfo, targetPlatform, logger, ohosRootPath, output);
@@ -759,7 +762,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     /// 检查plugin的har构建
     await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
 
-    await flutterBuildPre(flutterProject, buildInfo,
+    await flutterBuildPre(flutterProject, buildInfo, target,
         targetPlatform: targetPlatform, logger: logger);
 
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
