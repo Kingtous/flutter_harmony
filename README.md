@@ -135,32 +135,33 @@ Flutter SDK 仓库
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
-# flutter
-export FLUTTER_HOME=/home/<user>/code/flutter/gitlab/flutter
+# 从Gitee拉取下来的flutter_flutter目录
+export FLUTTER_HOME=/home/<user>/ohos/flutter_flutter
 export PATH=$PATH:$FLUTTER_HOME/bin
 
-export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
-export PUB_HOSTED_URL=https://pub.flutter-io.cn
-export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
-
-# ohpm
-export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm/
+# 解压DevEco Studio安装包中 commandline/ohcommandline-tools-mac-2.1.3.6.zip 之后 ohpm 子目录
+export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm
 export PATH=$PATH:$OHPM_HOME/bin
-# sdkmanager
+
+# 解压DevEco Studio安装包中 commandline/ohcommandline-tools-xxx.zip 之后的 sdkmanager 子目录
 export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
 
-# sdk与hdc
-export OHOS_SDK_HOME=/home/<user>/env/sdk
-export HDC_HOME=/home/<user>/env/sdk/10/toolchains
+# HarmonyOS SDK，解压DevEco Studio安装包中 sdk/X86SDK.zip 或 M1SDK.zip 之后的目录，HOS_SDK_HOME下有 openharmony、hmscore、licenses 三个直接子目录
+export HOS_SDK_HOME=/home/<user>/ohos/sdk
+
+# OpenHarmony SDK，解压DevEco Studio安装包中 sdk/X86SDK.zip 或 M1SDK.zip 之后的 openharmony 子目录
+export OHOS_SDK_HOME=/home/<user>/ohos/sdk/openharmony
+
+# HDC Home，OHOS_SDK_HOME目录下的 10/toolchains 子目录
+export HDC_HOME=/home/<user>/ohos/sdk/openharmony/10/toolchains
 export PATH=$PATH:$HDC_HOME
-# 配置HarmonyOS sdk
-export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 
 # 签名工具
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
 
 # grade
 export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
+
 # nodejs
 export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
 export PATH=$NODE_HOME/bin:$PATH
