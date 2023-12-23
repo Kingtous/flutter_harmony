@@ -133,26 +133,26 @@ This warehouse is based on the compatible extension of flutter sdk for OpenHarmo
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
-#flutter
-export FLUTTER_HOME=/home/<user>/code/flutter/gitlab/flutter
+# flutter_flutter directory pulled from Gitee
+export FLUTTER_HOME=/home/<user>/ohos/flutter_flutter
 export PATH=$PATH:$FLUTTER_HOME/bin
 
-export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
-export PUB_HOSTED_URL=https://pub.flutter-io.cn
-export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
-
-#ohpm
-export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm/
+# Unzip the commandline/ohcommandline tools mac-2.1.3.6.zip file in the DevEco Studio installation package, which includes the ohpm directory
+export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm
 export PATH=$PATH:$OHPM_HOME/bin
-#sdkmanager
+
+# Unzip the commandline/ohcommandline tools mac-2.1.3.6.zip file in the DevEco Studio installation package, which includes the sdkmanager directory
 export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
 
-# sdk and hdc
-export OHOS_SDK_HOME=/home/<user>/env/sdk
-export HDC_HOME=/home/<user>/env/sdk/10/toolchains
+# HarmonyOS SDK, Unzip the sdk/X86SDK.zip or M1SDK.zip file in the DevEco Studio installation package, whick contains three direct subdirectories: openharmony, hmscore, and licenses
+export HOS_SDK_HOME=/home/<user>/ohos/sdk
+
+# OpenHarmony SDK, Unzip the sdk/X86SDK.zip or M1SDK.zip file in the DevEco Studio installation package, which includes the openharmony directory
+export OHOS_SDK_HOME=/home/<user>/ohos/sdk/openharmony
+
+# HDC Home, directory 10/toolchains under OHOS_SDK_HOME
+export HDC_HOME=/home/<user>/ohos/sdk/openharmony/10/toolchains
 export PATH=$PATH:$HDC_HOME
-# for HarmonyOS sdk
-export HOS_SDK_HOME=/home/<user>/env/{HarmonyOS sdk}
 
 # Signature tool
 export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
