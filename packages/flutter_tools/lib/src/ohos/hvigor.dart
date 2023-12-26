@@ -599,45 +599,27 @@ String getEmbeddingHarFileSuffix(
   return '${buildInfo.isDebug ? 'debug' : buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
 }
 
-/// 获取本地flutter运行时的har文件路径
+/// 获取本地构建的flutter_embedding.har文件路径
 String? getLocalArtifactEmbeddingHarPath() {
   final Artifacts artifacts = globals.artifacts!;
   if (artifacts.isLocalEngine && artifacts is LocalEngineArtifacts) {
     final String engineOutPath = artifacts.engineOutPath;
-    //TODO:flutter.har的名字和HAR_FILE_NAME不一致，需要修改
-    final String outputFlutterHar = globals.fs.path.join(
-        engineOutPath,
-        '../../flutter/shell/platform/ohos/flutter_embedding/flutter/build/default/outputs/default',
-        'flutter.har');
-    final String outputEmbeddingHar = globals.fs.path.join(
-        engineOutPath,
-        '../../flutter/shell/platform/ohos/flutter_embedding/flutter/build/default/outputs/default',
-        HAR_FILE_NAME);
-    final String outputFlutterHarAbs =
-        globals.fs.path.normalize(outputFlutterHar);
-
+    final String outputEmbeddingHar = globals.fs.path
+        .join(engineOutPath, 'ohos', HAR_FILE_NAME);
     final String outputEmbeddingHarAbs =
-    globals.fs.path.normalize(outputEmbeddingHar);
+        globals.fs.path.normalize(outputEmbeddingHar);
 
-    // 如果flutter_embedding.har存在，直接返回
     if (globals.fs.file(outputEmbeddingHarAbs).existsSync()) {
       return outputEmbeddingHarAbs;
-    }
-
-    // 如果flutter.har不存在，直接返回
-    if (!globals.fs.file(outputFlutterHarAbs).existsSync()) {
+    }else{
       return null;
     }
-
-    //将这个文件名称改成HAR_FILE_NAME
-    globals.fs.file(outputFlutterHarAbs).renameSync(outputEmbeddingHarAbs);
-    return outputEmbeddingHarAbs;
   } else {
     return null;
   }
 }
 
-/// 获取本地flutter运行时的so文件路径
+/// 获取本地构建的libflutter.so文件路径
 String? getLocalArtifactSoPath() {
   final Artifacts artifacts = globals.artifacts!;
   if (artifacts.isLocalEngine && artifacts is LocalEngineArtifacts) {
