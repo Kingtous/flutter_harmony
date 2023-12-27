@@ -3502,6 +3502,11 @@ abstract class Element extends DiagnosticableTree implements BuildContext {
   // orderly fashion.
   _ElementLifecycle _lifecycleState = _ElementLifecycle.initial;
 
+  /// Determine whether the current Element is in a usable state
+  /// return true if _lifecycleState ==  _ElementLifecycle.active
+  /// Otherwise, return false.
+  bool get isElementActive => _lifecycleState == _ElementLifecycle.active;
+
   /// Calls the argument for each child. Must be overridden by subclasses that
   /// support having children.
   ///
