@@ -3033,7 +3033,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
   /// focus, the control will then attach to the keyboard and request that the
   /// keyboard become visible.
   void requestKeyboard() {
-    if (_hasFocus) {
+    if (_hasFocus && !widget.focusNode.disableKeyboard) {
       _openInputConnection();
     } else {
       widget.focusNode.requestFocus(); // This eventually calls _openInputConnection also, see _handleFocusChanged.
