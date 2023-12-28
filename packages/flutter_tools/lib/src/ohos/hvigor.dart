@@ -551,11 +551,6 @@ void cleanAndCopyFlutterRuntime(
       ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
       : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
 
-  String? localEngineSo = getLocalArtifactSoPath();
-  if (localEngineSo != null) {
-    originEngineSoPath = localEngineSo;
-  }
-
   if (originEngineSoPath == null) {
     throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
   }
@@ -612,29 +607,6 @@ String? getLocalArtifactEmbeddingHarPath() {
     if (globals.fs.file(outputEmbeddingHarAbs).existsSync()) {
       return outputEmbeddingHarAbs;
     }else{
-      return null;
-    }
-  } else {
-    return null;
-  }
-}
-
-/// 获取本地构建的libflutter.so文件路径
-String? getLocalArtifactSoPath() {
-  final Artifacts artifacts = globals.artifacts!;
-  if (artifacts.isLocalEngine && artifacts is LocalEngineArtifacts) {
-    final String engineOutPath = artifacts.engineOutPath;
-    final String outputUnstrippedFlutterSo =
-        globals.fs.path.join(engineOutPath, 'so.unstripped', 'libflutter.so');
-    final String outputFlutterSo =
-        globals.fs.path.join(engineOutPath, 'libflutter.so');
-
-    //如果outputUnstrippedFlutterSo存在，直接返回，否则返回outputFlutterSo，再否则返回null
-    if (globals.fs.file(outputUnstrippedFlutterSo).existsSync()) {
-      return outputUnstrippedFlutterSo;
-    } else if (globals.fs.file(outputFlutterSo).existsSync()) {
-      return outputFlutterSo;
-    } else {
       return null;
     }
   } else {
