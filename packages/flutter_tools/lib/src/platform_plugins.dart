@@ -629,7 +629,7 @@ class OhosPlugin extends PluginPlatform implements NativeOrDartPlugin {
     if (yaml == null) {
       return false;
     }
-    return (yaml['package'] is String && yaml[kPluginClass] is String) ||
+    return yaml[kPluginClass] is String ||
         yaml[kDartPluginClass] is String ||
         yaml[kFfiPlugin] == true ||
         yaml[kDefaultPackage] is String;

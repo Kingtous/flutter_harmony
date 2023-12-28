@@ -954,8 +954,8 @@ class OhosProject extends FlutterProjectPlatform {
       .childDirectory('default')
       .childFile('entry-default-signed.hap');
 
-  File get mainModulePackageFile =>
-      mainModuleDirectory.childFile('oh-package.json5');
+  File get flutterModulePackageFile =>
+      flutterModuleDirectory.childFile('oh-package.json5');
 
   File get localPropertiesFile => ohosRoot.childFile('local.properties');
 

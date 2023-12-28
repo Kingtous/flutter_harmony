@@ -74,7 +74,7 @@ Future<void> checkPluginsHarUpdate(FlutterProject flutterProject,
   for (final String path in harPaths) {
     final File originFile = globals.fs.file(path);
     final String descPath = globals.fs.path.join(
-        flutterProject.ohos.ohosRoot.childDirectory('har').path,
+        flutterProject.ohos.flutterModuleDirectory.childDirectory('har').path,
         originFile.basename);
     originFile.copySync(descPath);
   }

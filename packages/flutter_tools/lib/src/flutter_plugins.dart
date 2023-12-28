@@ -789,7 +789,7 @@ $_dartPluginRegisterWith
       {{#windows}}
 $_dartPluginRegisterWith
       {{/windows}}
-    } else if (Platform.isOhos) {
+    } else if (Platform.operatingSystem == 'ohos') {
       {{#ohos}}
 $_dartPluginRegisterWith
       {{/ohos}}
