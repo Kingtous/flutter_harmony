@@ -553,7 +553,6 @@ void cleanAndCopyFlutterRuntime(
   final String? originEngineSoPath = isWindows
       ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
       : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
-
   if (originEngineSoPath == null) {
     throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
   }
