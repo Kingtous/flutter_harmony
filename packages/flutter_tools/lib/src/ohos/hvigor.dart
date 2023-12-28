@@ -394,7 +394,7 @@ void checkFlutterEnv(Logger? logger) {
 }
 
 /// flutter构建
-Future<String> flutetrAssemble(FlutterProject flutterProject,
+Future<String> flutterAssemble(FlutterProject flutterProject,
     BuildInfo buildInfo, TargetPlatform targetPlatform) async {
   late String targetName;
   if (buildInfo.isDebug) {
@@ -467,7 +467,7 @@ Future<String> flutetrAssemble(FlutterProject flutterProject,
 }
 
 /// 清理和拷贝flutter产物和资源
-void cleanAndCopyFlutterAssest(
+void cleanAndCopyFlutterAsset(
     OhosProject ohosProject,
     BuildInfo buildInfo,
     TargetPlatform targetPlatform,
@@ -746,9 +746,9 @@ class OhosHvigorBuilder implements OhosBuilder {
     checkFlutterEnv(logger);
 
     final String output =
-        await flutetrAssemble(flutterProject, buildInfo, targetPlatform);
+        await flutterAssemble(flutterProject, buildInfo, targetPlatform);
 
-    cleanAndCopyFlutterAssest(
+    cleanAndCopyFlutterAsset(
         ohosProject, buildInfo, targetPlatform, logger, ohosRootPath, output);
 
     cleanAndCopyFlutterRuntime(ohosProject, buildInfo, targetPlatform, logger,
