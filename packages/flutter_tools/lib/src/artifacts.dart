@@ -52,6 +52,9 @@ enum Artifact {
 
   /// the flutter engine runtime
   flutterEngineSo,
+
+  /// The dart binary used to execute any of the required snapshots.
+  engineDartBinary,
 }
 
 /// A subset of [Artifact]s that are platform and build mode independent
@@ -215,6 +218,8 @@ String? _artifactToFileName(Artifact artifact, [ TargetPlatform? platform, Build
       return 'const_finder.dart.snapshot';
     case Artifact.flutterEngineSo:
       return 'libflutter.so';
+    case Artifact.engineDartBinary:
+      return 'dart$exe';
   }
 }
 
@@ -509,6 +514,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -542,6 +548,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -587,6 +594,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -616,6 +624,7 @@ class CachedArtifacts implements Artifacts {
       case Artifact.windowsCppClientWrapper:
       case Artifact.windowsDesktopPath:
       case Artifact.flutterEngineSo:
+      case Artifact.engineDartBinary:
         return _getHostArtifactPath(artifact, platform, mode);
     }
   }
@@ -689,6 +698,10 @@ class CachedArtifacts implements Artifacts {
         return _cache.getArtifactDirectory('engine')
             .childFile(_artifactToFileName(artifact)!)
             .path;
+      case Artifact.engineDartBinary:
+        return _fileSystem.path.join(
+          _dartSdkPath(_cache), 'bin',
+          _artifactToFileName(artifact),);
     }
   }
 
@@ -982,6 +995,11 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
         return _fileSystem.path.join(
           _getDartSdkPath(), 'bin', 'snapshots', artifactFileName,
         );
+      case Artifact.engineDartBinary:
+        final String clangName = getClangNameForHostPlatform(getCurrentHostPlatform());
+        return _fileSystem.path.join(
+          engineOutPath, clangName, artifactFileName,
+        );
     }
   }
 
@@ -1052,7 +1070,7 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
     late List<String> clangDirs;
     if (isOhosPlatform(platform)) {
       // on ohos platform, clang_x64 has compatibility first
-      clangDirs = <String>['clang_x64', '.', 'clang_x86', 'clang_i386', 'clang_arm64'];
+      clangDirs = <String>['clang_x64', 'clang_arm64', '.', 'clang_x86', 'clang_i386'];
     } else {
       clangDirs = <String>['.', 'clang_x64', 'clang_x86', 'clang_i386', 'clang_arm64'];
     }
@@ -1067,14 +1085,20 @@ class CachedLocalEngineArtifacts implements LocalEngineArtifacts {
   }
 
   String _flutterTesterPath(TargetPlatform platform) {
-    if (_platform.isLinux) {
-      return _fileSystem.path.join(engineOutPath, _artifactToFileName(Artifact.flutterTester));
-    } else if (_platform.isMacOS) {
-      return _fileSystem.path.join(engineOutPath, 'flutter_tester');
-    } else if (_platform.isWindows) {
-      return _fileSystem.path.join(engineOutPath, 'flutter_tester.exe');
+    late List<String> clangDirs;
+    clangDirs = <String>['clang_x64', 'clang_arm64', '.', 'clang_x86', 'clang_i386'];
+    final String testerName = _artifactToFileName(Artifact.flutterTester)!;
+    if (_platform.isLinux || _platform.isMacOS || _platform.isWindows) {
+      for (final String clangDir in clangDirs) {
+        final String testerPath = _fileSystem.path.join(engineOutPath, clangDir, testerName);
+        if (_processManager.canRun(testerPath)) {
+          return testerPath;
+        }
+      }
+    } else {
+      throw Exception('Unsupported platform $platform.');
     }
-    throw Exception('Unsupported platform $platform.');
+    throw Exception('Unable to find $testerName');
   }
 
   @override

@@ -152,7 +152,7 @@ Future<io.WebSocket> _defaultOpenChannel(String url, {
       final String? hdcServerHost = getHdcServerHost();
       // when on hdc server mode,the host is not local,change to hdc server
       if(hdcServerHost!=null){
-        url = url.replaceAll('0.0.0.0', hdcServerHost);
+        url = url.replaceAll('127.0.0.1', hdcServerHost);
         logger.printStatus('io.WebSocket.connect change url to $url');
       }
       socket = await constructor(url, compression: compression, logger: logger);

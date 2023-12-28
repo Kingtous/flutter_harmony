@@ -916,10 +916,7 @@ String fuchsiaArchForTargetPlatform(TargetPlatform targetPlatform) {
 }
 
 HostPlatform getCurrentHostPlatform() {
-  if (globals.platform.isMacOS) {
-    return HostPlatform.darwin_x64;
-  }
-  if (globals.platform.isLinux) {
+  if (globals.platform.isLinux || globals.platform.isMacOS) {
     // support x64 and arm64 architecture.
     return globals.os.hostPlatform;
   }
