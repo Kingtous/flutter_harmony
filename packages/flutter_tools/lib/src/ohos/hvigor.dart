@@ -540,9 +540,7 @@ void cleanAndCopyFlutterRuntime(
   }
   ensureParentExists(desHarPath);
   final File originHarFile = globals.localFileSystem.file(originHarPath);
-  if (!globals.localFileSystem.file(desHarPath).existsSync()) {
-    originHarFile.copySync(desHarPath);
-  }
+  originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
   final String? originEngineSoPath = isWindows
