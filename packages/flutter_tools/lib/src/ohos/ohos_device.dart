@@ -431,13 +431,13 @@ class OhosDevice extends Device {
     // const.product.cpu.abilist = arm64-v8a
     final String? abilist = await _getProperty('const.product.cpu.abilist');
     if (abilist == null) {
-      return TargetPlatform.ohos_arm;
+      return TargetPlatform.ohos_arm64;
     } else if (abilist.contains('arm64-v8a')) {
       return TargetPlatform.ohos_arm64;
     } else if (abilist.contains('x64')) {
       return TargetPlatform.ohos_x64;
     } else {
-      return TargetPlatform.ohos_arm;
+      return TargetPlatform.ohos_arm64;
     }
   }();
 

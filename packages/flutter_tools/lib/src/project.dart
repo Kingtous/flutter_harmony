@@ -921,9 +921,11 @@ class OhosProject extends FlutterProjectPlatform {
 
   List<Directory> get ohModulesCacheDirectorys {
     const String OH_MODULES_NAME = 'oh_modules';
-    return moduleDirectorys
+    final List<Directory> list = moduleDirectorys
         .map((Directory e) => e.childDirectory(OH_MODULES_NAME))
         .toList();
+    list.add(ohosRoot.childDirectory(OH_MODULES_NAME));
+    return list;
   }
 
   /// 删除ohModules文件夹缓存
