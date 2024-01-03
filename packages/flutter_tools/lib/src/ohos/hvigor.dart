@@ -695,6 +695,8 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('assembleHap error! please check log.');
     }
 
+    return;
+
     final String unsignedFile = globals.fs.path.join(
         ohosRootPath,
         ohosProject.mainModuleName,
