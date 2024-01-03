@@ -15,6 +15,7 @@
 
 import 'dart:io';
 
+import 'package:json5/json5.dart';
 import 'package:process/process.dart';
 
 import '../artifacts.dart';
@@ -700,13 +701,17 @@ class OhosHvigorBuilder implements OhosBuilder {
         ohosProject.mainModuleName,
         'build/default/outputs/default',
         'entry-default-signed.hap');
-
-
-     final File signedFile= globals.localFileSystem.file(desSignedFile);
-     if(signedFile.existsSync()) {
-       return;
-     }   
-   
+     
+    final File buildProfile=  FlutterProject.current().ohos.getBuildProfileFile();
+     final String buildProfileConfig = buildProfile.readAsStringSync();
+     final dynamic obj = JSON5.parse(buildProfileConfig);
+     dynamic signingConfigs = obj['app']?['signingConfigs'];
+     if(signingConfigs is List && signingConfigs.isNotEmpty){
+        final File signedFile= globals.localFileSystem.file(desSignedFile);
+        if(signedFile.existsSync()) {
+          return;
+        }   
+     }
 
     final String unsignedFile = globals.fs.path.join(
         ohosRootPath,
