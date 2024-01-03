@@ -695,18 +695,24 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('assembleHap error! please check log.');
     }
 
-    return;
+    final String desSignedFile = globals.fs.path.join(
+        ohosRootPath,
+        ohosProject.mainModuleName,
+        'build/default/outputs/default',
+        'entry-default-signed.hap');
+
+
+     final File signedFile= globals.localFileSystem.file(desSignedFile);
+     if(signedFile.existsSync()) {
+       return;
+     }   
+   
 
     final String unsignedFile = globals.fs.path.join(
         ohosRootPath,
         ohosProject.mainModuleName,
         'build/default/outputs/default',
         'entry-default-unsigned.hap');
-    final String desSignedFile = globals.fs.path.join(
-        ohosRootPath,
-        ohosProject.mainModuleName,
-        'build/default/outputs/default',
-        'entry-default-signed.hap');
 
     await signHap(globals.localFileSystem, unsignedFile, desSignedFile, logger,
         ohosBuildData.appInfo!.bundleName);
