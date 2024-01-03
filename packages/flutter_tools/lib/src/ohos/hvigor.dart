@@ -702,7 +702,7 @@ class OhosHvigorBuilder implements OhosBuilder {
         'build/default/outputs/default',
         'entry-default-signed.hap');
      
-    final File buildProfile=  FlutterProject.current().ohos.getBuildProfileFile();
+    final File buildProfile = flutterProject.ohos.getBuildProfileFile();
      final String buildProfileConfig = buildProfile.readAsStringSync();
      final dynamic obj = JSON5.parse(buildProfileConfig);
      dynamic signingConfigs = obj['app']?['signingConfigs'];
