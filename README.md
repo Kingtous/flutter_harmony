@@ -60,7 +60,17 @@ Flutter SDK 仓库
      export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
      ```
 
-  4. 配置签名工具
+  4. 配置签名
+    
+      可以通过下面任意一种方式对应用进行签名。
+    
+    (1) 使用 `Deveco Studio` 签名
+
+    - 用 `Deveco Studio` 打开项目的 `ohos` 目录
+    - 单击 `File > Project Structure > Project > Signing Configs` 界面勾选 `Automatically generate signature`，等待自动签名完成即可，单击 `OK`。
+    - 查看 `build-profile.json5` 配置信息，配置信息中增加自动签名生成的证书信息。
+    
+    (2) 使用 [签名工具](https://gitee.com/openharmony/developtools_hapsigner) 签名
 
      - 下载[签名工具](https://gitee.com/openharmony/developtools_hapsigner)，并配置环境变量SIGN_TOOL_HOME。
 
@@ -111,6 +121,7 @@ Flutter SDK 仓库
            "issuer": "pki_internal"
        }
        ```
+    
 
    5. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=\<engine产物目录\>`
 
