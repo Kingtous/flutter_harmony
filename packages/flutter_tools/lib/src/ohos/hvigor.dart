@@ -469,7 +469,7 @@ Future<String> flutterAssemble(FlutterProject flutterProject,
 }
 
 /// 清理和拷贝flutter产物和资源
-void cleanAndCopyFlutterAssest(
+void cleanAndCopyFlutterAsset(
     OhosProject ohosProject,
     BuildInfo buildInfo,
     TargetPlatform targetPlatform,
@@ -546,6 +546,11 @@ void cleanAndCopyFlutterRuntime(
             'gen/flutter/shell/vmservice/ohos/libs', VMSERVICE_SNAPSHOT_SO);
   }
 
+  String? localHar = getLocalArtifactEmbeddingHarPath();
+  if (localHar != null) {
+    originHarPath = localHar;
+  }
+
   String desHarPath = '';
   if (ohosProject.isModule) {
     desHarPath = globals.fs.path
@@ -594,6 +599,26 @@ String getEmbeddingHarFileSuffix(
     BuildInfo buildInfo, OhosBuildData ohosBuildData) {
   final int apiVersion = ohosBuildData.apiVersion;
   return '${buildInfo.isDebug ? 'debug' : buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
+}
+
+/// 获取本地构建的flutter_embedding.har文件路径
+String? getLocalArtifactEmbeddingHarPath() {
+  final Artifacts artifacts = globals.artifacts!;
+  if (artifacts.isLocalEngine && artifacts is LocalEngineArtifacts) {
+    final String engineOutPath = artifacts.engineOutPath;
+    final String outputEmbeddingHar = globals.fs.path
+        .join(engineOutPath, 'ohos', HAR_FILE_NAME);
+    final String outputEmbeddingHarAbs =
+        globals.fs.path.normalize(outputEmbeddingHar);
+
+    if (globals.fs.file(outputEmbeddingHarAbs).existsSync()) {
+      return outputEmbeddingHarAbs;
+    }else{
+      return null;
+    }
+  } else {
+    return null;
+  }
 }
 
 class OhosHvigorBuilder implements OhosBuilder {
@@ -742,7 +767,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     final String output =
         await flutterAssemble(flutterProject, buildInfo, targetPlatform, target);
 
-    cleanAndCopyFlutterAssest(
+    cleanAndCopyFlutterAsset(
         ohosProject, buildInfo, targetPlatform, logger, ohosRootPath, output);
 
     cleanAndCopyFlutterRuntime(ohosProject, buildInfo, targetPlatform, logger,
