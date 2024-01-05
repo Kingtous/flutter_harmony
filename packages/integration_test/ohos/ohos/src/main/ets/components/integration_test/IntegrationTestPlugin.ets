@@ -25,7 +25,6 @@ import {
   FlutterPlugin,
   FlutterPluginBinding
 } from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/FlutterPlugin';
-import { FlutterDeviceScreenshot } from './FlutterDeviceScreenshot';
 import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
 
 const TAG = "IntegrationTestPlugin"
