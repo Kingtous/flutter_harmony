@@ -826,7 +826,6 @@ class MaterialScrollBehavior extends ScrollBehavior {
           case TargetPlatform.linux:
           case TargetPlatform.macOS:
           case TargetPlatform.windows:
-          case TargetPlatform.ohos:
             return Scrollbar(
               controller: details.controller,
               child: child,
@@ -834,6 +833,7 @@ class MaterialScrollBehavior extends ScrollBehavior {
           case TargetPlatform.android:
           case TargetPlatform.fuchsia:
           case TargetPlatform.iOS:
+          case TargetPlatform.ohos:
             return child;
         }
     }
@@ -856,9 +856,9 @@ class MaterialScrollBehavior extends ScrollBehavior {
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
-      case TargetPlatform.ohos:
         return child;
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
         switch (indicator) {
           case AndroidOverscrollIndicator.stretch:
             return StretchingOverscrollIndicator(
