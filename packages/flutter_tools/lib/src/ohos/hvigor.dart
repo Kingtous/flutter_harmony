@@ -15,6 +15,7 @@
 
 import 'dart:io';
 
+import 'package:json5/json5.dart';
 import 'package:process/process.dart';
 
 import '../artifacts.dart';
@@ -522,14 +523,28 @@ void cleanAndCopyFlutterRuntime(
   final String copyDes = getDatPath(ohosRootPath, ohosProject);
   ohosDta.copySync(copyDes);
 
-  //copy har
+  // 若har_product不存在，从模板路径拷贝libflutter.so、libvmservice_snapshot.so、flutter_embedding.har
   final String suffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
-  final String harPath =
-      ohosProject.isModule ? 'har_product' : 'har/har_product';
-  String originHarPath = globals.fs.path.join(
-      ohosProject.flutterRuntimeAssertOriginPath.path,
-      harPath,
-      '$HAR_FILE_NAME.$suffix');
+  final String harCachedPath = ohosProject.isModule ? 'har_product' : 'har/har_product';
+  String? originHarPath, vmserviceSoSrc, originEngineSoPath;
+  if (!globals.localFileSystem.file(harCachedPath).existsSync()) {
+    final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
+    final String harPath = globals.fs.path.join(flutterSdk,
+        'packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl');
+    originHarPath = globals.fs.path.join(harPath, '$HAR_FILE_NAME.$suffix');
+    originEngineSoPath = globals.fs.path.join(harPath, '$FLUTTER_ENGINE_SO.$suffix');
+    vmserviceSoSrc = globals.fs.path.join(harPath, '$VMSERVICE_SNAPSHOT_SO.$suffix');
+  } else {
+    originHarPath = globals.fs.path.join(ohosProject.flutterRuntimeAssertOriginPath.path,
+      harCachedPath, '$HAR_FILE_NAME.$suffix');
+    originEngineSoPath = isWindows
+      ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
+      : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
+    vmserviceSoSrc = isWindows
+        ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$VMSERVICE_SNAPSHOT_SO.$suffix')
+        : globals.fs.path.join(originEngineSoPath!,
+            'gen/flutter/shell/vmservice/ohos/libs', VMSERVICE_SNAPSHOT_SO);
+  }
 
   String? localHar = getLocalArtifactEmbeddingHarPath();
   if (localHar != null) {
@@ -545,14 +560,9 @@ void cleanAndCopyFlutterRuntime(
   }
   ensureParentExists(desHarPath);
   final File originHarFile = globals.localFileSystem.file(originHarPath);
-  if (!globals.localFileSystem.file(desHarPath).existsSync()) {
-    originHarFile.copySync(desHarPath);
-  }
+  originHarFile.copySync(desHarPath);
 
   //copy ohos engine so
-  final String? originEngineSoPath = isWindows
-      ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$FLUTTER_ENGINE_SO.$suffix')
-      : globals.artifacts?.getArtifactPath(Artifact.flutterEngineSo);
   if (originEngineSoPath == null) {
     throwToolExit("flutter engine runtime  file 'libflutter.so' no found");
   }
@@ -567,11 +577,6 @@ void cleanAndCopyFlutterRuntime(
   final File vmServiceSoDestFile = globals.localFileSystem.file(vmServiceSoDest);
   if (buildInfo.isProfile) {
     // copy libvmservice_snapshot.so
-    final String vmserviceSoSrc = isWindows
-        ? globals.fs.path.join(ohosRootPath, 'har', 'har_product', '$VMSERVICE_SNAPSHOT_SO.$suffix')
-        : globals.fs.path.join(flutterEngineSoFile.parent.path,
-            'gen/flutter/shell/vmservice/ohos/libs',
-            VMSERVICE_SNAPSHOT_SO);
     final File vmserviceSoSrcFile = globals.localFileSystem.file(vmserviceSoSrc);
     vmserviceSoSrcFile.copySync(vmServiceSoDest);
   } else {
@@ -720,16 +725,28 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('assembleHap error! please check log.');
     }
 
-    final String unsignedFile = globals.fs.path.join(
-        ohosRootPath,
-        ohosProject.mainModuleName,
-        'build/default/outputs/default',
-        'entry-default-unsigned.hap');
     final String desSignedFile = globals.fs.path.join(
         ohosRootPath,
         ohosProject.mainModuleName,
         'build/default/outputs/default',
         'entry-default-signed.hap');
+     
+    final File buildProfile = flutterProject.ohos.getBuildProfileFile();
+     final String buildProfileConfig = buildProfile.readAsStringSync();
+     final dynamic obj = JSON5.parse(buildProfileConfig);
+     dynamic signingConfigs = obj['app']?['signingConfigs'];
+     if(signingConfigs is List && signingConfigs.isNotEmpty){
+        final File signedFile= globals.localFileSystem.file(desSignedFile);
+        if(signedFile.existsSync()) {
+          return;
+        }   
+     }
+
+    final String unsignedFile = globals.fs.path.join(
+        ohosRootPath,
+        ohosProject.mainModuleName,
+        'build/default/outputs/default',
+        'entry-default-unsigned.hap');
 
     await signHap(globals.localFileSystem, unsignedFile, desSignedFile, logger,
         ohosBuildData.appInfo!.bundleName);
