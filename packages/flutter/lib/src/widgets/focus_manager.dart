@@ -607,9 +607,6 @@ class FocusNode with DiagnosticableTreeMixin, ChangeNotifier {
   List<FocusNode>? _descendants;
   bool _hasKeyboardToken = false;
 
-  /// Whether the keyboard is disabled especially when there is a custom keyboard
-  bool disableKeyboard = false;
-
   /// Returns the parent node for this object.
   ///
   /// All nodes except for the root [FocusScopeNode] ([FocusManager.rootScope])
@@ -905,7 +902,7 @@ class FocusNode with DiagnosticableTreeMixin, ChangeNotifier {
   ///
   /// Returns true if this method successfully consumes the keyboard token.
   bool consumeKeyboardToken() {
-    if (!_hasKeyboardToken || disableKeyboard) {
+    if (!_hasKeyboardToken) {
       return false;
     }
     _hasKeyboardToken = false;
