@@ -866,7 +866,7 @@ class OhosProject extends FlutterProjectPlatform {
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
   Directory get managedDirectory =>
-      ohosRoot.childDirectory('entry/src/main/ets/plugins');
+      ohosRoot.childDirectory('$flutterModuleName/src/main/ets/plugins');
 
   /// 是否先编译.ohos/module下har，再运行hap
   bool get isRunWithModuleHar =>
