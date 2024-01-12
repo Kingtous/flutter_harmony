@@ -2019,6 +2019,7 @@ class TextSelectionGestureDetectorBuilder {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         // On mobile platforms the selection is set on tap up.
         if (_isShiftTapping) {
           _isShiftTapping = false;
@@ -2045,7 +2046,6 @@ class TextSelectionGestureDetectorBuilder {
         // precise position.
         renderEditable.selectPosition(cause: SelectionChangedCause.tap);
         break;
-      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
         if (isShiftPressedValid) {
@@ -2121,13 +2121,14 @@ class TextSelectionGestureDetectorBuilder {
         case TargetPlatform.linux:
         case TargetPlatform.macOS:
         case TargetPlatform.windows:
-        case TargetPlatform.ohos:
+        
           editableText.hideToolbar();
           // On desktop platforms the selection is set on tap down.
           if (_isShiftTapping) {
             _isShiftTapping = false;
           }
           break;
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
           editableText.hideToolbar();
@@ -2237,6 +2238,7 @@ class TextSelectionGestureDetectorBuilder {
       }
 
       switch (defaultTargetPlatform) {
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.iOS:
           editableText.showMagnifier(details.globalPosition);
@@ -2245,7 +2247,6 @@ class TextSelectionGestureDetectorBuilder {
         case TargetPlatform.linux:
         case TargetPlatform.macOS:
         case TargetPlatform.windows:
-        case TargetPlatform.ohos:
           break;
       }
 
@@ -2299,11 +2300,11 @@ class TextSelectionGestureDetectorBuilder {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
         case TargetPlatform.iOS:
+        case TargetPlatform.ohos:
           editableText.showMagnifier(details.globalPosition);
           break;
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
-        case TargetPlatform.ohos:
         case TargetPlatform.macOS:
         case TargetPlatform.windows:
           break;
@@ -2324,13 +2325,13 @@ class TextSelectionGestureDetectorBuilder {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         editableText.hideMagnifier();
         break;
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
-      case TargetPlatform.ohos:
         break;
     }
     if (shouldShowSelectionToolbar) {
