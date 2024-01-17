@@ -884,6 +884,10 @@ class OhosHvigorBuilder implements OhosBuilder {
             entryPath: element.path,
             logger: logger);
       }
+      await ohpmInstall(
+          processManager: globals.processManager,
+          entryPath: ohosProject.ohosRoot.path,
+          logger: logger);
     }
   }
 
