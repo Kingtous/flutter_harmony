@@ -866,7 +866,7 @@ class OhosProject extends FlutterProjectPlatform {
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
   Directory get managedDirectory =>
-      ohosRoot.childDirectory('entry/src/main/ets/plugins');
+      ohosRoot.childDirectory('$flutterModuleName/src/main/ets/plugins');
 
   /// 是否先编译.ohos/module下har，再运行hap
   bool get isRunWithModuleHar =>
@@ -921,9 +921,11 @@ class OhosProject extends FlutterProjectPlatform {
 
   List<Directory> get ohModulesCacheDirectorys {
     const String OH_MODULES_NAME = 'oh_modules';
-    return moduleDirectorys
+    final List<Directory> list = moduleDirectorys
         .map((Directory e) => e.childDirectory(OH_MODULES_NAME))
         .toList();
+    list.add(ohosRoot.childDirectory(OH_MODULES_NAME));
+    return list;
   }
 
   /// 删除ohModules文件夹缓存
@@ -954,8 +956,8 @@ class OhosProject extends FlutterProjectPlatform {
       .childDirectory('default')
       .childFile('entry-default-signed.hap');
 
-  File get mainModulePackageFile =>
-      mainModuleDirectory.childFile('oh-package.json5');
+  File get flutterModulePackageFile =>
+      flutterModuleDirectory.childFile('oh-package.json5');
 
   File get localPropertiesFile => ohosRoot.childFile('local.properties');
 

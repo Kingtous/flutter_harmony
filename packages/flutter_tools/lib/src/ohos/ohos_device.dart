@@ -265,9 +265,8 @@ class OhosDevice extends Device {
     /// 3. install or not
     /// 4. start app command
     ///
-
+    
     final TargetPlatform devicePlatform = await targetPlatform;
-
     OhosHap? builtPackage = package as OhosHap?;
     OhosArch ohosArch;
     switch (devicePlatform) {
@@ -307,7 +306,7 @@ class OhosDevice extends Device {
         debuggingOptions.buildInfo,
         targetPlatform: devicePlatform,
         logger: globals.logger,
-        target: getNameForTargetPlatform(devicePlatform),
+        target: mainPath ?? 'lib/main.dart',
       );
 
       builtPackage = await ApplicationPackageFactory.instance!
@@ -381,6 +380,9 @@ class OhosDevice extends Device {
       if (debuggingOptions.buildInfo.isDebug ||
           debuggingOptions.buildInfo.isProfile) {
         observatoryUri = await observatoryDiscovery?.uri;
+        _logger.printWarning(
+            'waiting for a debug connection: $observatoryUri'
+          );
         if (observatoryUri == null) {
           _logger.printError(
             'Error waiting for a debug connection: '
@@ -429,13 +431,13 @@ class OhosDevice extends Device {
     // const.product.cpu.abilist = arm64-v8a
     final String? abilist = await _getProperty('const.product.cpu.abilist');
     if (abilist == null) {
-      return TargetPlatform.ohos_arm;
+      return TargetPlatform.ohos_arm64;
     } else if (abilist.contains('arm64-v8a')) {
       return TargetPlatform.ohos_arm64;
     } else if (abilist.contains('x64')) {
       return TargetPlatform.ohos_x64;
     } else {
-      return TargetPlatform.ohos_arm;
+      return TargetPlatform.ohos_arm64;
     }
   }();
 

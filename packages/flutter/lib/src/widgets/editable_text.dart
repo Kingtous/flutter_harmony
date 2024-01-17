@@ -2621,6 +2621,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TextInputAction.previous:
       case TextInputAction.search:
       case TextInputAction.send:
+      case TextInputAction.unspecified:
         _finalizeEditing(action, shouldUnfocus: true);
         break;
       case TextInputAction.continueAction:
@@ -2628,7 +2629,6 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TextInputAction.join:
       case TextInputAction.none:
       case TextInputAction.route:
-      case TextInputAction.unspecified:
         // Finalize editing, but don't give up focus because this keyboard
         // action does not imply the user is done inputting information.
         _finalizeEditing(action, shouldUnfocus: false);
