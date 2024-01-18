@@ -491,7 +491,7 @@ class CachedArtifacts implements Artifacts {
     switch (artifact) {
       case Artifact.genSnapshot:
         assert(mode != BuildMode.debug, 'Artifact $artifact only available in non-debug mode.');
-        final String hostPlatform = getNameForHostPlatform(getCurrentHostPlatform());
+        final String hostPlatform = getNameForHostPlatform(globals.platform.isMacOS ? HostPlatform.darwin_x64 : getCurrentHostPlatform());
         return _fileSystem.path.join(engineDir, hostPlatform, _artifactToFileName(artifact));
       case Artifact.frontendServerSnapshotForEngineDartSdk:
       case Artifact.constFinder:
