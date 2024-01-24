@@ -23,6 +23,8 @@ const String kOhosSdkRoot = 'OHOS_SDK_HOME';
 const String kHmosHome = 'HOS_SDK_HOME';
 
 const List<String> supportSdkVersion = <String>['10', '11', '9'];
+// for api11 developer preview
+const Map<int, String> sdkVersionMap = {11: 'HarmonyOS-NEXT-DP1', 10: 'HarmonyOS-NEXT-DP0'};
 
 class OhosSdk {
   OhosSdk(this._sdkDir) {
@@ -78,8 +80,17 @@ class OhosSdk {
   }
 
   static String? getHdcPath(String sdkPath) {
+    final bool isWindows = globals.platform.isWindows;
+    // find it in api11 developer preview folder
+    for (final int api in sdkVersionMap.keys) {
+      final File file = globals.fs.file(globals.fs.path
+          .join(sdkPath, sdkVersionMap[api], 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+      if (file.existsSync()) {
+        return file.path;
+      }
+    }
+    // if hdc not found, find it in previous version
     for (final String folder in supportSdkVersion) {
-      final bool isWindows = globals.platform.isWindows;
       final File file = globals.fs.file(globals.fs.path
           .join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
@@ -91,11 +102,22 @@ class OhosSdk {
 
   List<String> getAvailableApi() {
     final List<String> list = <String>[];
-    for (final String folder in supportSdkVersion) {
+     // for api11 developer preview
+    for (final int api in sdkVersionMap.keys) {
       final Directory directory =
-          globals.fs.directory(globals.fs.path.join(sdkPath, folder));
+          globals.fs.directory(globals.fs.path.join(sdkPath, sdkVersionMap[api]));
       if (directory.existsSync()) {
-        list.add(folder);
+        list.add(sdkVersionMap[api]!);
+      }
+    }
+    // if not found, find it in previous version
+    if (list.isEmpty) {
+      for (final String folder in supportSdkVersion) {
+        final Directory directory =
+            globals.fs.directory(globals.fs.path.join(sdkPath, folder));
+        if (directory.existsSync()) {
+          list.add(folder);
+        }
       }
     }
     return list;
@@ -144,8 +166,11 @@ class HmosSdk {
   //harmonyOsSdk，包含目录hmscore和openharmony
   static bool validSdkDirectory(String hmosHomeDir) {
     final Directory directory = globals.fs.directory(hmosHomeDir);
-    return directory.childDirectory('hmscore').existsSync() &&
-        directory.childDirectory('openharmony').existsSync();
+    return (directory.childDirectory('hmscore').existsSync() &&
+        directory.childDirectory('openharmony').existsSync()) ||
+        // for api11 developer preview
+        (directory.childDirectory('HarmonyOS-NEXT-DP1').existsSync() && 
+        directory.childDirectory('licenses').existsSync());
   }
 }
 

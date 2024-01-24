@@ -38,12 +38,23 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        ├── 9
        ...
        ```
+    * The directory structure after decompression of the API11 developer preview version is as follows:
+      ```
+      /SDK
+      ├── HarmonyOS-NEXT-DP0
+      │   └── base
+      │   └── hms
+      ├── HarmonyOS-NEXT-DP1
+      │   └── base
+      │   └── hms
+      ...
+      ```
 
     * Configure environment variables
 
        ```
        export OHOS_SDK_HOME=/home/<user>/env/sdk
-       export HDC_HOME=/home/<user>/env/sdk/10/toolchains
+       export HDC_HOME=$OHOS_SDK_HOME/HarmonyOS-NEXT-DP1/base/toolchains
        export PATH=$PATH:$HDC_HOME
 
        # Configure HarmonyOS SDK

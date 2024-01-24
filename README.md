@@ -38,12 +38,22 @@ Flutter SDK 仓库
       ├── 9
       ...
       ```
-
-   * 配置环境变量
+   * API11 开发者预览版解压后目录结构如下：
+      ```
+      /SDK
+      ├── HarmonyOS-NEXT-DP0
+      │   └── base
+      │   └── hms
+      ├── HarmonyOS-NEXT-DP1
+      │   └── base
+      │   └── hms
+      ...
+      ```
+   * 配置环境变量,如：
 
       ```
       export OHOS_SDK_HOME=/home/<user>/env/sdk
-      export HDC_HOME=/home/<user>/env/sdk/10/toolchains
+      export HDC_HOME=$OHOS_SDK_HOME/HarmonyOS-NEXT-DP1/base/toolchains
       export PATH=$PATH:$HDC_HOME
 
       # 配置HarmonyOS SDK
