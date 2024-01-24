@@ -261,3 +261,22 @@ Flutter SDK 仓库
    registry=https://repo.huaweicloud.com/repository/npm/
    @ohos:registry=https://repo.harmonyos.com/npm/
    ```
+
+10. 查日志时，存在日志丢失现象。
+    解决方案：关闭全局日志，只打开自己领域的日志
+
+    ```
+    步骤一：关闭所有领域的日志打印（部分特殊日志无法关闭）
+    hdc shell hilog -b X
+    步骤二：只打开自己领域的日志
+    hdc shell hilog <level> -D <domain> 
+    其中<level>为日志打印的级别：D/I/W/E/F,<domain>为Tag前面的数字
+    举例：
+    打印A00000/XComFlutterOHOS_Native的日志，需要设置hdc shell hilog -b D -D A00000
+    注：上面的设置在机器重启后会失效，如果要继续使用，需要重新设置。
+    ```
+
+
+
+
+
