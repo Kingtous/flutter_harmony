@@ -204,7 +204,12 @@ Future<void> signHap(LocalFileSystem localFileSystem, String unsignedFile,
 
   if (isNeedCopySignHistory) {
     final List<String> cmdCreateCertAndProfile = <String>[];
-    cmdCreateCertAndProfile.add('python3');
+    if (isWindows) {
+      cmdCreateCertAndProfile.add('py');
+      cmdCreateCertAndProfile.add('-3');
+    } else {
+      cmdCreateCertAndProfile.add('python3');
+    }
     cmdCreateCertAndProfile
         .add(globals.fs.path.join(signToolHome, 'autosign.py'));
     cmdCreateCertAndProfile.add('createAppCertAndProfile');
