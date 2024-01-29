@@ -348,6 +348,7 @@ void main() {
           isMethodCall('HapticFeedback.vibrate', arguments: 'HapticFeedbackType.selectionClick'),
         );
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
       case TargetPlatform.linux:
@@ -1223,6 +1224,7 @@ void main() {
       final bool alt;
       final bool control;
       switch(defaultTargetPlatform) {
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
@@ -1333,6 +1335,7 @@ void main() {
       final bool alt;
       final bool meta;
       switch(defaultTargetPlatform) {
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
@@ -1428,6 +1431,7 @@ void main() {
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           meta = false;
           alt = true;
           break;

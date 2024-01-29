@@ -775,7 +775,7 @@ class PageTransitionsTheme with Diagnosticable {
 
   static const Map<TargetPlatform, PageTransitionsBuilder> _defaultBuilders = <TargetPlatform, PageTransitionsBuilder>{
     TargetPlatform.android: ZoomPageTransitionsBuilder(),
-    TargetPlatform.ohos: ZoomPageTransitionsBuilder(),
+    TargetPlatform.ohos: OpenRightwardsPageTransitionsBuilder(),
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
     TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
   };
@@ -802,7 +802,7 @@ class PageTransitionsTheme with Diagnosticable {
     }
 
     final PageTransitionsBuilder matchingBuilder =
-      builders[platform] ?? const OpenRightwardsPageTransitionsBuilder();
+      builders[platform] ?? const ZoomPageTransitionsBuilder();
     return matchingBuilder.buildTransitions<T>(route, context, animation, secondaryAnimation, child);
   }
 
