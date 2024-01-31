@@ -138,7 +138,7 @@ void checkDevDependencies(
       getOhosDependenciesListFromPackageFile(packageConfigFile,
           dependenceType: DependenceType.dev);
 
-  /// 如果包含@ohos/flutter_ohos，每次构建，都需要重新拷贝har文件，确保flutter_embedding.har文件的正确性
+  /// 如果包含@ohos/flutter_ohos，每次构建，都需要重新拷贝har文件，确保flutter.har文件的正确性
   if (devDependencies.any(
       (OhosDependence element) => element.moduleName == '@ohos/flutter_ohos')) {
     final OhosDependence flutterOhosDepence = devDependencies.firstWhere(

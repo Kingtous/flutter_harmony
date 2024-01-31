@@ -35,14 +35,14 @@ enum DependenceType {
 }
 
 class OhosDependence {
-  ///"@ohos/flutter_ohos": "file:../har/flutter_embedding.har"
+  ///"@ohos/flutter_ohos": "file:../har/flutter.har"
   OhosDependence(this.moduleName, this.baseModuleName, this.modulePath,
       this.dependenceType);
 
   ///@ohos/flutter_ohos
   String moduleName;
 
-  ///file:../har/flutter_embedding.har
+  ///file:../har/flutter.har
   String modulePath;
 
   ///flutter_ohos
