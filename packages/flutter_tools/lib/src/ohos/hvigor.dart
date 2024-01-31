@@ -837,21 +837,16 @@ class OhosHvigorBuilder implements OhosBuilder {
     final String buildProfileConfig = buildProfile.readAsStringSync();
     final dynamic obj = JSON5.parse(buildProfileConfig);
     dynamic signingConfigs = obj['app']?['signingConfigs'];
+    if (signingConfigs is List && signingConfigs.isEmpty) {
+      logger?.printError('请通过DevEco Studio打开ohos工程后配置调试签名(File -> Project Structure -> Signing Configs 勾选Automatically generate signature)');
+      return;
+    }
     if (signingConfigs is List && signingConfigs.isNotEmpty) {
       final File signedFile = globals.localFileSystem.file(desSignedFile);
       if (signedFile.existsSync()) {
         return;
       }
     }
-
-    final String unsignedFile = globals.fs.path.join(
-        ohosRootPath,
-        ohosProject.mainModuleName,
-        'build/default/outputs/default',
-        'entry-default-unsigned.hap');
-
-    await signHap(globals.localFileSystem, unsignedFile, desSignedFile, logger,
-        ohosBuildData.appInfo!.bundleName);
   }
 
   Future<void> flutterBuildPre(

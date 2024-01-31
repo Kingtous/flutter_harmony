@@ -72,67 +72,12 @@ Flutter SDK 仓库
 
   4. 配置签名
     
-      可以通过下面任意一种方式对应用进行签名。
-    
-    (1) 使用 `Deveco Studio` 签名
+      使用 `Deveco Studio` 签名
 
     - 用 `Deveco Studio` 打开项目的 `ohos` 目录
     - 单击 `File > Project Structure > Project > Signing Configs` 界面勾选 `Automatically generate signature`，等待自动签名完成即可，单击 `OK`。
     - 查看 `build-profile.json5` 配置信息，配置信息中增加自动签名生成的证书信息。
     
-    (2) 使用 [签名工具](https://gitee.com/openharmony/developtools_hapsigner) 签名
-
-     - 下载[签名工具](https://gitee.com/openharmony/developtools_hapsigner)，并配置环境变量SIGN_TOOL_HOME。
-
-       ```
-       export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
-       ```
-
-     - 执行gradle命令编译得到hap-sign-tool.jar，确保其在目录：./hapsigntool/hap_sign_tool/build/libs/hap-sign-tool.jar。(gradle版本推荐7.x)
-
-       ```
-       gradle build
-       ```
-
-     - 编辑autosign目录下`autosign.config`和`createAppCertAndProfile.config`文件，并修改其中值：
-
-       ```
-       sign.profile.inFile=profile_tmp.json
-       ```
-
-     - 在autosign目录下（ linux和mac环境下须先执行命令 `chmod 777 *.sh` ，Windows环境下无需执行此命令 ），新增`profile_tmp_template.json`文件，编辑如下：
-
-       ```
-       {
-           "version-name": "2.0.0",
-           "version-code": 2,
-           "app-distribution-type": "os_integration",
-           "uuid": "5027b99e-5f9e-465d-9508-a9e0134ffe18",
-           "validity": {
-               "not-before": 1594865258,
-               "not-after": 1689473258
-           },
-           "type": "release",
-           "bundle-info": {
-               "developer-id": "OpenHarmony",
-               "distribution-certificate": "-----BEGIN CERTIFICATE-----\nMIICSTCCAc+gAwIBAgIFAJV7uNUwCgYIKoZIzj0EAwIwYzELMAkGA1UEBhMCQ04x\nFDASBgNVBAoMC09wZW5IYXJtb255MRkwFwYDVQQLDBBPcGVuSGFybW9ueSBUZWFt\nMSMwIQYDVQQDDBpPcGVuSGFybW9ueSBBcHBsaWNhdGlvbiBDQTAeFw0yMjAxMjkw\nNTU0MTRaFw0yMzAxMjkwNTU0MTRaMGgxCzAJBgNVBAYTAkNOMRQwEgYDVQQKDAtP\ncGVuSGFybW9ueTEZMBcGA1UECwwQT3Blbkhhcm1vbnkgVGVhbTEoMCYGA1UEAwwf\nT3Blbkhhcm1vbnkgQXBwbGljYXRpb24gUmVsZWFzZTBZMBMGByqGSM49AgEGCCqG\nSM49AwEHA0IABAW8pFu7tHGUuWtddD5wvazc1qN8ts9UPZH4pecbb/bSFWKh7X7R\n/eTVaRrCTSSdovI1dhoV5GjuFsKW+jT2TwSjazBpMB0GA1UdDgQWBBScyywAaAMj\nI7HcuIS42lvZx0Lj+zAJBgNVHRMEAjAAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUE\nDDAKBggrBgEFBQcDAzAYBgwrBgEEAY9bAoJ4AQMECDAGAgEBCgEAMAoGCCqGSM49\nBAMCA2gAMGUCMFfNidGo6uK6KGT9zT1T5bY1NCHTH3P3muy5X1xudOgxWoOqIbnk\ntmQYB78dxWEHLQIxANfApAlXAD/0hnyNC8RDzfLOPEeay6jU9FXJj3AoR90rwZpR\noN9sYD6Oks4VGRw6yQ==\n-----END CERTIFICATE-----\n",
-               "bundle-name": "{{ohosId}}",
-               "apl": "normal",
-               "app-feature": "hos_normal_app"
-           },
-           "acls": {
-               "allowed-acls": [
-                   ""
-               ]
-           },
-           "permissions": {
-               "restricted-permissions": []
-           },
-           "issuer": "pki_internal"
-       }
-       ```
-    
-
    5. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=\<engine产物目录\>`
 
       上述所有环境变量的配置（Windows下环境变量配置请在‘编辑系统环境变量’中设置），可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
@@ -164,9 +109,6 @@ Flutter SDK 仓库
       # HDC Home，OHOS_SDK_HOME目录下的 10/toolchains 子目录
       export HDC_HOME=/home/<user>/ohos/sdk/openharmony/10/toolchains
       export PATH=$PATH:$HDC_HOME
-
-      # 签名工具
-      export SIGN_TOOL_HOME=/home/<user>/ohos/developtools_hapsigner/autosign
 
       # grade
       export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
@@ -287,6 +229,7 @@ Flutter SDK 仓库
     ```
 11. 若Api11 Beta1版本的机器上无法启动debug签名的应用，可以通过将签名换成正式签名，或在手机端打开开发者模式解决（步骤：设置->通用->开发者模式）
 
+12. 如果报`Invalid CEN header (invalid zip64 extra data field size)`异常，请更换Jdk版本，参见[JDK-8313765](https://bugs.openjdk.org/browse/JDK-8313765)
 
 
 
