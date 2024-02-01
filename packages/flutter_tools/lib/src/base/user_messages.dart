@@ -170,7 +170,7 @@ class UserMessages {
           'second: follow this document: https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3 to install OpenHarmony sdk with ohsdkmgr; \n'
           'If the Ohos SDK has been installed to a custom location, please use\n'
           '`flutter config --ohos-sdk` to update to that location.\n';
-  String ohosSdkVersion(OhosSdk ohosSdk) =>
+  String ohosSdkVersion(HarmonySdk ohosSdk) =>
       'OpenHarmony Sdk location: ${ohosSdk.sdkPath}, available api versions has ${ohosSdk.apiAvailable}';
 
   String hdcMissing() =>

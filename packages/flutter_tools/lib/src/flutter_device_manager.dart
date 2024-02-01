@@ -45,7 +45,7 @@ class FlutterDeviceManager extends DeviceManager {
     required ProcessManager processManager,
     required FileSystem fileSystem,
     required AndroidSdk? androidSdk,
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required FeatureFlags featureFlags,
     required IOSSimulatorUtils iosSimulatorUtils,
     required XCDevice xcDevice,

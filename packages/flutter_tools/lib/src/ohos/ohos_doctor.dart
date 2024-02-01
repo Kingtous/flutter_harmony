@@ -51,7 +51,7 @@ class _VersionInfo {
 
 class OhosValidator extends DoctorValidator {
   OhosValidator({
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required FileSystem fileSystem,
     required Logger logger,
     required Platform platform,
@@ -71,7 +71,7 @@ class OhosValidator extends DoctorValidator {
         _userMessages = userMessages,
         super('OpenHarmony toolchain - develop for OpenHarmony devices');
 
-  final OhosSdk? _ohosSdk;
+  final HarmonySdk? _ohosSdk;
   final FileSystem _fileSystem;
   final Logger _logger;
   final OperatingSystemUtils _operatingSystemUtils;

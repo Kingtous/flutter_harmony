@@ -52,7 +52,7 @@ String? getHdcServerPort() {
 }
 
 List<String> getHdcCommandCompat(
-    OhosSdk ohosSdk, String id, List<String> args) {
+    HarmonySdk ohosSdk, String id, List<String> args) {
   final String? hdcServer = getHdcServer();
   final List<String> hdcServerCommand =
       hdcServer == null ? <String>['-t', id] : <String>['-s', hdcServer];

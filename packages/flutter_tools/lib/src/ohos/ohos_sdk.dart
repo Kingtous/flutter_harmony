@@ -26,18 +26,50 @@ const List<String> supportSdkVersion = <String>['10', '11', '9'];
 // for api11 developer preview
 const Map<int, String> sdkVersionMap = {11: 'HarmonyOS-NEXT-DP1', 10: 'HarmonyOS-NEXT-DP0'};
 
-class OhosSdk {
-  OhosSdk(this._sdkDir) {
-    init();
+abstract class HarmonySdk {
+  // name
+  String get name;
+  // sdk path
+  String get sdkPath;
+  // hdc path
+  String? get hdcPath;
+  // available api list
+  List<String> get apiAvailable;
+  // is valid sdk
+  bool get isValidDirectory;
+
+  static HarmonySdk? locateHarmonySdk() {
+    final OhosSdk? ohosSdk = OhosSdk.localOhosSdk();
+    final HmosSdk? hmosSdk = HmosSdk.localHmosSdk();
+    if (ohosSdk != null) {
+      return ohosSdk;
+    } else if (hmosSdk != null) {
+      return hmosSdk;
+    } else {
+      return null;
+    }
   }
+}
+
+class OhosSdk implements HarmonySdk {
+  OhosSdk(this._sdkDir);
 
   final Directory _sdkDir;
 
+  @override
+  String get name => 'OpenHarmonySDK';
+
+  @override
   String get sdkPath => _sdkDir.path;
 
-  String? hdcPath;
+  @override
+  String? get hdcPath => getHdcPath(_sdkDir.path);
 
-  List<String>? apiAvailable;
+  @override
+  List<String> get apiAvailable => getAvailableApi();
+
+  @override
+  bool get isValidDirectory => validSdkDirectory(_sdkDir.path);
 
   static OhosSdk? localOhosSdk() {
     String? findOhosHomeDir() {
@@ -123,18 +155,34 @@ class OhosSdk {
     return list;
   }
 
-  void init() {
-    hdcPath = getHdcPath(_sdkDir.path);
-    apiAvailable = getAvailableApi();
-  }
 }
 
-class HmosSdk {
+class HmosSdk implements HarmonySdk {
   HmosSdk(this._sdkDir);
 
   final Directory _sdkDir;
 
+  @override
+  String get name => 'HarmonyOSSDK';
+
+  @override
+  String? get hdcPath => getHdcPath(_sdkDir.path);
+
+  @override
   String get sdkPath => _sdkDir.path;
+
+  @override
+  List<String> get apiAvailable => getAvailableApi();
+
+  @override
+  bool get isValidDirectory => validSdkDirectory(sdkPath);
+
+   List<String> getAvailableApi() {
+    File file = globals.fs.file(globals.fs.path.join(sdkPath, 'base'));
+    return <String>[
+      file.path,
+    ];
+  }
 
   static HmosSdk? localHmosSdk() {
     String? findHmosHomeDir() {
@@ -162,6 +210,28 @@ class HmosSdk {
 
     return HmosSdk(globals.fs.directory(hmosHomeDir));
   }
+
+  static String? getHdcPath(String sdkPath) {
+    final bool isWindows = globals.platform.isWindows;
+    // find it in api11 developer preview folder
+    for (final int api in sdkVersionMap.keys) {
+      final File file = globals.fs.file(globals.fs.path
+          .join(sdkPath, sdkVersionMap[api], 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+      if (file.existsSync()) {
+        return file.path;
+      }
+    }
+    // if hdc not found, find it in previous version
+    for (final String folder in supportSdkVersion) {
+      final File file = globals.fs.file(globals.fs.path
+          .join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+      if (file.existsSync()) {
+        return file.path;
+      }
+    }
+    return null;
+  }
+
 
   //harmonyOsSdk，包含目录hmscore和openharmony
   static bool validSdkDirectory(String hmosHomeDir) {
