@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 
@@ -413,13 +414,16 @@ abstract class ScrollView extends StatelessWidget {
     final ScrollController? scrollController = effectivePrimary
         ? PrimaryScrollController.maybeOf(context)
         : controller;
-
+    ScrollBehavior? localScrollBehavior = scrollBehavior;           
+    if(defaultTargetPlatform == TargetPlatform.ohos){
+      localScrollBehavior = ScrollConfiguration.of(context).copyWith(scrollbars:false);
+    }
     final Scrollable scrollable = Scrollable(
       dragStartBehavior: dragStartBehavior,
       axisDirection: axisDirection,
       controller: scrollController,
       physics: physics,
-      scrollBehavior: ScrollConfiguration.of(context).copyWith(scrollbars:false),
+      scrollBehavior: localScrollBehavior,
       semanticChildCount: semanticChildCount,
       restorationId: restorationId,
       viewportBuilder: (BuildContext context, ViewportOffset offset) {

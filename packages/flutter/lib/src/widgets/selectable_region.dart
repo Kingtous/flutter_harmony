@@ -342,9 +342,9 @@ class SelectableRegionState extends State<SelectableRegion> with TextSelectionDe
       case TargetPlatform.android:
       case TargetPlatform.iOS:
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
         return;

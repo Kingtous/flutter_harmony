@@ -351,7 +351,6 @@ class _ReorderableListViewState extends State<ReorderableListView> {
       switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
         case TargetPlatform.windows:
-        case TargetPlatform.ohos:
         case TargetPlatform.macOS:
           switch (widget.scrollDirection) {
             case Axis.horizontal:
@@ -399,6 +398,7 @@ class _ReorderableListViewState extends State<ReorderableListView> {
         case TargetPlatform.iOS:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
+        case TargetPlatform.ohos:
           return ReorderableDelayedDragStartListener(
             key: itemGlobalKey,
             index: index,

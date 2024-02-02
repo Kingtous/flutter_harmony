@@ -1516,11 +1516,11 @@ class FocusManager with DiagnosticableTreeMixin, ChangeNotifier {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         if (WidgetsBinding.instance.mouseTracker.mouseIsConnected) {
           return FocusHighlightMode.traditional;
         }
         return FocusHighlightMode.touch;
-      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:

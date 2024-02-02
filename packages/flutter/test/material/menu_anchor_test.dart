@@ -1603,6 +1603,7 @@ void main() {
       Text mnemonic3;
 
       switch (defaultTargetPlatform) {
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
@@ -1992,6 +1993,7 @@ void main() {
       String expectedCtrl;
       String expectedAlt;
       switch (defaultTargetPlatform) {
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:

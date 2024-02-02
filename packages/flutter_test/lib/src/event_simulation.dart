@@ -69,6 +69,7 @@ class KeyEventSimulator {
       case 'web':
       case 'ios':
       case 'windows':
+      case 'ohos':
         return true;
     }
     return false;
@@ -78,6 +79,9 @@ class KeyEventSimulator {
     assert(_osIsSupported(platform), 'Platform $platform not supported for key simulation');
     late Map<int, PhysicalKeyboardKey> map;
     switch (platform) {
+      case 'ohos':
+        map = kOhosToPhysicalKey;
+        break;
       case 'android':
         map = kAndroidToPhysicalKey;
         break;
@@ -120,6 +124,9 @@ class KeyEventSimulator {
     } else {
       late Map<int, LogicalKeyboardKey> map;
       switch (platform) {
+        case 'ohos':
+          map = kOhosToLogicalKey;
+          break;
         case 'android':
           map = kAndroidToLogicalKey;
           break;
@@ -210,6 +217,9 @@ class KeyEventSimulator {
       map = kWebToPhysicalKey;
     } else {
       switch (platform) {
+        case 'ohos':
+          map = kOhosToPhysicalKey;
+          break;
         case 'android':
           map = kAndroidToPhysicalKey;
           break;
@@ -283,6 +293,11 @@ class KeyEventSimulator {
     final int scanCode = _getScanCode(physicalKey, platform);
 
     switch (platform) {
+      case 'ohos':
+        Map<String,dynamic?> map = {'code':keyCode,'pressedTime':10,'deviceId':1};
+        result['key'] = map;
+        result['action'] = 1;
+        break;
       case 'android':
         result['keyCode'] = keyCode;
         if (resultCharacter.isNotEmpty) {

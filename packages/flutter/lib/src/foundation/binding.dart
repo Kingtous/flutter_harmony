@@ -460,7 +460,6 @@ abstract class BindingBase {
         name: FoundationServiceExtensions.platformOverride.name,
         callback: (Map<String, String> parameters) async {
           if (parameters.containsKey('value')) {
-            print('registerServiceExtension name:${parameters['value']}');
             switch (parameters['value']) {
               case 'android':
                 debugDefaultTargetPlatformOverride = TargetPlatform.android;
