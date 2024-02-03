@@ -294,9 +294,13 @@ class KeyEventSimulator {
 
     switch (platform) {
       case 'ohos':
-        Map<String,dynamic?> map = {'code':keyCode,'pressedTime':10,'deviceId':1};
-        result['key'] = map;
-        result['action'] = 1;
+        result['keyCode'] = keyCode;
+        result['deviceId'] = 1;
+        if (resultCharacter.isNotEmpty) {
+          result['character'] = resultCharacter;
+        }else {
+          result['character'] = '';
+        }
         break;
       case 'android':
         result['keyCode'] = keyCode;

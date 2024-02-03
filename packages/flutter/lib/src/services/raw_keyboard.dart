@@ -315,7 +315,12 @@ abstract class RawKeyEvent with Diagnosticable {
       final String keymap = message['keymap']! as String;
       switch (keymap) {
         case 'ohos':
-          data = transformMessage(message);
+          data = RawKeyEventDataOhos(
+            message['type'] as String? ?? KeyType.keydown.toString(),
+            message['keyCode'] as int? ?? 0,
+            message['deviceId'] as int? ?? 0,
+            message['character'] as String? ?? '',
+          );
           if (message.containsKey('character')) {
             character = message['character'] as String?;
           }
