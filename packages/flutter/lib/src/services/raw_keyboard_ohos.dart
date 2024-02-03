@@ -16,144 +16,146 @@
 import 'keyboard_maps.g.dart';
 import 'raw_keyboard.dart';
 
-/// key对象
-class KeyObj {
-  /// 构造
-  KeyObj(this.code, this.pressedTime, this.deviceId);
+/// 左Alt
+const int KEYCODE_ALT_LEFT = 2045;
 
-  /// 按键码
-  int code;
+/// 右Alt
+const int KEYCODE_ALT_RIGHT = 2046;
 
-  /// 按键按下时间
-  int pressedTime;
+/// 左shift
+const int KEYCODE_SHIFT_LEFT = 2047;
 
-  /// 设备id
-  int deviceId;
-}
+/// 右shift
+const int KEYCODE_SHIFT_RIGHT = 2048;
 
-/// 从map转换成一个keyObj
-KeyObj transformKey(Map<String, Object?> map) {
-  return KeyObj(map['code'] as int? ?? 0, map['pressedTime'] as int? ?? 0,
-      map['deviceId'] as int? ?? 0);
-}
+/// 左ctrl
+const int KEYCODE_CTRL_LEFT = 2072;
 
-/// 从message转换出一个RawKeyEventDataOhos对象
-RawKeyEventDataOhos transformMessage(Map<String, Object?> message) {
-  final Map<String, Object?> keyObjMap =
-      message['key'] as Map<String, Object?>? ??
-          {'code': 0, 'pressedTime': 0, 'deviceId': 0};
-  final KeyObj keyObj = transformKey(keyObjMap);
-  final List<Map<String, Object?>> keysMap =
-      message['keys'] as List<Map<String, Object?>>? ??
-          List<Map<String, Object?>>.empty();
-  final List<KeyObj> keys =
-      keysMap.map((Map<String, Object?> e) => transformKey(e)).toList();
-  return RawKeyEventDataOhos(
-    keyObj,
-    keys,
-    action: message['action'] as int? ?? 0,
-    unicodeChar: message['unicodeChar'] as int? ?? 0,
-    ctrlKey: message['ctrlKey'] as bool? ?? false,
-    altKey: message['altKey'] as bool? ?? false,
-    shiftKey: message['shiftKey'] as bool? ?? false,
-    logoKey: message['logoKey'] as bool? ?? false,
-    fnKey: message['fnKey'] as bool? ?? false,
-    capsLock: message['capsLock'] as bool? ?? false,
-    numLock: message['numLock'] as bool? ?? false,
-    scrollLock: message['scrollLock'] as bool? ?? false,
-  );
+/// 右ctrl
+const int KEYCODE_CTRL_RIGHT = 2073;
+
+/// 功能键
+const int KEYCODE_FUNCTION = 2078;
+
+/// 滚动键锁定
+const int KEYCODE_SCROLL_LOCK = 2075;
+
+/// 大小写锁定
+const int KEYCODE_CAPS_LOCK = 2074;
+
+/// 小键盘锁
+const int KEYCODE_NUM_LOCK = 2102;
+
+/// mate left
+const int KEYCODE_MATE_LEFT = 2076;
+
+/// mate right
+const int KEYCODE_MATE_RIGHT = 2077;
+
+/// 按键类型
+enum KeyType {
+  /// 按键松开
+  keyup,
+
+  /// 按键按下
+  keydown
 }
 
 /// RawKeyEventData for OpenHarmony platform
 class RawKeyEventDataOhos extends RawKeyEventData {
   /// Constructor
-  RawKeyEventDataOhos(
-    this.key,
-    this.keys, {
-    this.action = 0,
-    this.unicodeChar = 0,
-    this.ctrlKey = false,
-    this.altKey = false,
-    this.shiftKey = false,
-    this.logoKey = false,
-    this.fnKey = false,
-    this.capsLock = false,
-    this.numLock = false,
-    this.scrollLock = false,
-  });
+  const RawKeyEventDataOhos(
+      this._type, this._keyCode, this._deviceId, this._character);
 
-  /// 按键动作 0按键取消，1按键按下，2按键抬起
-  int action;
+  //按键类型，keyup/keydown
+  final String _type;
 
-  /// 当前上报的按键
-  KeyObj key;
+  // 按键编号
+  final int _keyCode;
 
-  /// 按键对应的uniCode字符
-  int unicodeChar;
+  // 设备id
+  final int _deviceId;
 
-  /// 当前处于按下状态的按键列表
-  List<KeyObj> keys;
+  // 按键键值
+  final String _character;
 
-  /// 当前ctrlKey是否处于按下状态 ture表示处于按下状态，false表示处于抬起状态。
-  bool ctrlKey;
-
-  /// 	当前altKey是否处于按下状态 ture表示处于按下状态，false表示处于抬起状态。
-  bool altKey;
-
-  /// 当前shiftKey是否处于按下状态 ture表示处于按下状态，false表示处于抬起状态。
-  bool shiftKey;
-
-  ///当前logoKey是否处于按下状态 ture表示处于按下状态，false表示处于抬起状态。
-  bool logoKey;
-
-  /// 当前fnKey是否处于按下状态 ture表示处于按下状态，false表示处于抬起状态。
-  bool fnKey;
-
-  /// 当前capsLock是否处于激活状态 ture表示处于激活状态，false表示处于未激活状态。
-  bool capsLock;
-
-  /// 当前numLock是否处于激活状态 ture表示处于激活状态，false表示处于未激活状态。
-  bool numLock;
-
-  /// 当前scrollLock是否处于激活状态 ture表示处于激活状态，false表示处于未激活状态。
-  bool scrollLock;
+  bool get _isKeyDown => _type == KeyType.keydown.toString();
 
   @override
   KeyboardSide? getModifierSide(ModifierKey key) {
-    /// todo 根据key值判断修饰键方向
-    return KeyboardSide.all;
+    KeyboardSide? findSide(int leftMask, int rightMask) {
+      if (_keyCode == leftMask) {
+        return KeyboardSide.left;
+      } else if (_keyCode == rightMask) {
+        return KeyboardSide.right;
+      }
+      return KeyboardSide.all;
+    }
+
+    switch (key) {
+      case ModifierKey.controlModifier:
+        return findSide(KEYCODE_CTRL_LEFT, KEYCODE_CTRL_RIGHT);
+      case ModifierKey.shiftModifier:
+        return findSide(KEYCODE_SHIFT_LEFT, KEYCODE_SHIFT_RIGHT);
+      case ModifierKey.altModifier:
+        return findSide(KEYCODE_ALT_LEFT, KEYCODE_ALT_RIGHT);
+      case ModifierKey.metaModifier:
+        return findSide(KEYCODE_MATE_LEFT, KEYCODE_MATE_RIGHT);
+      case ModifierKey.capsLockModifier:
+        return (_keyCode == KEYCODE_CAPS_LOCK) ? KeyboardSide.all : null;
+      case ModifierKey.numLockModifier:
+      case ModifierKey.scrollLockModifier:
+      case ModifierKey.functionModifier:
+      case ModifierKey.symbolModifier:
+        return KeyboardSide.all;
+    }
   }
 
   @override
   bool isModifierPressed(ModifierKey key,
       {KeyboardSide side = KeyboardSide.any}) {
-    return ctrlKey |
-        altKey |
-        shiftKey |
-        logoKey |
-        fnKey |
-        capsLock |
-        numLock |
-        scrollLock;
+    if (!_isKeyDown) {
+      return false;
+    }
+    switch (key) {
+      case ModifierKey.controlModifier:
+        return _keyCode == KEYCODE_CTRL_LEFT || _keyCode == KEYCODE_CTRL_RIGHT;
+      case ModifierKey.shiftModifier:
+        return _keyCode == KEYCODE_SHIFT_LEFT ||
+            _keyCode == KEYCODE_SHIFT_RIGHT;
+      case ModifierKey.altModifier:
+        return _keyCode == KEYCODE_ALT_LEFT || _keyCode == KEYCODE_ALT_RIGHT;
+      case ModifierKey.metaModifier:
+        return _keyCode == KEYCODE_MATE_LEFT || _keyCode == KEYCODE_MATE_RIGHT;
+      case ModifierKey.capsLockModifier:
+        return _keyCode == KEYCODE_CAPS_LOCK;
+      case ModifierKey.numLockModifier:
+        return _keyCode == KEYCODE_NUM_LOCK;
+      case ModifierKey.scrollLockModifier:
+        return _keyCode == KEYCODE_SCROLL_LOCK;
+      case ModifierKey.functionModifier:
+        return _keyCode == KEYCODE_FUNCTION;
+      case ModifierKey.symbolModifier:
+        return false;
+    }
   }
 
   @override
-  String get keyLabel =>
-      unicodeChar == 0 ? '' : String.fromCharCode(unicodeChar);
+  String get keyLabel => _character;
 
   @override
   LogicalKeyboardKey get logicalKey {
-    if (kOhosToLogicalKey.containsKey(key.code)) {
-      return kOhosToLogicalKey[key.code]!;
+    if (kOhosToLogicalKey.containsKey(_keyCode)) {
+      return kOhosToLogicalKey[_keyCode]!;
     }
-    return LogicalKeyboardKey(key.code | LogicalKeyboardKey.ohosPlane);
+    return LogicalKeyboardKey(_keyCode | LogicalKeyboardKey.ohosPlane);
   }
 
   @override
   PhysicalKeyboardKey get physicalKey {
-    if (kOhosToPhysicalKey.containsKey(key.code)) {
-      return kOhosToPhysicalKey[key.code]!;
+    if (kOhosToPhysicalKey.containsKey(_keyCode)) {
+      return kOhosToPhysicalKey[_keyCode]!;
     }
-    return PhysicalKeyboardKey(key.code + LogicalKeyboardKey.ohosPlane);
+    return PhysicalKeyboardKey(_keyCode + LogicalKeyboardKey.ohosPlane);
   }
 }
