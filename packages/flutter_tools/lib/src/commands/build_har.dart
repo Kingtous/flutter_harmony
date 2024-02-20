@@ -24,7 +24,6 @@ class BuildHarCommand extends BuildSubCommand {
   BuildHarCommand({required super.logger, bool verboseHelp = false})
       : super(verboseHelp: verboseHelp) {
     const String defaultTargetPlatform = 'ohos-arm64';
-    usesTargetOption();
     addDartObfuscationOption();
     addSplitDebugInfoOption();
     usesExtraDartFlagOptions(verboseHelp: verboseHelp);
@@ -53,7 +52,7 @@ class BuildHarCommand extends BuildSubCommand {
       buildInfo,
       targetPlatform: targetPlatform,
       logger: globals.logger,
-      target: targetFile,
+      target: getNameForTargetPlatform(targetPlatform),
     );
     return FlutterCommandResult.success();
   }

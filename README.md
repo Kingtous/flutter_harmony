@@ -132,16 +132,16 @@ Flutter SDK 仓库
    flutter create --platforms ohos <projectName>
 
    # 进入工程根目录编译
-   # 示例：flutter build hap --target-platform ohos-arm64 --local-engine-src-path=/home/user/code/flutter/engine_make/src --local-engine=ohos_release_arm64
-   flutter build hap --target-platform ohos-arm64 --local-engine-src-path=<flutter_engine src path> --local-engine=ohos_release_arm64
+   # 示例：flutter build hap [--target-platform ohos-arm64] --local-engine=<DIR>/src/out/ohos_release_arm64 --release
+   flutter build hap --local-engine=/home/user/engine_make/src/out/ohos_release_arm64 --release
    ```
 
 3. 通过`flutter devices`指令发现ohos设备之后，使用 `hdc -t <deviceId> install <hap file path>`进行安装。
 
 4. 也可直接使用下列指令运行：
 ```
-   # 示例：flutter run --local-engine=/home/user/code/flutter/engine_make/src/out/ohos_debug_unopt_arm64
-   flutter run --local-engine=<flutter_engine out path>
+   # 示例：flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64
+   flutter run --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 --debug
 ```
 
 

@@ -132,16 +132,16 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
     flutter create --platforms ohos <projectName>
 
     # Enter the project root directory to compile
-    # Example: flutter build hap --target-platform ohos-arm64 --local-engine-src-path=/home/user/code/flutter/engine_make/src --local-engine=ohos_release_arm64
-    flutter build hap --target-platform ohos-arm64 --local-engine-src-path=<flutter_engine src path> --local-engine=ohos_release_arm64
+    # Example: flutter build hap [--target-platform ohos-arm64] --local-engine=<DIR>/src/out/ohos_release_arm64 --release
+   flutter build hap --local-engine=/home/user/engine_make/src/out/ohos_release_arm64 --release
     ```
 
 3. After discovering the ohos device through the `flutter devices` command, use `hdc -t <deviceId> install <hap file path>` to install it.
 
 4. You can also directly use the following command to run:
 ```
-    # Example: flutter run --local-engine=/home/user/code/flutter/engine_make/src/out/ohos_debug_unopt_arm64
-    flutter run --local-engine=<flutter_engine out path>
+    # Example: flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64
+   flutter run --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 --debug
 ```
 
 
