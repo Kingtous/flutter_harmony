@@ -47,7 +47,7 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
   /// Creates a new OhosHap based on the information in the Ohos build-profile.
   static Future<OhosHap?> fromOhosProject(
     OhosProject ohosProject, {
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required ProcessManager processManager,
     required UserMessages userMessages,
     required ProcessUtils processUtils,
@@ -67,7 +67,7 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
 
   static Future<OhosHap?> fromHap(
     File hap, {
-    required OhosSdk ohosSdk,
+    required HarmonySdk ohosSdk,
     required ProcessManager processManager,
     required UserMessages userMessages,
     required Logger logger,

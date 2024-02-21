@@ -44,7 +44,7 @@ class OhosDevice extends Device {
     required Logger logger,
     required ProcessManager processManager,
     required Platform platform,
-    required OhosSdk ohosSdk,
+    required HarmonySdk ohosSdk,
     required FileSystem fileSystem,
     required String? hdcServer,
   })  : _logger = logger,
@@ -63,7 +63,7 @@ class OhosDevice extends Device {
 
   final Logger _logger;
   final ProcessManager _processManager;
-  final OhosSdk _ohosSdk;
+  final HarmonySdk _ohosSdk;
   final Platform _platform;
   final FileSystem _fileSystem;
   final ProcessUtils _processUtils;

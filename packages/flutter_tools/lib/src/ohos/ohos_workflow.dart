@@ -22,12 +22,12 @@ OhosWorkflow? get ohosWorkflow => context.get<OhosWorkflow>();
 
 class OhosWorkflow implements Workflow {
   OhosWorkflow({
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required FeatureFlags featureFlags,
   })  : _ohosSdk = ohosSdk,
         _featureFlags = featureFlags;
 
-  final OhosSdk? _ohosSdk;
+  final HarmonySdk? _ohosSdk;
   final FeatureFlags _featureFlags;
 
   @override

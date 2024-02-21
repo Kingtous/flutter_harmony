@@ -65,6 +65,7 @@ AndroidStudio? get androidStudio => context.get<AndroidStudio>();
 AndroidSdk? get androidSdk => context.get<AndroidSdk>();
 OhosSdk? get ohosSdk => context.get<OhosSdk>();
 HmosSdk? get hmosSdk => context.get<HmosSdk>();
+HarmonySdk? get harmonySdk => context.get<HarmonySdk>();
 FlutterVersion get flutterVersion => context.get<FlutterVersion>()!;
 FuchsiaArtifacts? get fuchsiaArtifacts => context.get<FuchsiaArtifacts>();
 FuchsiaSdk? get fuchsiaSdk => context.get<FuchsiaSdk>();

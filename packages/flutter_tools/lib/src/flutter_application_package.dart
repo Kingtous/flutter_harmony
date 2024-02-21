@@ -28,7 +28,7 @@ import 'windows/application_package.dart';
 class FlutterApplicationPackageFactory extends ApplicationPackageFactory {
   FlutterApplicationPackageFactory({
     required AndroidSdk? androidSdk,
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required ProcessManager processManager,
     required Logger logger,
     required UserMessages userMessages,
@@ -43,7 +43,7 @@ class FlutterApplicationPackageFactory extends ApplicationPackageFactory {
             ProcessUtils(logger: logger, processManager: processManager);
 
   final AndroidSdk? _androidSdk;
-  final OhosSdk? _ohosSdk;
+  final HarmonySdk? _ohosSdk;
   final ProcessManager _processManager;
   final Logger _logger;
   final ProcessUtils _processUtils;
