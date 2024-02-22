@@ -266,10 +266,8 @@ Future<void> ohpmInstall(
     {required ProcessManager processManager,
     required String entryPath,
     Logger? logger}) async {
-  final String ohpmHome = Platform.environment['OHPM_HOME']!;
-  final String ohpmPath = globals.fs.path.join(ohpmHome, 'bin', 'ohpm');
   final List<String> command = <String>[
-    ohpmPath,
+    'ohpm',
     'install',
   ];
   logger?.printTrace('invoke at:$entryPath ,command: ${command.join(' ')}');
@@ -375,7 +373,6 @@ void checkFlutterEnv(Logger? logger) {
     checkPlatformEnvironment('PUB_HOSTED_URL', logger);
     checkPlatformEnvironment('FLUTTER_STORAGE_BASE_URL', logger);
   }
-  checkPlatformEnvironment('OHPM_HOME', logger);
 }
 
 /// flutter构建

@@ -14,31 +14,11 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
 
 * Environment configuration
 
-    **For the following environment variable configuration, you can directly refer to the configuration under Unix-like systems (Linux, Mac). For environment variable configuration under Windows, please set it in ‘Edit System Environment Variables’**
+    **Please give priority to downloading the supporting development tools from [Hongmeng Kit List](https://developer.harmonyos.com/deveco-developer-suite/enabling/kit?currentPage=1&pageSize=100). Downloads from other channels are not currently supported. Kit**
+    *The following environment variable configuration is for Unix-like systems (Linux, Mac). You can directly refer to the configuration below. For environment variable configuration under Windows, please set it in ‘Edit System Environment Variables’*
 
-   1. Download [ohpm command line tool](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli), and configure the environment variables ohpm and sdkmanager. After the download is completed, execute `bin/init in the ohpm directory `Initialize ohpm. Refer to the guidance document: [ohpm usage guide](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3).
-
-      ```
-      export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm/
-      export PATH=$PATH:$OHPM_HOME/bin:$OHPM_HOME/sdkmanager/bin
-      ```
-
-   2. Download OpenHarmony SDK and configure environment variables
-   * API9 SDK download: Please refer to [ohsdkmgr usage guide](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) Use the command to download SDK below API9;
-   *API10 SDK needs to be downloaded from [Daily Build](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component) (download `ohos-full-sdk` for Linux and Windows, please download `mac for Mac -sdk-full` or `mac-sdk-m1-full`), please keep the SDK directory structure as follows after decompression:
-  
-       ```
-       /SDK
-       ├── 10
-       │ └── ets
-       │ └── js
-       │ └── native
-       │ └── previewer
-       │ └── toolchains
-       ├── 9
-       ...
-       ```
-    * The directory structure after decompression of the API11 developer preview version is as follows:
+   1. Download OpenHarmony SDK and configure environment variables
+   * The directory structure after decompression of the API11 developer preview version is as follows:
       ```
       /SDK
       ├── HarmonyOS-NEXT-DP0
@@ -53,15 +33,14 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
     * Configure environment variables
 
        ```
-       export OHOS_SDK_HOME=/home/<user>/env/sdk
-       export HDC_HOME=$OHOS_SDK_HOME/HarmonyOS-NEXT-DP1/base/toolchains
-       export PATH=$PATH:$HDC_HOME
+       #HarmonyOS SDK, extract the directory after sdk/xxSDK.zip from the development kit package
+       Export HOSSDK_HOME=/home/<user>/ohos/sdk
 
-       # Configure HarmonyOS SDK
-       export HOS_SDK_HOME=<HarmonyOS SDK Path>
+       #Unzip the bin subdirectory after commandline/commandline tools xxxx.zip in the development kit package
+       Export PATH=$PATH:/home/<user>/ohos/command line tools/bin
        ```
 
-   3. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
+   2. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
 
       ```
       export PATH=<flutter_flutter path>/bin:$PATH
@@ -71,15 +50,7 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
       ```
 
-   4. Signature
-    
-      Signing with `Deveco Studio`
-
-    - Open the ohos directory of the project using Deveco Studio.
-    - Click on File > Project Structure > Project > Signing Configs. Check the Automatically generate signature option, wait for the automatic signing process to complete, and then click OK.
-    - Review the configuration information in build-profile.json5. Add the certificate information generated from the automatic signing process to the configuration.
-
-    5. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. \<engine product directory\>`
+    3. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. \<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
 
        For the configuration of all the above environment variables (for environment variable configuration under Windows, please set it in 'Edit System Environment Variables'), you can refer to the following example (please replace user and specific code path with the actual path):
 
@@ -91,28 +62,13 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
        # The flutter_flutter directory pulled from Gitee
-       export FLUTTER_HOME=/home/<user>/ohos/flutter_flutter
        export PATH=$PATH:$FLUTTER_HOME/bin
 
-       # Unzip the ohpm subdirectory after commandline/ohcommandline-tools-mac-2.1.3.6.zip in the DevEco Studio installation package
-       export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm
-       export PATH=$PATH:$OHPM_HOME/bin
+       # Unzip the bin subdirectory after commandline/commandline-tools-xxxx.zip in the development kit package
+       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
 
-       # Unzip the sdkmanager subdirectory after commandline/ohcommandline-tools-xxx.zip in the DevEco Studio installation package
-       export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
-
-       # HarmonyOS SDK, unzip the directory after sdk/X86SDK.zip or M1SDK.zip in the DevEco Studio installation package. There are three direct subdirectories under HOS_SDK_HOME: openharmony, hmscore, and licenses
+       # HarmonyOS SDK, unzip the directory after sdk/X86SDK.zip or M1SDK.zip in the DevEco Studio installation package
        export HOS_SDK_HOME=/home/<user>/ohos/sdk
-
-       # OpenHarmony SDK, unzip the openharmony subdirectory after sdk/X86SDK.zip or M1SDK.zip in the DevEco Studio installation package
-       export OHOS_SDK_HOME=/home/<user>/ohos/sdk/openharmony
-
-       # HDC Home, 10/toolchains subdirectory under the OHOS_SDK_HOME directory
-       export HDC_HOME=/home/<user>/ohos/sdk/openharmony/10/toolchains
-       export PATH=$PATH:$HDC_HOME
-
-       # grade
-       export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
 
        #nodejs
        export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
