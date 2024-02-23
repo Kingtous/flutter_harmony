@@ -13,31 +13,10 @@ Flutter SDK 仓库
   Flutter Tools指令目前已支持在Linux、Mac和Windows下使用。
 
 * 环境配置
+   **请优先从[鸿蒙套件列表](https://developer.harmonyos.com/deveco-developer-suite/enabling/kit?currentPage=1&pageSize=100)下载配套开发工具，暂不支持非该渠道下载的套件**
+   *下列环境变量配置，类Unix系统（Linux、Mac），下可直接参照配置，Windows下环境变量配置请在‘编辑系统环境变量’中设置*
 
-   **下列环境变量配置，类Unix系统（Linux、Mac）下可直接参照配置，Windows下环境变量配置请在‘编辑系统环境变量’中设置**
-
-  1. 下载[ohpm命令行工具](https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli)，并配置环境变量ohpm与sdkmanager，下载完成后执行ohpm目录下`bin/init`初始化ohpm。参照指导文档：[ohpm使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohpm-0000001490235312-V3)。
-
-     ```
-     export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm/
-     export PATH=$PATH:$OHPM_HOME/bin:$OHPM_HOME/sdkmanager/bin
-     ```
-
-  2. 下载OpenHarmony SDK并配置环境变量
-  * API9 SDK下载：可参考[ohsdkmgr使用指导](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3) 使用命令下载API9以下SDK；
-  * API10 SDK需要从[每日构建](http://ci.openharmony.cn/workbench/cicd/dailybuild/detail/component)下载（Linux和Windows下载`ohos-full-sdk`，Mac请下载`mac-sdk-full`或者`mac-sdk-m1-full`），解压后请保持SDK目录结构如下：
-  
-      ```
-      /SDK
-      ├── 10                                                  
-      │   └── ets
-      │   └── js
-      │   └── native                                      
-      │   └── previewer                     
-      │   └── toolchains
-      ├── 9
-      ...
-      ```
+  1. 配置HarmonyOS SDK和环境变量
    * API11 开发者预览版解压后目录结构如下：
       ```
       /SDK
@@ -52,15 +31,14 @@ Flutter SDK 仓库
    * 配置环境变量,如：
 
       ```
-      export OHOS_SDK_HOME=/home/<user>/env/sdk
-      export HDC_HOME=$OHOS_SDK_HOME/HarmonyOS-NEXT-DP1/base/toolchains
-      export PATH=$PATH:$HDC_HOME
+      # HarmonyOS SDK，解压开发套件包中 sdk/xxSDK.zip 之后的目录
+      export HOS_SDK_HOME=/home/<user>/ohos/sdk
 
-      # 配置HarmonyOS SDK
-      export HOS_SDK_HOME=<HarmonyOS SDK Path>
+      # 解压开发套件包中 commandline/commandline-tools-xxxx.zip 之后 bin 子目录
+      export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
       ```
 
-  3. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，并配置环境
+  2. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，并配置环境
 
      ```
      export PATH=<flutter_flutter path>/bin:$PATH
@@ -69,16 +47,8 @@ Flutter SDK 仓库
      export PUB_HOSTED_URL=https://pub.flutter-io.cn
      export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
      ```
-
-  4. 配置签名
     
-      使用 `Deveco Studio` 签名
-
-    - 用 `Deveco Studio` 打开项目的 `ohos` 目录
-    - 单击 `File > Project Structure > Project > Signing Configs` 界面勾选 `Automatically generate signature`，等待自动签名完成即可，单击 `OK`。
-    - 查看 `build-profile.json5` 配置信息，配置信息中增加自动签名生成的证书信息。
-    
-   5. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=\<engine产物目录\>`
+   3. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=\<engine产物目录\>` 可在该路径下载[编译产物](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
 
       上述所有环境变量的配置（Windows下环境变量配置请在‘编辑系统环境变量’中设置），可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
 
@@ -89,29 +59,14 @@ Flutter SDK 仓库
       export PUB_HOSTED_URL=https://pub.flutter-io.cn
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
-      # 从Gitee拉取下来的flutter_flutter目录
-      export FLUTTER_HOME=/home/<user>/ohos/flutter_flutter
-      export PATH=$PATH:$FLUTTER_HOME/bin
+      # 拉取下来的flutter_flutter/bin目录
+      export PATH=$PATH:/home/<user>/ohos/flutter_flutter/bin
 
-      # 解压DevEco Studio安装包中 commandline/ohcommandline-tools-mac-2.1.3.6.zip 之后 ohpm 子目录
-      export OHPM_HOME=/home/<user>/ohos/oh-command-line-tools/ohpm
-      export PATH=$PATH:$OHPM_HOME/bin
+      # 解压开发套件包中 commandline/commandline-tools-xxxx.zip 之后 bin 子目录
+      export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
 
-      # 解压DevEco Studio安装包中 commandline/ohcommandline-tools-xxx.zip 之后的 sdkmanager 子目录
-      export PATH=/home/<user>/ohos/oh-command-line-tools/sdkmanager/bin:$PATH
-
-      # HarmonyOS SDK，解压DevEco Studio安装包中 sdk/X86SDK.zip 或 M1SDK.zip 之后的目录，HOS_SDK_HOME下有 openharmony、hmscore、licenses 三个直接子目录
+      # HarmonyOS SDK，解压开发套件包中 sdk/xxSDK.zip 之后的目录
       export HOS_SDK_HOME=/home/<user>/ohos/sdk
-
-      # OpenHarmony SDK，解压DevEco Studio安装包中 sdk/X86SDK.zip 或 M1SDK.zip 之后的 openharmony 子目录
-      export OHOS_SDK_HOME=/home/<user>/ohos/sdk/openharmony
-
-      # HDC Home，OHOS_SDK_HOME目录下的 10/toolchains 子目录
-      export HDC_HOME=/home/<user>/ohos/sdk/openharmony/10/toolchains
-      export PATH=$PATH:$HDC_HOME
-
-      # grade
-      export PATH=/home/<user>/env/gradle-7.3/bin:$PATH
 
       # nodejs
       export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
