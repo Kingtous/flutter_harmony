@@ -39,8 +39,12 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        #Unzip the bin subdirectory after commandline/commandline tools xxxx.zip in the development kit package
        Export PATH=$PATH:/home/<user>/ohos/command line tools/bin
        ```
+    * Configure the path of sdkmgr (commandline/command-line-tools/sdkmanager/conf/config.properties), use the local path, and run sdkmgr list to verify, the path configuration of config.properties:
+      ```
+      sdk-directory=/home/<user>/ohos/sdk
+      ```
 
-   2. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
+   1. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
 
       ```
       export PATH=<flutter_flutter path>/bin:$PATH
@@ -50,13 +54,11 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
       ```
 
-    3. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. \<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
+    2. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. --local-engine=src/out/<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
 
        For the configuration of all the above environment variables (for environment variable configuration under Windows, please set it in 'Edit System Environment Variables'), you can refer to the following example (please replace user and specific code path with the actual path):
 
        ```
-       #flutter env start ===>
-
        # Domestic mirror
        export PUB_HOSTED_URL=https://pub.flutter-io.cn
        export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
@@ -73,8 +75,6 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        #nodejs
        export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
        export PATH=$NODE_HOME/bin:$PATH
-
-       #flutter env end <===
        ```
 
 ## Build steps

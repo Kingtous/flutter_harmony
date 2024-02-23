@@ -28,7 +28,7 @@ Flutter SDK 仓库
       │   └── hms
       ...
       ```
-   * 配置环境变量,如：
+   * 解压开发套件包之后，配置环境变量,如：
 
       ```
       # HarmonyOS SDK，解压开发套件包中 sdk/xxSDK.zip 之后的目录
@@ -37,8 +37,12 @@ Flutter SDK 仓库
       # 解压开发套件包中 commandline/commandline-tools-xxxx.zip 之后 bin 子目录
       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
       ```
+   * 配置sdkmgr的路径(commandline/command-line-tools/sdkmanager/conf/config.properties)，使用本地路径，并运行sdkmgr list验证，config.properties的路径配置：
+     ```
+     sdk-directory=/home/<user>/ohos/sdk
+     ```
 
-  2. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，并配置环境
+  2. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，指定dev或master分支，并配置环境
 
      ```
      export PATH=<flutter_flutter path>/bin:$PATH
@@ -48,13 +52,11 @@ Flutter SDK 仓库
      export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
      ```
     
-   3. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=\<engine产物目录\>` 可在该路径下载[编译产物](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
+   3. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=src/out/<engine产物目录\>` 可在该路径下载[编译产物](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)，engine路径指向需带上`src/out`目录
 
       上述所有环境变量的配置（Windows下环境变量配置请在‘编辑系统环境变量’中设置），可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
 
       ```
-      #flutter env start ===>
-
       # 国内镜像
       export PUB_HOSTED_URL=https://pub.flutter-io.cn
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
@@ -62,17 +64,15 @@ Flutter SDK 仓库
       # 拉取下来的flutter_flutter/bin目录
       export PATH=$PATH:/home/<user>/ohos/flutter_flutter/bin
 
-      # 解压开发套件包中 commandline/commandline-tools-xxxx.zip 之后 bin 子目录
+      # 步骤1中command-line-tools的bin 子目录
       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
 
-      # HarmonyOS SDK，解压开发套件包中 sdk/xxSDK.zip 之后的目录
+      # HarmonyOS SDK，步骤1中解压开发套件包中 sdk/xxSDK.zip 之后的目录
       export HOS_SDK_HOME=/home/<user>/ohos/sdk
 
       # nodejs
       export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
       export PATH=$NODE_HOME/bin:$PATH
-
-      #flutter env end <===
       ```
 
 
@@ -123,28 +123,20 @@ Flutter SDK 仓库
 
 ## 常见问题
 
-1. OpenHarmony SDK版本推荐: `4.0.10.3`，可在每日构建的8月20号左右下载，若在编译过程中存在SDK版本相关问题，可尝试更换该版本SDK。
-
-2. 若出现报错：`The SDK license agreement is not accepted`，参考执行以下命令后再次编译：
+1. 若出现报错：`The SDK license agreement is not accepted`，参考执行以下命令后再次编译：
 
    ```
    ./ohsdkmgr install ets:9 js:9 native:9 previewer:9 toolchains:9 --sdk-directory='/home/xc/code/sdk/ohos-sdk/' --accept-license
    ```
 
-3. 切换debug和release编译模式后，可能运行报错，可尝试删除oh_modules缓存文件，重新编译。
+2. 如果你使用的是DevEco Studio的Beta版本，编译工程时遇到“must have required property 'compatibleSdkVersion', location: demo/ohos/build-profile.json5:17:11"错误，请参考《DevEco Studio环境配置指导.docx》中的‘6 创建工程和运行Hello World’【配置插件】章节修改 hvigor/hvigor-config.json5文件。
 
-4. 如果`flutter docker -v`提示ohpm无法找到，但是检测环境变量无误，请确保已执行`ohpm/bin/init`命令安装ohpm后再次检查。
-
-5. 若在编译签名工具时遇到错误Unsupported class file major version 61，说明当前JDK版本不支持，请降低Java SDK版本重试。
-
-6. 如果你使用的是DevEco Studio的Beta版本，编译工程时遇到“must have required property 'compatibleSdkVersion', location: demo/ohos/build-profile.json5:17:11"错误，请参考《DevEco Studio环境配置指导.docx》中的‘6 创建工程和运行Hello World’【配置插件】章节修改 hvigor/hvigor-config.json5文件。
-
-7. 若提示安装报错：`fail to verify pkcs7 file` 请执行指令
+3. 若提示安装报错：`fail to verify pkcs7 file` 请执行指令
 
    ```
    hdc shell param set persist.bms.ohCert.verify true
    ```
-8. linux虚拟机通过hdc无法直接发现OpenHarmony设备
+4. linux虚拟机通过hdc无法直接发现OpenHarmony设备
 
    解决方案：在windows宿主机中，开启hdc server，具体指令如下：
    ```
@@ -159,7 +151,7 @@ Flutter SDK 仓库
 
    配置完成后flutter sdk可以通过hdc server完成设备连接，也可参考[官方指导](https://docs.openharmony.cn/pages/v4.0/zh-cn/device-dev/subsystems/subsys-toolchain-hdc-guide.md/#hdc-client%E5%A6%82%E4%BD%95%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AEhdc-server)。
 
-9. 构建Hap任务时报错：Error: The hvigor depends on the npmrc file. Configure the npmrc file first.
+5. 构建Hap任务时报错：Error: The hvigor depends on the npmrc file. Configure the npmrc file first.
 
 
    请在用户目录`~`下创建文件`.npmrc`，该配置也可参考[DevEco Studio官方文档](https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/environment_config-0000001052902427-V3)，编辑内容如下：
@@ -169,7 +161,7 @@ Flutter SDK 仓库
    @ohos:registry=https://repo.harmonyos.com/npm/
    ```
 
-10. 查日志时，存在日志丢失现象。
+6. 查日志时，存在日志丢失现象。
     解决方案：关闭全局日志，只打开自己领域的日志
 
     ```
@@ -182,9 +174,9 @@ Flutter SDK 仓库
     打印A00000/XComFlutterOHOS_Native的日志，需要设置hdc shell hilog -b D -D A00000
     注：上面的设置在机器重启后会失效，如果要继续使用，需要重新设置。
     ```
-11. 若Api11 Beta1版本的机器上无法启动debug签名的应用，可以通过将签名换成正式签名，或在手机端打开开发者模式解决（步骤：设置->通用->开发者模式）
+7. 若Api11 Beta1版本的机器上无法启动debug签名的应用，可以通过将签名换成正式签名，或在手机端打开开发者模式解决（步骤：设置->通用->开发者模式）
 
-12. 如果报`Invalid CEN header (invalid zip64 extra data field size)`异常，请更换Jdk版本，参见[JDK-8313765](https://bugs.openjdk.org/browse/JDK-8313765)
+8. 如果报`Invalid CEN header (invalid zip64 extra data field size)`异常，请更换Jdk版本，参见[JDK-8313765](https://bugs.openjdk.org/browse/JDK-8313765)
 
 
 
