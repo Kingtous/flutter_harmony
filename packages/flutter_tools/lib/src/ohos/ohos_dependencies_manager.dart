@@ -25,7 +25,7 @@ import '../project.dart';
 
 enum DependenceType {
   normal,
-  dev;
+  dev; //deprecated
 
   static String getConfigKey(DependenceType dependenceType) {
     return dependenceType == DependenceType.normal
@@ -96,9 +96,6 @@ List<OhosDependence> getOhosDependenciesListFromPackageFile(File ohPackageFile,
   final List<OhosDependence> list = List<OhosDependence>.empty(growable: true);
   if (dependenceType == DependenceType.normal || dependenceType == null) {
     list.addAll(parseDependenciesFromType(config, DependenceType.normal));
-  }
-  if (dependenceType == DependenceType.dev || dependenceType == null) {
-    list.addAll(parseDependenciesFromType(config, DependenceType.dev));
   }
   return list;
 }
