@@ -112,7 +112,7 @@ List<OhosDependence> parseDependenciesFromType(
   for (final String symbol in dependencies.keys) {
     final String moduleName = symbol;
     final String modulePath = dependencies[symbol] as String;
-    if (moduleName.split('/').isNotEmpty) {
+    if (moduleName.split('/').length > 2) {
       final String baseModuleName = moduleName.split('/')[1];
       list.add(OhosDependence(
           moduleName, baseModuleName, modulePath, dependenceType));
