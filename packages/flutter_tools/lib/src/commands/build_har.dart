@@ -52,7 +52,7 @@ class BuildHarCommand extends BuildSubCommand {
       buildInfo,
       targetPlatform: targetPlatform,
       logger: globals.logger,
-      target: getNameForTargetPlatform(targetPlatform),
+      target: targetFile,
     );
     return FlutterCommandResult.success();
   }
