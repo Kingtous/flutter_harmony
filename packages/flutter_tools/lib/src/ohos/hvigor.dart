@@ -398,7 +398,7 @@ Future<bool> checkFillLocalPropertiesIfNeed(
         // 'hwsdk.dir=' line does not exist, append it to the end of the file
         logger?.printStatus(
             'hwsdk.dir= line does not exist, append it to the end of the $localPropertiesPath');
-        await localPropertiesFile.writeAsString('hwsdk.dir=\n',
+        await localPropertiesFile.writeAsString('hwsdk.dir=$environmentConfig\n',
             mode: FileMode.append);
       } else {
         // 'hwsdk.dir=' line exists, check if there is any content after it
