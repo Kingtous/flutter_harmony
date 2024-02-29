@@ -328,6 +328,9 @@ Future<int> assembleHap(
     required String ohosRootPath,
     required String hvigorwPath,
     Logger? logger}) async {
+
+  await checkFillLocalPropertiesIfNeed(ohosRootPath, logger);
+
   final List<String> command = <String>[
     hvigorwPath,
     'clean',
@@ -347,6 +350,9 @@ Future<int> assembleHar(
     required String hvigorwPath,
     required String moduleName,
     Logger? logger}) async {
+
+  await checkFillLocalPropertiesIfNeed(workPath, logger);
+    
   final List<String> command = <String>[
     hvigorwPath,
     'clean',
@@ -372,6 +378,47 @@ void checkFlutterEnv(Logger? logger) {
   if (NEED_PUB_CN) {
     checkPlatformEnvironment('PUB_HOSTED_URL', logger);
     checkPlatformEnvironment('FLUTTER_STORAGE_BASE_URL', logger);
+  }
+}
+
+/// 检查是否需要填充local.properties
+Future<bool> checkFillLocalPropertiesIfNeed(
+    String workPath, Logger? logger) async {
+  final String? environmentConfig = Platform.environment['HOS_SDK_HOME'];
+  if (environmentConfig != null) {
+    final String localPropertiesPath = '$workPath/local.properties';
+    final File localPropertiesFile =
+        globals.localFileSystem.file(localPropertiesPath);
+    if (await localPropertiesFile.exists()) {
+      final List<String> lines = await localPropertiesFile.readAsLines();
+      final int index =
+          lines.indexWhere((String line) => line.startsWith('hwsdk.dir='));
+
+      if (index == -1) {
+        // 'hwsdk.dir=' line does not exist, append it to the end of the file
+        logger?.printStatus(
+            'hwsdk.dir= line does not exist, append it to the end of the $localPropertiesPath');
+        await localPropertiesFile.writeAsString('hwsdk.dir=\n',
+            mode: FileMode.append);
+      } else {
+        // 'hwsdk.dir=' line exists, check if there is any content after it
+        final String content = lines[index].substring('hwsdk.dir='.length);
+        if (content.isEmpty) {
+          // No content after 'hwsdk.dir=', set it to 'hwsdk.dir=$environmentConfig'
+          lines[index] = 'hwsdk.dir=$environmentConfig';
+          logger?.printStatus(
+              'No content after hwsdk.dir=, set it to hwsdk.dir=$environmentConfig in $localPropertiesPath');
+          await localPropertiesFile.writeAsString(lines.join('\n'));
+        }
+      }
+      return true;
+    } else {
+      logger?.printError('$localPropertiesPath does not exist.');
+      return false;
+    }
+  } else {
+    logger?.printWarning('environment HOS_SDK_HOME has not been set.');
+    return false;
   }
 }
 
