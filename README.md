@@ -95,8 +95,8 @@ Flutter SDK 仓库
 
 4. 也可直接使用下列指令运行：
 ```
-   # 示例：flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64
-   flutter run --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 --debug
+   # 示例：flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64 -d <device-id>
+   flutter run --debug --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 -d <device-id>
 ```
 
 
