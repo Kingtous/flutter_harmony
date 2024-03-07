@@ -13,6 +13,9 @@
 * limitations under the License.
 */
 
+import 'package:json5/json5.dart';
+
+import '../base/common.dart';
 import '../base/file_system.dart';
 import '../globals.dart' as globals;
 
@@ -22,9 +25,8 @@ const String kOhosSdkRoot = 'OHOS_SDK_HOME';
 // HarmonyOS SDK
 const String kHmosHome = 'HOS_SDK_HOME';
 
-const List<String> supportSdkVersion = <String>['10', '11', '9'];
 // for api11 developer preview
-const Map<int, String> sdkVersionMap = {11: 'HarmonyOS-NEXT-DP1', 10: 'HarmonyOS-NEXT-DP0'};
+Map<int, String> sdkVersionMap = <int, String>{};
 
 abstract class HarmonySdk {
   // name
@@ -83,6 +85,8 @@ class OhosSdk implements HarmonySdk {
       }
 
       if (ohosHomeDir != null) {
+        initSdkVersionMap(ohosHomeDir);
+
         if (validSdkDirectory(ohosHomeDir)) {
           return ohosHomeDir;
         }
@@ -103,6 +107,22 @@ class OhosSdk implements HarmonySdk {
     return OhosSdk(globals.fs.directory(ohosHomeDir));
   }
 
+  // int sdkVersionMap
+  static void initSdkVersionMap(String sdkPath) {
+    final Directory directory = globals.fs.directory(sdkPath);
+    if (!directory.existsSync()) {
+      throwToolExit('Unable to locate an Harmony SDK.');
+    }
+    for (FileSystemEntity element in directory.listSync()) {
+      if (element is Directory) {
+        Directory dir = globals.fs.directory(element).childDirectory('toolchains');
+        if (dir.existsSync()) {
+          sdkVersionMap.addAll({int.parse(element.basename): element.basename});
+        }
+      }
+    }
+  }
+
   static bool validSdkDirectory(String dir) {
     return hdcExists(dir);
   }
@@ -116,15 +136,15 @@ class OhosSdk implements HarmonySdk {
     // find it in api11 developer preview folder
     for (final int api in sdkVersionMap.keys) {
       final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, sdkVersionMap[api], 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+          .join(sdkPath, sdkVersionMap[api]!, 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
     }
     // if hdc not found, find it in previous version
-    for (final String folder in supportSdkVersion) {
+    for (final int folder in sdkVersionMap.keys) {
       final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+          .join(sdkPath, folder.toString(), 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
@@ -144,11 +164,11 @@ class OhosSdk implements HarmonySdk {
     }
     // if not found, find it in previous version
     if (list.isEmpty) {
-      for (final String folder in supportSdkVersion) {
+      for (final int folder in sdkVersionMap.keys) {
         final Directory directory =
-            globals.fs.directory(globals.fs.path.join(sdkPath, folder));
+            globals.fs.directory(globals.fs.path.join(sdkPath, folder.toString()));
         if (directory.existsSync()) {
-          list.add(folder);
+          list.add(folder.toString());
         }
       }
     }
@@ -178,10 +198,26 @@ class HmosSdk implements HarmonySdk {
   bool get isValidDirectory => validSdkDirectory(sdkPath);
 
    List<String> getAvailableApi() {
-    File file = globals.fs.file(globals.fs.path.join(sdkPath, 'base'));
-    return <String>[
-      file.path,
-    ];
+     final List<String> list = <String>[];
+     // for api11 developer preview
+     for (final int api in sdkVersionMap.keys) {
+       final Directory directory =
+       globals.fs.directory(globals.fs.path.join(sdkPath, sdkVersionMap[api]));
+       if (directory.existsSync()) {
+         list.add(sdkVersionMap[api]!);
+       }
+     }
+     // if not found, find it in previous version
+     if (list.isEmpty) {
+       for (final int folder in sdkVersionMap.keys) {
+         final Directory directory =
+         globals.fs.directory(globals.fs.path.join(sdkPath, folder.toString()));
+         if (directory.existsSync()) {
+           list.add(folder.toString());
+         }
+       }
+     }
+     return list;
   }
 
   static HmosSdk? localHmosSdk() {
@@ -194,6 +230,8 @@ class HmosSdk implements HarmonySdk {
       }
 
       if (hmosHomeDir != null) {
+        initSdkVersionMap(hmosHomeDir);
+
         if (validSdkDirectory(hmosHomeDir)) {
           return hmosHomeDir;
         }
@@ -211,20 +249,38 @@ class HmosSdk implements HarmonySdk {
     return HmosSdk(globals.fs.directory(hmosHomeDir));
   }
 
+  // int sdkVersionMap
+  static void initSdkVersionMap(String sdkPath) {
+    final Directory directory = globals.fs.directory(sdkPath);
+    if (!directory.existsSync()) {
+      throwToolExit('Unable to locate an Harmony SDK.');
+    }
+    for (FileSystemEntity element in directory.listSync()) {
+      if (element is Directory) {
+        // read apiVersion from sdk-pkg.json
+        File sdkPkgJson = globals.fs.directory(element).childFile('sdk-pkg.json');
+        if (sdkPkgJson.existsSync()) {
+          dynamic sdk_pkg = JSON5.parse(sdkPkgJson.readAsStringSync());
+          sdkVersionMap.addAll({int.parse(sdk_pkg['data']['apiVersion'] as String): element.basename});
+        }
+      }
+    }
+  }
+
   static String? getHdcPath(String sdkPath) {
     final bool isWindows = globals.platform.isWindows;
     // find it in api11 developer preview folder
     for (final int api in sdkVersionMap.keys) {
       final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, sdkVersionMap[api], 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+          .join(sdkPath, sdkVersionMap[api]!, 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
     }
     // if hdc not found, find it in previous version
-    for (final String folder in supportSdkVersion) {
+    for (final int folder in sdkVersionMap.keys) {
       final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, folder, 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
+          .join(sdkPath, folder.toString(), 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
       if (file.existsSync()) {
         return file.path;
       }
@@ -235,11 +291,28 @@ class HmosSdk implements HarmonySdk {
 
   //harmonyOsSdk，包含目录hmscore和openharmony
   static bool validSdkDirectory(String hmosHomeDir) {
+    return validApi10SdkDirectory(hmosHomeDir) ||
+        validApi11SdkDirectory(hmosHomeDir);
+  }
+
+  static bool validApi10SdkDirectory(String hmosHomeDir) {
     final Directory directory = globals.fs.directory(hmosHomeDir);
-    return (directory.childDirectory('hmscore').existsSync() &&
-        directory.childDirectory('openharmony').existsSync()) ||
-        // for api11 developer preview
-        (directory.childDirectory('HarmonyOS-NEXT-DP1').existsSync() && 
-        directory.childDirectory('licenses').existsSync());
+    return directory.childDirectory('hmscore').existsSync() &&
+        directory.childDirectory('openharmony').existsSync();
+  }
+
+  static bool validApi11SdkDirectory(String hmosHomeDir) {
+    final Directory directory = globals.fs.directory(hmosHomeDir);
+    if (!directory.childDirectory('licenses').existsSync()) {
+      return false;
+    }
+    for (String sdkName in sdkVersionMap.values) {
+      Directory sdkDir = globals.fs.directory(
+          globals.fs.path.join(hmosHomeDir, sdkName));
+      if (!sdkDir.existsSync()) {
+        return false;
+      }
+    }
+    return true;
   }
 }
