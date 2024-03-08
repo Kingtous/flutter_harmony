@@ -13,6 +13,8 @@
 * limitations under the License.
 */
 
+import 'dart:collection';
+
 import 'package:json5/json5.dart';
 
 import '../base/common.dart';
@@ -26,7 +28,7 @@ const String kOhosSdkRoot = 'OHOS_SDK_HOME';
 const String kHmosHome = 'HOS_SDK_HOME';
 
 // for api11 developer preview
-Map<int, String> sdkVersionMap = <int, String>{};
+SplayTreeMap<int, String> sdkVersionMap = SplayTreeMap<int, String>((a, b) => b.compareTo(a));
 
 abstract class HarmonySdk {
   // name
