@@ -263,10 +263,17 @@ class HmosSdk implements HarmonySdk {
         File sdkPkgJson = globals.fs.directory(element).childFile('sdk-pkg.json');
         if (sdkPkgJson.existsSync()) {
           dynamic sdk_pkg = JSON5.parse(sdkPkgJson.readAsStringSync());
-          sdkVersionMap.addAll({int.parse(sdk_pkg['data']['apiVersion'] as String): element.basename});
+          if (sdk_pkg['data'] != null && sdk_pkg['data']['apiVersion'] != null
+              && isNumeric(sdk_pkg['data']['apiVersion'] as String)) {
+            sdkVersionMap.addAll({int.parse(sdk_pkg['data']['apiVersion'] as String): element.basename});
+          }
         }
       }
     }
+  }
+
+  static bool isNumeric(String str) {
+    return double.tryParse(str) != null;
   }
 
   static String? getHdcPath(String sdkPath) {
