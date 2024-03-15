@@ -22,7 +22,7 @@ import 'dart/language_version.dart';
 import 'dart/package_map.dart';
 import 'features.dart';
 import 'globals.dart' as globals;
-import 'ohos/ohos_dependencies_manager.dart';
+import 'ohos/ohos_plugins_manager.dart';
 import 'platform_plugins.dart';
 import 'plugins.dart';
 import 'project.dart';
@@ -530,7 +530,7 @@ const String _arktsPluginRegistryTemplate = '''
 import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
 import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
 {{#methodChannelPlugins}}
-import {{class}} from '@ohos/{{name}}'
+import {{class}} from '{{name}}'
 {{/methodChannelPlugins}}
 
 /**
