@@ -311,8 +311,7 @@ class HmosSdk implements HarmonySdk {
   }
 
   static bool validApi11SdkDirectory(String hmosHomeDir) {
-    final Directory directory = globals.fs.directory(hmosHomeDir);
-    if (!directory.childDirectory('licenses').existsSync()) {
+    if (sdkVersionMap.length == 0) {
       return false;
     }
     for (String sdkName in sdkVersionMap.values) {
