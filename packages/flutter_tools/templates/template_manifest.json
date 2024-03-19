@@ -144,8 +144,8 @@
         "templates/app_shared/ohos.tmpl/hvigorfile.ts.tmpl",
         "templates/app_shared/ohos.tmpl/hvigorw.bat.tmpl",
         "templates/app_shared/ohos.tmpl/hvigorw.tmpl",
-        "templates/app_shared/ohos.tmpl/local.properties",
-        "templates/app_shared/ohos.tmpl/oh-package.json5",
+        "templates/app_shared/ohos.tmpl/local.properties.tmpl",
+        "templates/app_shared/ohos.tmpl/oh-package.json5.tmpl",
         "templates/app_shared/ohos.tmpl/AppScope/app.json5.tmpl",
         "templates/app_shared/ohos.tmpl/AppScope/resources/base/element/string.json.tmpl",
         "templates/app_shared/ohos.tmpl/AppScope/resources/base/media/app_icon.png",
@@ -425,6 +425,7 @@
         "templates/plugin_ffi/ohos.tmpl/hvigorw.tmpl",
         "templates/plugin_ffi/ohos.tmpl/local.properties.tmpl",
         "templates/plugin_ffi/ohos.tmpl/oh-package.json5.tmpl",
+        "templates/plugin_ffi/ohos.tmpl/.gitignore",
 
         "templates/plugin_shared/.gitignore.tmpl",
         "templates/plugin_shared/.idea/libraries/Dart_SDK.xml.tmpl",
