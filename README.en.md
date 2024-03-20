@@ -34,10 +34,10 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
 
        ```
        #HarmonyOS SDK, extract the directory after sdk/xxSDK.zip from the development kit package
-       Export HOSSDK_HOME=/home/<user>/ohos/sdk
+       export HOS_SDK_HOME=/home/<user>/ohos/sdk
 
        #Unzip the bin subdirectory after commandline/commandline tools xxxx.zip in the development kit package
-       Export PATH=$PATH:/home/<user>/ohos/command line tools/bin
+       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
        ```
     * Configure the path of sdkmgr (commandline/command-line-tools/sdkmanager/conf/config.properties), use the local path, and run sdkmgr list to verify, the path configuration of config.properties:
       ```
