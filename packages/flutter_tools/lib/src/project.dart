@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
 import 'package:meta/meta.dart';
 import 'package:xml/xml.dart';
 import 'package:yaml/yaml.dart';
@@ -1000,6 +1001,12 @@ class OhosProject extends FlutterProjectPlatform {
   }
 
   bool _shouldRegenerateFromTemplate() {
+    // Do not re-generate .ohos when it already exists and is a symbolic link.
+    if (ephemeralDirectory.existsSync() &&
+        io.FileSystemEntity.isLinkSync(ephemeralDirectory.path)) {
+      return false;
+    }
+
     return globals.fsUtils.isOlderThanReference(
           entity: ephemeralDirectory,
           referenceFile: parent.pubspecFile,
