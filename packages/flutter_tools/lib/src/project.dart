@@ -994,9 +994,6 @@ class OhosProject extends FlutterProjectPlatform {
     await _overwriteFromTemplate(
         globals.fs.path.join('module', 'ohos', 'host_config'),
         ephemeralDirectory);
-    await _overwriteFromTemplate(
-        globals.fs.path.join('app_shared', 'ohos.tmpl', 'har'),
-        ephemeralDirectory);
   }
 
   bool _shouldRegenerateFromTemplate() {
