@@ -82,6 +82,18 @@
                 <filteritem type="filepath" name="packages/integration_test/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/dependencies/.*" desc="dependencies files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/AppScope/.*" desc="AppScope files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigor/.*" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorw*" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/entry/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorw.bat" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/libs/.*" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/ohos/libs/.*" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/dependencies/.*" desc="dependencies files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/entry/libs/arm64-v8a/libc++_shared.so" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/dta/icudtl.dat" desc="libs files"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <filteritem type="filepath" name="dev/bots/test/analyze-test-input/root/packages/foo/foo.dart"
