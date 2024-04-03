@@ -14,10 +14,7 @@
 */
 
 import 'dart:collection';
-
 import 'package:json5/json5.dart';
-
-import '../base/common.dart';
 import '../base/file_system.dart';
 import '../globals.dart' as globals;
 
@@ -52,6 +49,10 @@ abstract class HarmonySdk {
     } else {
       return null;
     }
+  }
+
+  static bool isNumeric(String str) {
+    return double.tryParse(str) != null;
   }
 }
 
@@ -96,13 +97,29 @@ class OhosSdk implements HarmonySdk {
           return globals.fs.path.join(ohosHomeDir, 'sdk');
         }
       }
+
+      //openharmony/11/toolchains/hdc
+      final List<File> hdcBins = globals.os.whichAll(globals.platform.isWindows ? 'hdc.exe' : 'hdc');
+      for (File hdcBin in hdcBins) {
+        // Make sure we're using the hdc from the SDK.
+        hdcBin = globals.fs.file(hdcBin.resolveSymbolicLinksSync());
+        final String dir = hdcBin.parent.parent.parent.path;
+        Directory directory = globals.fs.directory(dir);
+        if (directory.existsSync()) {
+          initSdkVersionMap(dir);
+          if (validSdkDirectory(dir)) {
+            return dir;
+          }
+        }
+      }
+
       return null;
     }
 
     final String? ohosHomeDir = findOhosHomeDir();
     if (ohosHomeDir == null) {
       // No dice.
-      globals.printTrace('Unable to locate an Ohos SDK.');
+      globals.printTrace('Unable to locate an OpenHarmony SDK.');
       return null;
     }
 
@@ -112,14 +129,13 @@ class OhosSdk implements HarmonySdk {
   // int sdkVersionMap
   static void initSdkVersionMap(String sdkPath) {
     final Directory directory = globals.fs.directory(sdkPath);
-    if (!directory.existsSync()) {
-      throwToolExit('Unable to locate an Harmony SDK.');
-    }
-    for (FileSystemEntity element in directory.listSync()) {
-      if (element is Directory) {
-        Directory dir = globals.fs.directory(element).childDirectory('toolchains');
-        if (dir.existsSync()) {
-          sdkVersionMap.addAll({int.parse(element.basename): element.basename});
+    if (directory.existsSync()) {
+      for (FileSystemEntity element in directory.listSync()) {
+        if (element is Directory) {
+          Directory dir = globals.fs.directory(element).childDirectory('toolchains');
+          if (dir.existsSync() && HarmonySdk.isNumeric(element.basename)) {
+            sdkVersionMap.addAll({int.parse(element.basename): element.basename});
+          }
         }
       }
     }
@@ -225,8 +241,8 @@ class HmosSdk implements HarmonySdk {
   static HmosSdk? localHmosSdk() {
     String? findHmosHomeDir() {
       String? hmosHomeDir;
-      if (globals.config.containsKey('hmos-sdk')) {
-        hmosHomeDir = globals.config.getValue('hmos-sdk') as String?;
+      if (globals.config.containsKey('ohos-sdk')) {
+        hmosHomeDir = globals.config.getValue('ohos-sdk') as String?;
       } else if (globals.platform.environment.containsKey(kHmosHome)) {
         hmosHomeDir = globals.platform.environment[kHmosHome];
       }
@@ -238,13 +254,28 @@ class HmosSdk implements HarmonySdk {
           return hmosHomeDir;
         }
       }
+      //sdk/HarmonyOS-NEXT-DP1/base/toolchains/hdc
+      final List<File> hdcBins = globals.os.whichAll(globals.platform.isWindows ? 'hdc.exe' : 'hdc');
+      for (File hdcBin in hdcBins) {
+        // Make sure we're using the hdc from the SDK.
+        hdcBin = globals.fs.file(hdcBin.resolveSymbolicLinksSync());
+        final String dir = hdcBin.parent.parent.parent.parent.path;
+        Directory directory = globals.fs.directory(dir);
+        if (directory.existsSync()) {
+          initSdkVersionMap(dir);
+          if (validSdkDirectory(dir)) {
+            return dir;
+          }
+        }
+      }
+
       return null;
     }
 
     final String? hmosHomeDir = findHmosHomeDir();
     if (hmosHomeDir == null) {
       // No dice.
-      globals.printTrace('Unable to locate an Hmos SDK.');
+      globals.printError('Unable to locate an HarmonyOS SDK.');
       return null;
     }
 
@@ -254,26 +285,21 @@ class HmosSdk implements HarmonySdk {
   // int sdkVersionMap
   static void initSdkVersionMap(String sdkPath) {
     final Directory directory = globals.fs.directory(sdkPath);
-    if (!directory.existsSync()) {
-      throwToolExit('Unable to locate an Harmony SDK.');
-    }
-    for (FileSystemEntity element in directory.listSync()) {
-      if (element is Directory) {
-        // read apiVersion from sdk-pkg.json
-        File sdkPkgJson = globals.fs.directory(element).childFile('sdk-pkg.json');
-        if (sdkPkgJson.existsSync()) {
-          dynamic sdk_pkg = JSON5.parse(sdkPkgJson.readAsStringSync());
-          if (sdk_pkg['data'] != null && sdk_pkg['data']['apiVersion'] != null
-              && isNumeric(sdk_pkg['data']['apiVersion'] as String)) {
-            sdkVersionMap.addAll({int.parse(sdk_pkg['data']['apiVersion'] as String): element.basename});
+    if (directory.existsSync()) {
+      for (FileSystemEntity element in directory.listSync()) {
+        if (element is Directory) {
+          // read apiVersion from sdk-pkg.json
+          File sdkPkgJson = globals.fs.directory(element).childFile('sdk-pkg.json');
+          if (sdkPkgJson.existsSync()) {
+            dynamic sdk_pkg = JSON5.parse(sdkPkgJson.readAsStringSync());
+            if (sdk_pkg['data'] != null && sdk_pkg['data']['apiVersion'] != null
+                && HarmonySdk.isNumeric(sdk_pkg['data']['apiVersion'] as String)) {
+              sdkVersionMap.addAll({int.parse(sdk_pkg['data']['apiVersion'] as String): element.basename});
+            }
           }
         }
       }
     }
-  }
-
-  static bool isNumeric(String str) {
-    return double.tryParse(str) != null;
   }
 
   static String? getHdcPath(String sdkPath) {
