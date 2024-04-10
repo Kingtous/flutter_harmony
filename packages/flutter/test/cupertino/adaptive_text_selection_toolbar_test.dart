@@ -57,12 +57,12 @@ void main() {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         expect(find.byType(CupertinoTextSelectionToolbar), findsOneWidget);
         expect(find.byType(CupertinoDesktopTextSelectionToolbar), findsNothing);
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoTextSelectionToolbar), findsNothing);
         expect(find.byType(CupertinoDesktopTextSelectionToolbar), findsOneWidget);
@@ -144,11 +144,11 @@ void main() {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         expect(find.byType(CupertinoTextSelectionToolbarButton), findsOneWidget);
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsOneWidget);
         break;
@@ -186,11 +186,11 @@ void main() {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         expect(find.byType(CupertinoTextSelectionToolbarButton), findsNWidgets(4));
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsNWidgets(4));
         break;
@@ -232,12 +232,12 @@ void main() {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         expect(find.byType(CupertinoTextSelectionToolbarButton), findsOneWidget);
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsNothing);
         break;
       case TargetPlatform.macOS:
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.windows:
         expect(find.byType(CupertinoTextSelectionToolbarButton), findsNothing);
         expect(find.byType(CupertinoDesktopTextSelectionToolbarButton), findsOneWidget);

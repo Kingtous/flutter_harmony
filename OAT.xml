@@ -69,7 +69,7 @@
 
         <filefilterlist>
             <filefilter name="defaultFilter" desc="Files not to check">
-                <filteritem type="filename" name="*.iml|*.json|*.txt" desc="desc files"/>
+                <filteritem type="filename" name="*.iml|*.json|*.txt|*.md" desc="desc files"/>
                 <filteritem type="filename" name="*.png|*.ico|*.jpg|*.ttf|*.enc|*.json5" desc="app resource files"/>
                 <filteritem type="filepath" name="projectroot/[a-zA-Z0-9]{20,}.sh" desc="Temp files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/AppScope/.*" desc="AppScope files"/>
@@ -82,6 +82,18 @@
                 <filteritem type="filepath" name="packages/integration_test/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/ohos/libs/.*" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/ohos/dependencies/.*" desc="dependencies files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/AppScope/.*" desc="AppScope files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigor/.*" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorw*" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/entry/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/ohos/hvigorfile.ts" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/hvigorw.bat" desc="hvigor files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/libs/.*" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/ohos/libs/.*" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/dependencies/.*" desc="dependencies files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/entry/libs/arm64-v8a/libc++_shared.so" desc="libs files"/>
+                <filteritem type="filepath" name="packages/integration_test/example/ohos/dta/icudtl.dat" desc="libs files"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <filteritem type="filepath" name="dev/bots/test/analyze-test-input/root/packages/foo/foo.dart"
@@ -107,6 +119,7 @@
 		        <filteritem type="filepath" name="*README.md|*README.en.md" desc="README文件，不参与编译"/>
             </filefilter>
             <filefilter name="readmeOpenSourcefileNamePolicyFilter" desc="Filters for README.OpenSource file policies">
+                <filteritem type="filepath" name="README.md|README.en.md" desc="README文件，不参与编译"/>
             </filefilter>
             <filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies">
             	<filteritem type="filename" name="*.iml|*.json|*.txt|*.png" desc="desc files"/>

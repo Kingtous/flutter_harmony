@@ -27,6 +27,9 @@ import '../globals.dart' as globals;
 import '../project.dart';
 import 'ohos_sdk.dart';
 
+const String OHOS_ENTRY_DEFAULT = 'entry';
+const int OHOS_SDK_INT_DEFAULT = 11;
+
 /// An application package created from an already built Ohos HAP.
 class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
   OhosHap({
@@ -47,7 +50,7 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
   /// Creates a new OhosHap based on the information in the Ohos build-profile.
   static Future<OhosHap?> fromOhosProject(
     OhosProject ohosProject, {
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required ProcessManager processManager,
     required UserMessages userMessages,
     required ProcessUtils processUtils,
@@ -67,7 +70,7 @@ class OhosHap extends ApplicationPackage implements PrebuiltApplicationPackage {
 
   static Future<OhosHap?> fromHap(
     File hap, {
-    required OhosSdk ohosSdk,
+    required HarmonySdk ohosSdk,
     required ProcessManager processManager,
     required UserMessages userMessages,
     required Logger logger,
@@ -99,6 +102,8 @@ class OhosBuildData {
         final String json = appJson.readAsStringSync();
         final dynamic obj = JSON5.parse(json);
         appInfo = AppInfo.getAppInfo(obj);
+      } else {
+        appInfo = AppInfo('', 0, '');
       }
       moduleInfo = ModuleInfo.getModuleInfo(ohosProject.ohosRoot.path);
       apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
@@ -110,20 +115,23 @@ class OhosBuildData {
 }
 
 int getApiVersion(File buildProfile) {
+  if (!buildProfile.existsSync()) {
+    return OHOS_SDK_INT_DEFAULT;
+  }
   final String buildProfileConfig = buildProfile.readAsStringSync();
   final dynamic obj = JSON5.parse(buildProfileConfig);
   dynamic sdkObj = obj['app']['compileSdkVersion'];
   sdkObj ??= obj['app']['products'][0]['compileSdkVersion'];
   if (sdkObj is int) {
     return sdkObj;
-  } else if (sdkObj is String && sdkObj != null) {
-    final String? str = RegExp(r'\d{2}').stringMatch(sdkObj);
+  } else if (sdkObj is String && sdkObj != null) { // 4.1.0(11)
+    String? str = RegExp(r'\(\d+\)').stringMatch(sdkObj);
     if (str != null) {
+      str = str.substring(1, str.length - 1);
       return int.parse(str);
     }
   }
-
-  throwToolExit('Parse compileSdkVersion failed.');
+  return OHOS_SDK_INT_DEFAULT;
 }
 
 List<String> getModuleListName(String ohosProjectPath) {
@@ -131,7 +139,7 @@ List<String> getModuleListName(String ohosProjectPath) {
   final File buildProfileFile =
       pluginPathDirectory.childFile('build-profile.json5');
   if (!pluginPathDirectory.existsSync() || !buildProfileFile.existsSync()) {
-    throwToolExit('please check if ohosProjectPath:$ohosProjectPath exists !');
+    return List<String>.empty();
   }
 
   final List<String> moduleNames = List<String>.empty(growable: true);
@@ -180,7 +188,8 @@ class ModuleInfo {
 
   /// 获取主要的module名，如果存在entry，返回entry类型的module，否则返回第一个module
   String get mainModuleName =>
-      entryModule?.moduleName ?? moduleList.first.moduleName;
+      entryModule?.moduleName ??
+      (moduleList.isNotEmpty ? moduleList.first.moduleName : OHOS_ENTRY_DEFAULT);
 
   static ModuleInfo getModuleInfo(String ohosProjectPath) {
     final List<OhosModule> moduleList =

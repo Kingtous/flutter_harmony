@@ -733,9 +733,9 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
       final bool platformHasBackButton;
       switch (Theme.of(context).platform) {
         case TargetPlatform.android:
-        case TargetPlatform.ohos:
           platformHasBackButton = true;
           break;
+        case TargetPlatform.ohos:
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
         case TargetPlatform.fuchsia:

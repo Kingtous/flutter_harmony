@@ -110,7 +110,7 @@ List<String> getProjectHarList(FlutterProject flutterProject) {
 Future<String> pluginsHarGenerate(String ohosPath, String pluginName,
     String moduleName, BuildInfo buildInfo, OhosBuildData ohosBuildData) async {
   final String modulePath = globals.fs.path.join(ohosPath, moduleName);
-  checkDevDependencies(modulePath, buildInfo, ohosBuildData);
+  checkDependencies(modulePath, buildInfo, ohosBuildData);
   await ohpmInstall(
       processManager: globals.processManager,
       entryPath: modulePath,
@@ -129,19 +129,19 @@ Future<String> pluginsHarGenerate(String ohosPath, String pluginName,
   return getHarPath(ohosPath, pluginName, moduleName);
 }
 
-/// 检查module的devDependencies，如果存在 "@ohos/flutter_ohos": "file:./libs/flutter_ohos.har" ， 拷贝har文件到module目录
-void checkDevDependencies(
+/// 检查module的dependencies，如果存在 "@ohos/flutter_ohos": "file:./har/flutter.har" ， 拷贝har文件到module目录
+void checkDependencies(
     String modulePath, BuildInfo buildInfo, OhosBuildData ohosBuildData) {
   final Directory moduleDirectory = globals.fs.directory(modulePath);
   final File packageConfigFile = moduleDirectory.childFile('oh-package.json5');
-  final List<OhosDependence> devDependencies =
+  final List<OhosDependence> dependencies =
       getOhosDependenciesListFromPackageFile(packageConfigFile,
-          dependenceType: DependenceType.dev);
+          dependenceType: DependenceType.normal);
 
-  /// 如果包含@ohos/flutter_ohos，每次构建，都需要重新拷贝har文件，确保flutter_embedding.har文件的正确性
-  if (devDependencies.any(
+  /// 如果包含@ohos/flutter_ohos，每次构建，都需要重新拷贝har文件，确保flutter.har文件的正确性
+  if (dependencies.any(
       (OhosDependence element) => element.moduleName == '@ohos/flutter_ohos')) {
-    final OhosDependence flutterOhosDepence = devDependencies.firstWhere(
+    final OhosDependence flutterOhosDepence = dependencies.firstWhere(
         (OhosDependence element) => element.moduleName == '@ohos/flutter_ohos');
     copyOhosEmbeddingHarToModule(
         modulePath, flutterOhosDepence, buildInfo, ohosBuildData);

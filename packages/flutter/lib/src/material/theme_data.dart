@@ -462,12 +462,12 @@ class ThemeData with Diagnosticable {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.iOS:
+      case TargetPlatform.ohos:
         materialTapTargetSize ??= MaterialTapTargetSize.padded;
         break;
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
-      case TargetPlatform.ohos:
          materialTapTargetSize ??= MaterialTapTargetSize.shrinkWrap;
         break;
     }
@@ -2918,9 +2918,9 @@ class VisualDensity with Diagnosticable {
       case TargetPlatform.android:
       case TargetPlatform.iOS:
       case TargetPlatform.fuchsia:
+      case TargetPlatform.ohos:
         break;
       case TargetPlatform.linux:
-      case TargetPlatform.ohos:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
         return compact;

@@ -51,13 +51,13 @@ class _VersionInfo {
 
 class OhosValidator extends DoctorValidator {
   OhosValidator({
-    required OhosSdk? ohosSdk,
+    required HarmonySdk? ohosSdk,
     required FileSystem fileSystem,
     required Logger logger,
     required Platform platform,
     required ProcessManager processManager,
     required UserMessages userMessages,
-  })  : _ohosSdk = ohosSdk,
+  })  : _hosSdk = ohosSdk,
         _fileSystem = fileSystem,
         _logger = logger,
         _operatingSystemUtils = OperatingSystemUtils(
@@ -69,9 +69,9 @@ class OhosValidator extends DoctorValidator {
         _platform = platform,
         _processManager = processManager,
         _userMessages = userMessages,
-        super('OpenHarmony toolchain - develop for OpenHarmony devices');
+        super('HarmonyOS toolchain - develop for HarmonyOS devices');
 
-  final OhosSdk? _ohosSdk;
+  final HarmonySdk? _hosSdk;
   final FileSystem _fileSystem;
   final Logger _logger;
   final OperatingSystemUtils _operatingSystemUtils;
@@ -87,57 +87,17 @@ class OhosValidator extends DoctorValidator {
     final List<ValidationMessage> messages = <ValidationMessage>[];
 
     /// check ohos sdk exist and version correct
-    if (_ohosSdk != null && _ohosSdk?.hdcPath != null) {
-      messages.add(ValidationMessage(_userMessages.ohosSdkVersion(_ohosSdk!)));
-
-      /// check hdc
-      final _VersionInfo? hdcVersion = await _getBinaryVersion(isWindows ? 'hdc.exe' : 'hdc');
-      if (hdcVersion == null) {
-        validationType = ValidationType.missing;
-        messages.add(ValidationMessage.error(_userMessages.hdcMissing()));
-      } else {
-        messages.add(ValidationMessage(
-            _userMessages.hdcVersion(hdcVersion.number.toString())));
-      }
+    if (HarmonySdk.locateHarmonySdk() != null ) {
+      messages.add(ValidationMessage(_userMessages.ohosSdkVersion(_hosSdk!)));
     } else {
       validationType = ValidationType.missing;
-      if (_ohosSdk != null) {
+      if (_hosSdk != null) {
         messages.add(ValidationMessage.error(
-            _userMessages.ohosSdkMissing((_ohosSdk?.sdkPath) ?? '')));
+            _userMessages.ohosSdkMissing((_hosSdk?.sdkPath) ?? '')));
       }
       messages
-          .add(ValidationMessage.error(_userMessages.ohosSdkInstallation()));
+          .add(ValidationMessage.error(_userMessages.hosSdkInstallation()));
     }
-
-    /// check ohpm
-    final Ohpm? ohpm = Ohpm.local();
-    String? ohpmVersionString;
-    if (ohpm != null && ohpm.getOhpmBinPath() != null) {
-      final String ohpmPath = ohpm.getOhpmBinPath() ?? (isWindows ? 'ohpm.bat' : 'ohpm');
-      final _VersionInfo? ohpmVersion = await _getBinaryVersion(ohpmPath);
-      if (ohpmVersion != null) {
-        ohpmVersionString = ohpmVersion.number.toString();
-      }
-    }
-    if (ohpmVersionString == null) {
-      validationType = ValidationType.missing;
-      messages.add(ValidationMessage.error(_userMessages.ohpmMissing()));
-    } else {
-      messages
-          .add(ValidationMessage(_userMessages.ohpmVersion(ohpmVersionString)));
-    }
-
-    /// check sign tool environment
-    final SignTool? signTool = SignTool.local();
-    if (signTool == null || !signTool.validJar()) {
-      validationType = ValidationType.missing;
-      messages.add(ValidationMessage.error(_userMessages.signToolMissing()));
-    } else {
-      messages.add(ValidationMessage(
-          _userMessages.signToolVersion(signTool.signToolHome)));
-    }
-
-    /// todo: check local engine environment
 
     return ValidationResult(validationType, messages);
   }

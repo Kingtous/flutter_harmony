@@ -52,6 +52,9 @@ class DevelopmentArtifact {
   /// Artifacts required for iOS development.
   static const DevelopmentArtifact iOS = DevelopmentArtifact._('ios', feature: flutterIOSFeature);
 
+  /// Artifacts required for OpenHarmony development.
+  static const DevelopmentArtifact ohos = DevelopmentArtifact._('ohos', feature: flutterOhosFeature);
+
   /// Artifacts required for web development.
   static const DevelopmentArtifact web = DevelopmentArtifact._('web', feature: flutterWebFeature);
 
@@ -82,6 +85,7 @@ class DevelopmentArtifact {
     androidMaven,
     androidInternalBuild,
     iOS,
+    ohos,
     web,
     macOS,
     windows,

@@ -15,7 +15,6 @@
 
 import { FlutterAbility } from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/FlutterAbility';
 import UIAbility from '@ohos.app.ability.UIAbility';
-import { FlutterView } from '@ohos/flutter_ohos/src/main/ets/view/FlutterView';
 import MethodChannel, { MethodCallHandler, MethodResult} from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodChannel';
 import Ability from '@ohos.app.ability.Ability';
 
@@ -31,19 +30,6 @@ import Ability from '@ohos.app.ability.Ability';
  * that waits for that frame to be presented by the Ohos framework.
  */
 export class FlutterDeviceScreenshot {
-  /**
-   * Finds the {@code FlutterView} added to the {@code activity} view hierarchy.
-   *
-   * <p> This assumes that there's only one {@code FlutterView} per activity, which
-   * is always the case.
-   *
-   * @param activity typically, {code FlutterActivity}.
-   * @return the Flutter view.
-   */
-  private static getFlutterView(ability: UIAbility): FlutterView {
-    // return (FlutterView)ability.findViewById(FlutterAbility.FLUTTER_VIEW_ID);
-    return 0;
-  }
 
   /**
    * Whether the app is run with instrumentation.
@@ -71,12 +57,6 @@ export class FlutterDeviceScreenshot {
    * @param activity typically {@code FlutterActivity}.
    */
   static convertFlutterSurfaceToImage(ability: UIAbility): void {
-    let flutterView = FlutterDeviceScreenshot.getFlutterView(ability) as FlutterView;
-    if (flutterView != null && !FlutterDeviceScreenshot.flutterSurfaceConvertedToImage) {
-      // todo
-      // flutterView.convertToImageView();
-      FlutterDeviceScreenshot.flutterSurfaceConvertedToImage = true;
-    }
   }
 
   /**
@@ -87,12 +67,6 @@ export class FlutterDeviceScreenshot {
    * @param onDone callback called once the surface has been restored.
    */
   static revertFlutterImage(ability: UIAbility): void {
-    let flutterView = FlutterDeviceScreenshot.getFlutterView(ability) as FlutterView;
-      if (flutterView != null && FlutterDeviceScreenshot.flutterSurfaceConvertedToImage) {
-        // flutterView.revertImageView(() -> {
-        //   FlutterDeviceScreenshot.flutterSurfaceConvertedToImage = false;
-        // });
-      }
   }
 
   /**
@@ -105,18 +79,6 @@ export class FlutterDeviceScreenshot {
    * @param methodChannel the method channel to call into Dart.
    * @param result the result for the method channel that will contain the byte array.
    */
-  static  captureView(ability: UIAbility, methodChannel: MethodChannel, result: Result): void {
-     let flutterView = FlutterDeviceScreenshot.getFlutterView(ability) as FlutterView;
-      if (flutterView == null) {
-        // result.error("Could not copy the pixels", "FlutterView is null", null);
-        return;
-      }
-    if (!FlutterDeviceScreenshot.flutterSurfaceConvertedToImage) {
-      // result.error("Could not copy the pixels", "Flutter surface must be converted to image first", null);
-      return;
-    }
-
-    // Ask the framework to schedule a new frame.
-    methodChannel.invokeMethod("scheduleFrame", null);
+  static captureView(ability: UIAbility, methodChannel: MethodChannel, result: Result): void {
   }
 }

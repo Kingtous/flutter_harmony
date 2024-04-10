@@ -115,6 +115,7 @@ Future<T> runInContext<T>(
       AndroidSdk: AndroidSdk.locateAndroidSdk,
       OhosSdk: OhosSdk.localOhosSdk,
       HmosSdk: HmosSdk.localHmosSdk,
+      HarmonySdk: HarmonySdk.locateHarmonySdk,
       OhosBuilder:()=> OhosHvigorBuilder(
         logger: globals.logger,
         processManager: globals.processManager,
@@ -135,14 +136,14 @@ Future<T> runInContext<T>(
         userMessages: globals.userMessages,
       ),
       OhosValidator: () => OhosValidator(
-          ohosSdk: globals.ohosSdk,
+          ohosSdk: globals.harmonySdk,
           fileSystem: globals.fs,
           logger: globals.logger,
           platform: globals.platform,
           processManager: globals.processManager,
           userMessages: userMessages),
       OhosWorkflow: () => OhosWorkflow(
-        ohosSdk: globals.ohosSdk,
+        ohosSdk: globals.harmonySdk,
         featureFlags: featureFlags,
       ),
       AndroidWorkflow: () => AndroidWorkflow(
@@ -155,7 +156,7 @@ Future<T> runInContext<T>(
         logger: globals.logger,
         fileSystem: globals.fs,
         androidSdk: globals.androidSdk,
-        ohosSdk: globals.ohosSdk,
+        ohosSdk: globals.harmonySdk,
       ),
       Artifacts: () => CachedArtifacts(
         fileSystem: globals.fs,
@@ -216,7 +217,7 @@ Future<T> runInContext<T>(
         processManager: globals.processManager,
         platform: globals.platform,
         androidSdk: globals.androidSdk,
-        ohosSdk: globals.ohosSdk,
+        ohosSdk: globals.harmonySdk,
         iosSimulatorUtils: globals.iosSimulatorUtils!,
         featureFlags: featureFlags,
         fileSystem: globals.fs,

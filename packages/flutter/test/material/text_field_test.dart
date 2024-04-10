@@ -2323,6 +2323,7 @@ void main() {
         expect(controller.selection.baseOffset, 11);
         expect(controller.selection.extentOffset, 2);
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -2353,6 +2354,7 @@ void main() {
         expect(controller.selection.baseOffset, 11);
         expect(controller.selection.extentOffset, 0);
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -2432,6 +2434,7 @@ void main() {
         expect(controller.selection.baseOffset, 11);
         expect(controller.selection.extentOffset, 2);
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -2462,6 +2465,7 @@ void main() {
         expect(controller.selection.baseOffset, 11);
         expect(controller.selection.extentOffset, 0);
         break;
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -12513,6 +12517,7 @@ void main() {
         break;
 
       // Other platforms start from the previous selection.
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -12978,7 +12983,7 @@ void main() {
         expect(find.text('Copy'), findsOneWidget);
         expect(find.text('Paste'), findsOneWidget);
         break;
-
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -13005,7 +13010,7 @@ void main() {
         expect(find.text('Copy'), findsOneWidget);
         expect(find.text('Paste'), findsOneWidget);
         break;
-
+      case TargetPlatform.ohos:
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
@@ -13316,7 +13321,7 @@ void main() {
             isA<CupertinoTextMagnifier>());
       }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
-      testWidgets('should build nothing on Android and iOS',
+      testWidgets('should build nothing on Android and iOS,OpenHarmony',
           (WidgetTester tester) async {
         await tester.pumpWidget(const MaterialApp(
           home: Scaffold(body: TextField()))
@@ -13335,7 +13340,8 @@ void main() {
       },
       variant: TargetPlatformVariant.all(excluding: <TargetPlatform>{
         TargetPlatform.iOS,
-        TargetPlatform.android
+        TargetPlatform.android,
+        TargetPlatform.ohos,
       }));
     });
   });
@@ -13671,6 +13677,7 @@ void main() {
         switch(pointerDeviceKind) {
           case PointerDeviceKind.touch:
             switch(defaultTargetPlatform) {
+              case TargetPlatform.ohos:
               case TargetPlatform.iOS:
               case TargetPlatform.android:
               case TargetPlatform.fuchsia:

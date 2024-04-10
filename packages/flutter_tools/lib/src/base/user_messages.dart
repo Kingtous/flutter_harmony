@@ -164,14 +164,26 @@ class UserMessages {
   String ohosSdkMissing(String location) =>
       'OHOS_SDK_HOME = $location\n'
           'but OpenHarmony Sdk not found at this location';
+  String hosSdkMissing(String location) =>
+      'HOS_SDK_HOME = $location\n'
+          'but nHarmonyOS Sdk not found at this location';
   String ohosSdkInstallation() =>
       'OpenHarmony Sdk not found; \n'
           'please do that, first: download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli ;\n'
           'second: follow this document: https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3 to install OpenHarmony sdk with ohsdkmgr; \n'
           'If the Ohos SDK has been installed to a custom location, please use\n'
           '`flutter config --ohos-sdk` to update to that location.\n';
-  String ohosSdkVersion(OhosSdk ohosSdk) =>
+  String hosSdkInstallation() =>
+      'HarmonyOS Sdk not found; \n'
+          'please do that, first: download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli ;\n'
+          'second: follow this document: https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/ide-command-line-ohsdkmgr-0000001545647965-V3 to install OpenHarmony sdk with ohsdkmgr; \n'
+          'If the Ohos SDK has been installed to a custom location, please use\n'
+          '`flutter config --ohos-sdk` to update to that location.\n';
+
+  String ohosSdkVersion(HarmonySdk ohosSdk) =>
       'OpenHarmony Sdk location: ${ohosSdk.sdkPath}, available api versions has ${ohosSdk.apiAvailable}';
+  String hosSdkVersion(HarmonySdk hosSdk) =>
+      'HarmonyOS Sdk location: ${hosSdk.sdkPath}, available api versions has ${hosSdk.apiAvailable}';
 
   String hdcMissing() =>
       'hdc is missing ,please download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli;\n'

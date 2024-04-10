@@ -2069,8 +2069,8 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
         case TargetPlatform.macOS:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
-        case TargetPlatform.ohos:
           break;
+        case TargetPlatform.ohos:
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
           // Collapse the selection and hide the toolbar and handles.
@@ -2173,11 +2173,11 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
         case TargetPlatform.android:
         case TargetPlatform.iOS:
         case TargetPlatform.fuchsia:
+        case TargetPlatform.ohos:
           break;
         case TargetPlatform.macOS:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
-        case TargetPlatform.ohos:
           hideToolbar();
       }
       switch (defaultTargetPlatform) {
@@ -2409,8 +2409,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       }
     }
 
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android
-        && defaultTargetPlatform != TargetPlatform.ohos) {
+    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android ) {
       return;
     }
 
@@ -2425,7 +2424,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         hideToolbar(false);
       }
-      if (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.ohos) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
         hideToolbar();
       }
     }
@@ -2621,7 +2620,6 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TextInputAction.previous:
       case TextInputAction.search:
       case TextInputAction.send:
-      case TextInputAction.unspecified:
         _finalizeEditing(action, shouldUnfocus: true);
         break;
       case TextInputAction.continueAction:
@@ -2629,6 +2627,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TextInputAction.join:
       case TextInputAction.none:
       case TextInputAction.route:
+      case TextInputAction.unspecified:
         // Finalize editing, but don't give up focus because this keyboard
         // action does not imply the user is done inputting information.
         _finalizeEditing(action, shouldUnfocus: false);
@@ -4116,6 +4115,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       case TargetPlatform.android:
       case TargetPlatform.iOS:
       case TargetPlatform.fuchsia:
+      case TargetPlatform.ohos:
       // On mobile platforms, we don't unfocus on touch events unless they're
       // in the web browser, but we do unfocus for all other kinds of events.
         switch (event.kind) {
@@ -4134,7 +4134,6 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
             throw UnimplementedError('Unexpected pointer down event for trackpad');
         }
         break;
-      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
       case TargetPlatform.windows:
@@ -5176,13 +5175,13 @@ class _TextEditingHistoryState extends State<_TextEditingHistory> {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-      case TargetPlatform.ohos:
         // Composing text is not counted in history coalescing.
         if (!widget.controller.value.composing.isCollapsed) {
           return;
         }
         break;
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
         // Gboard on Android puts non-CJK words in composing regions. Coalesce
         // composing text in order to allow the saving of partial words in that
         // case.

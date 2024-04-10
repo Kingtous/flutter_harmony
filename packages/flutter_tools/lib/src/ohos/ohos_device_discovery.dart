@@ -33,7 +33,7 @@ class OhosDevices extends PollingDeviceDiscovery {
     required OhosWorkflow ohosWorkflow,
     required ProcessManager processManager,
     required Logger logger,
-    OhosSdk? ohosSdk,
+    HarmonySdk? ohosSdk,
     required FileSystem fileSystem,
     required Platform platform,
     required UserMessages userMessages,
@@ -48,7 +48,7 @@ class OhosDevices extends PollingDeviceDiscovery {
         _fileSystem = fileSystem,
         _platform = platform,
         _userMessages = userMessages,
-        super('Android devices');
+        super('HarmonyOS devices');
 
   final OhosWorkflow _ohosWorkflow;
   final ProcessUtils _processUtils;
@@ -57,7 +57,7 @@ class OhosDevices extends PollingDeviceDiscovery {
   final FileSystem _fileSystem;
   final Platform _platform;
   final UserMessages _userMessages;
-  final OhosSdk? _ohosSdk;
+  final HarmonySdk? _ohosSdk;
 
   bool _doesNotHaveHdc() {
     return _ohosSdk == null ||

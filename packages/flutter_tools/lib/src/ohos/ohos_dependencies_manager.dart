@@ -25,7 +25,7 @@ import '../project.dart';
 
 enum DependenceType {
   normal,
-  dev;
+  dev; //deprecated
 
   static String getConfigKey(DependenceType dependenceType) {
     return dependenceType == DependenceType.normal
@@ -35,14 +35,14 @@ enum DependenceType {
 }
 
 class OhosDependence {
-  ///"@ohos/flutter_ohos": "file:../har/flutter_embedding.har"
+  ///"@ohos/flutter_ohos": "file:../har/flutter.har"
   OhosDependence(this.moduleName, this.baseModuleName, this.modulePath,
       this.dependenceType);
 
   ///@ohos/flutter_ohos
   String moduleName;
 
-  ///file:../har/flutter_embedding.har
+  ///file:../har/flutter.har
   String modulePath;
 
   ///flutter_ohos
@@ -97,9 +97,6 @@ List<OhosDependence> getOhosDependenciesListFromPackageFile(File ohPackageFile,
   if (dependenceType == DependenceType.normal || dependenceType == null) {
     list.addAll(parseDependenciesFromType(config, DependenceType.normal));
   }
-  if (dependenceType == DependenceType.dev || dependenceType == null) {
-    list.addAll(parseDependenciesFromType(config, DependenceType.dev));
-  }
   return list;
 }
 
@@ -115,9 +112,14 @@ List<OhosDependence> parseDependenciesFromType(
   for (final String symbol in dependencies.keys) {
     final String moduleName = symbol;
     final String modulePath = dependencies[symbol] as String;
-    final String baseModuleName = moduleName.split('/')[1];
-    list.add(
-        OhosDependence(moduleName, baseModuleName, modulePath, dependenceType));
+    if (moduleName.split('/').length > 1) {
+      final String baseModuleName = moduleName.split('/')[1];
+      list.add(OhosDependence(
+          moduleName, baseModuleName, modulePath, dependenceType));
+    } else {
+      globals.printStatus(
+          'skip add dependence without baseModule.moduleName:$moduleName ');
+    }
   }
   return list;
 }

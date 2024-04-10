@@ -398,7 +398,7 @@ abstract class CreateBase extends FlutterCommand {
     final String ohosIdentifier = androidIdentifier;
     // locating ohos sdk from environment
     final String? ohosSdkHome = globals.ohosSdk?.sdkPath;
-    final String? hosSdkHome = Platform.environment['HOS_SDK_HOME'];
+    final String? hosSdkHome = globals.hmosSdk?.sdkPath;
     final String? nodeHome = Platform.environment['NODE_HOME'];
 
     return <String, Object?>{
