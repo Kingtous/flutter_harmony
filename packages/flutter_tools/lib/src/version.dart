@@ -82,8 +82,7 @@ class FlutterVersion {
       _workingDirectory,
     );
     _gitTagVersion = GitTagVersion.determine(globals.processUtils, globals.platform, workingDirectory: _workingDirectory, gitRef: _frameworkRevision);
-    // _frameworkVersion = gitTagVersion.frameworkVersionFor(_frameworkRevision);
-    _frameworkVersion = '3.7.12';
+    _frameworkVersion = gitTagVersion.frameworkVersionFor(_frameworkRevision);
   }
 
   final SystemClock _clock;
@@ -97,8 +96,7 @@ class FlutterVersion {
   /// `flutter doctor`.
   void fetchTagsAndUpdate() {
     _gitTagVersion = GitTagVersion.determine(globals.processUtils, globals.platform, workingDirectory: _workingDirectory, fetchTags: true);
-    // _frameworkVersion = gitTagVersion.frameworkVersionFor(_frameworkRevision);
-    _frameworkVersion = '3.7.12';
+    _frameworkVersion = gitTagVersion.frameworkVersionFor(_frameworkRevision);
   }
 
   String? _repositoryUrl;
