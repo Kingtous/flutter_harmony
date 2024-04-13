@@ -736,6 +736,13 @@ class GitTagVersion {
       }
     }
 
+    final RegExp ohosTagPattern = RegExp(r'^\d+\.\d+\.\d+-ohos$');
+    for (final String tag in tags) {
+      if (ohosTagPattern.hasMatch(tag.trim())) {
+        return parse(tag.replaceAll('-ohos', ''));
+      }
+    }
+
     // If we're not currently on a tag, use git describe to find the most
     // recent tag and number of commits past.
     return parse(
