@@ -356,7 +356,7 @@ class OhosDevice extends Device {
       'aa',
       'start',
       '-a',
-      builtPackage.ohosBuildData.modeInfo.mainElement!,
+      builtPackage.ohosBuildData.moduleInfo.mainElement!,
       '-b',
       builtPackage.ohosBuildData.appInfo!.bundleName,
     ];
