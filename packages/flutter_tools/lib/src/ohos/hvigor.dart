@@ -344,6 +344,28 @@ Future<int> assembleHap(
       logger: logger);
 }
 
+Future<int> assembleApp(
+    {required ProcessManager processManager,
+    required String ohosRootPath,
+    required String hvigorwPath,
+    Logger? logger}) async {
+
+  await checkFillLocalPropertiesIfNeed(ohosRootPath, logger);
+
+  final List<String> command = <String>[
+    hvigorwPath,
+    'clean',
+    'assembleApp',
+    '--no-daemon',
+  ];
+  return hvigorwTask(command,
+      processManager: processManager,
+      workPath: ohosRootPath,
+      hvigorwPath: hvigorwPath,
+      logger: logger);
+}
+
+
 Future<int> assembleHar(
     {required ProcessManager processManager,
     required String workPath,
@@ -702,53 +724,8 @@ class OhosHvigorBuilder implements OhosBuilder {
       Logger? logger}) async {
     logger?.printStatus('start hap build...');
 
-    if (!flutterProject.ohos.ohosBuildData.modeInfo.hasEntryModule) {
-      throwToolExit(
-          "this ohos project don't have a entry module , can't build to a hap file.");
-    }
+    await buildApplicationPipeLine(flutterProject, buildInfo, target: target, targetPlatform: targetPlatform, logger: logger);
 
-    parseData(flutterProject, logger);
-
-    /// 检查plugin的har构建
-    await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
-
-    await flutterBuildPre(flutterProject, buildInfo, target,
-        targetPlatform: targetPlatform, logger: logger);
-
-    if (ohosProject.isRunWithModuleHar) {
-      final String hvigorwPath =
-          getHvigorwPath(ohosProject.ephemeralDirectory.path, checkMod: true);
-      final int errorCode0 = await assembleHar(
-          processManager: globals.processManager,
-          workPath: ohosProject.ephemeralDirectory.path,
-          moduleName: ohosProject.flutterModuleName,
-          hvigorwPath: hvigorwPath,
-          logger: logger);
-      if (errorCode0 != 0) {
-        throwToolExit('assembleHar error! please check log.');
-      }
-
-      final File originHar = ohosProject.flutterModuleDirectory
-          .childDirectory('build')
-          .childDirectory('default')
-          .childDirectory('outputs')
-          .childDirectory('default')
-          .childFile('${ohosProject.flutterModuleName}.har');
-      if (!originHar.existsSync()) {
-        throwToolExit('can not found module assemble har out file !');
-      }
-      final String desPath = globals.fs.path
-          .join(ohosRootPath, 'har', '${ohosProject.flutterModuleName}.har');
-      ensureParentExists(desPath);
-      originHar.copySync(desPath);
-
-      /// har文件拷贝后，需要重新install
-      ohosProject.deleteOhModulesCache();
-      await ohpmInstall(
-          processManager: globals.processManager,
-          entryPath: ohosProject.mainModuleDirectory.path,
-          logger: logger);
-    }
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
 
     /// invoke hvigow task generate hap file.
@@ -761,12 +738,6 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('assembleHap error! please check log.');
     }
 
-    final String desSignedFile = globals.fs.path.join(
-        ohosRootPath,
-        ohosProject.mainModuleName,
-        'build/default/outputs/default',
-        'entry-default-signed.hap');
-
     final File buildProfile = flutterProject.ohos.getBuildProfileFile();
     final String buildProfileConfig = buildProfile.readAsStringSync();
     final dynamic obj = JSON5.parse(buildProfileConfig);
@@ -774,12 +745,6 @@ class OhosHvigorBuilder implements OhosBuilder {
     if (signingConfigs is List && signingConfigs.isEmpty) {
       logger?.printError('请通过DevEco Studio打开ohos工程后配置调试签名(File -> Project Structure -> Signing Configs 勾选Automatically generate signature)');
       return;
-    }
-    if (signingConfigs is List && signingConfigs.isNotEmpty) {
-      final File signedFile = globals.localFileSystem.file(desSignedFile);
-      if (signedFile.existsSync()) {
-        return;
-      }
     }
   }
 
@@ -863,5 +828,74 @@ class OhosHvigorBuilder implements OhosBuilder {
       Logger? logger}) {
     // TODO: implement buildHsp
     throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> buildApp(FlutterProject flutterProject, BuildInfo buildInfo, 
+      {required String target, required TargetPlatform targetPlatform, Logger? logger}) async {
+    
+    await buildApplicationPipeLine(flutterProject, buildInfo, target: target, targetPlatform: targetPlatform, logger: logger);
+    
+    final String hvigorwPath = getHvigorwPath(ohosRootPath,       checkMod: true);
+
+    /// invoke hvigow task generate hap file.
+    final int errorCode1 = await assembleApp(
+        processManager: globals.processManager,
+        ohosRootPath: ohosRootPath,
+        hvigorwPath: hvigorwPath,
+        logger: logger);
+    if (errorCode1 != 0) {
+      throwToolExit('assembleHap error! please check log.');
+    }
+  }
+  
+  Future<void> buildApplicationPipeLine(FlutterProject flutterProject, BuildInfo buildInfo, {required String target, required TargetPlatform targetPlatform, Logger? logger}) async {
+        if (!flutterProject.ohos.ohosBuildData.modeInfo.hasEntryModule) {
+      throwToolExit(
+          "this ohos project don't have a entry module , can't build to a application.");
+    }
+
+    parseData(flutterProject, logger);
+
+    /// 检查plugin的har构建
+    await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
+
+    await flutterBuildPre(flutterProject, buildInfo, target,
+        targetPlatform: targetPlatform, logger: logger);
+
+    if (ohosProject.isRunWithModuleHar) {
+      final String hvigorwPath =
+          getHvigorwPath(ohosProject.ephemeralDirectory.path, checkMod: true);
+      final int errorCode0 = await assembleHar(
+          processManager: globals.processManager,
+          workPath: ohosProject.ephemeralDirectory.path,
+          moduleName: ohosProject.flutterModuleName,
+          hvigorwPath: hvigorwPath,
+          logger: logger);
+      if (errorCode0 != 0) {
+        throwToolExit('assemble error! please check log.');
+      }
+
+      final File originHar = ohosProject.flutterModuleDirectory
+          .childDirectory('build')
+          .childDirectory('default')
+          .childDirectory('outputs')
+          .childDirectory('default')
+          .childFile('${ohosProject.flutterModuleName}.har');
+      if (!originHar.existsSync()) {
+        throwToolExit('can not found module assemble har out file !');
+      }
+      final String desPath = globals.fs.path
+          .join(ohosRootPath, 'har', '${ohosProject.flutterModuleName}.har');
+      ensureParentExists(desPath);
+      originHar.copySync(desPath);
+
+      /// har文件拷贝后，需要重新install
+      ohosProject.deleteOhModulesCache();
+      await ohpmInstall(
+          processManager: globals.processManager,
+          entryPath: ohosProject.mainModuleDirectory.path,
+          logger: logger);
+    }
   }
 }

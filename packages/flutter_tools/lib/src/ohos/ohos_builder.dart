@@ -38,6 +38,12 @@ abstract class OhosBuilder {
       required TargetPlatform targetPlatform,
       Logger? logger});
 
+  /// build app
+  Future<void> buildApp(FlutterProject flutterProject, BuildInfo buildInfo,
+      {required String target,
+      required TargetPlatform targetPlatform,
+      Logger? logger});
+
   /// build hsp
   Future<void> buildHsp(FlutterProject flutterProject, BuildInfo buildInfo,
       {required String target,
