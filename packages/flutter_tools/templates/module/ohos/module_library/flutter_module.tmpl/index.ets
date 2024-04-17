@@ -13,8 +13,4 @@
 * limitations under the License.
 */
 
-export { FlutterAbility } from '@ohos/flutter_ohos'
-
-export { FlutterPage } from '@ohos/flutter_ohos'
-
-export {GeneratedPluginRegistrant} from './src/main/ets/plugins/GeneratedPluginRegistrant'
+export { GeneratedPluginRegistrant } from './src/main/ets/plugins/GeneratedPluginRegistrant'
