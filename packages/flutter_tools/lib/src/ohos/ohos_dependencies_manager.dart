@@ -36,17 +36,13 @@ enum DependenceType {
 
 class OhosDependence {
   ///"@ohos/flutter_ohos": "file:../har/flutter.har"
-  OhosDependence(this.moduleName, this.baseModuleName, this.modulePath,
-      this.dependenceType);
+  OhosDependence(this.moduleName, this.modulePath, this.dependenceType);
 
   ///@ohos/flutter_ohos
   String moduleName;
 
   ///file:../har/flutter.har
   String modulePath;
-
-  ///flutter_ohos
-  String baseModuleName;
 
   DependenceType dependenceType;
 }
@@ -69,11 +65,20 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
       flutterProject.ohos.flutterModulePackageFile,
       dependenceType: DependenceType.normal);
   final List<String> hasInstallPlugin =
-      list.map((OhosDependence e) => e.baseModuleName).toList();
+      list.map((OhosDependence e) => e.moduleName).toList();
   final List<OhosDependence> uninstallPlugins = pluginList
       .where((OhosPlugin element) => !hasInstallPlugin.contains(element.name))
       .map((OhosPlugin element) => transform(element, DependenceType.normal))
       .toList();
+  final List<String> deprecatedDependencies = pluginList
+      .where((OhosPlugin e) => hasInstallPlugin.contains('@ohos/${e.name}'))
+      .map((OhosPlugin e) => '@ohos/${e.name}')
+      .toList();
+  if (deprecatedDependencies.isNotEmpty) {
+    globals.printStatus(
+        'OhosDependenciesManager: ${deprecatedDependencies.length} deprecated plugin dependencies has removed.');
+    await removeDependencies(flutterProject, deprecatedDependencies);
+  }
   if (uninstallPlugins.isEmpty) {
     globals.printStatus(
         'OhosDependenciesManager: all plugins dependencies has installed.');
@@ -85,8 +90,7 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
 }
 
 OhosDependence transform(OhosPlugin ohosPlugin, DependenceType dependenceType) {
-  return OhosDependence('@ohos/${ohosPlugin.name}', ohosPlugin.name,
-      './har/${ohosPlugin.name}.har', dependenceType);
+  return OhosDependence(ohosPlugin.name, './har/${ohosPlugin.name}.har', dependenceType);
 }
 
 /// 解析dependence列表，dependenceType为空时，返回normal和dev的合集。
@@ -112,14 +116,7 @@ List<OhosDependence> parseDependenciesFromType(
   for (final String symbol in dependencies.keys) {
     final String moduleName = symbol;
     final String modulePath = dependencies[symbol] as String;
-    if (moduleName.split('/').length > 1) {
-      final String baseModuleName = moduleName.split('/')[1];
-      list.add(OhosDependence(
-          moduleName, baseModuleName, modulePath, dependenceType));
-    } else {
-      globals.printStatus(
-          'skip add dependence without baseModule.moduleName:$moduleName ');
-    }
+    list.add(OhosDependence(moduleName, modulePath, dependenceType));
   }
   return list;
 }
@@ -134,7 +131,24 @@ Future<void> addDependencies(
 
   for (final OhosDependence dependence in list) {
     dependencies[dependence.moduleName] =
-        'file:./har/${dependence.baseModuleName}.har';
+        'file:./har/${dependence.moduleName}.har';
+  }
+  final String configNew = JSON5.stringify(config, space: 2);
+  flutterProject.ohos.flutterModulePackageFile
+      .writeAsStringSync(configNew, flush: true);
+}
+
+/// 从 oh-package.json5文件中移除依赖
+Future<void> removeDependencies(
+    FlutterProject flutterProject, List<String> list) async {
+  final dynamic config =
+      parsePakcageConfig(flutterProject.ohos.flutterModulePackageFile);
+  final Map<String, dynamic> dependencies =
+      config['dependencies'] as Map<String, dynamic>;
+
+  // ignore: prefer_foreach
+  for (final String name in list) {
+    dependencies.remove(name);
   }
   final String configNew = JSON5.stringify(config, space: 2);
   flutterProject.ohos.flutterModulePackageFile
