@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
-import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
+import { FlutterEngine, Log } from '@ohos/flutter_ohos';
 import IntegrationTestPlugin from '@ohos/integration_test'
 
 /**
