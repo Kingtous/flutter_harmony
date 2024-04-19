@@ -13,19 +13,19 @@
  * limitations under the License.
  */
  
-import AbilityAware from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/ability/AbilityAware';
 import {
-  AbilityPluginBinding
-} from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/ability/AbilityPluginBinding';
-import UIAbility from '@ohos.app.ability.UIAbility';
-import MethodChannel, { MethodCallHandler, MethodResult} from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodChannel';
-import MethodCall from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodCall';
-import { BinaryMessenger } from '@ohos/flutter_ohos/src/main/ets/plugin/common/BinaryMessenger';
-import {
+  AbilityAware,
+  AbilityPluginBinding,
+  BinaryMessenger,
   FlutterPlugin,
-  FlutterPluginBinding
-} from '@ohos/flutter_ohos/src/main/ets/embedding/engine/plugins/FlutterPlugin';
-import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
+  FlutterPluginBinding,
+  Log,
+  MethodCall,
+  MethodCallHandler,
+  MethodChannel,
+  MethodResult,
+} from '@ohos/flutter_ohos';
+import UIAbility from '@ohos.app.ability.UIAbility';
 
 const TAG = "IntegrationTestPlugin"
 

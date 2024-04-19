@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { FlutterAbility } from '@ohos/flutter_ohos/src/main/ets/embedding/ohos/FlutterAbility';
+import {
+  MethodChannel,
+  MethodResult,
+} from '@ohos/flutter_ohos';
 import UIAbility from '@ohos.app.ability.UIAbility';
-import MethodChannel, { MethodCallHandler, MethodResult} from '@ohos/flutter_ohos/src/main/ets/plugin/common/MethodChannel';
-import Ability from '@ohos.app.ability.Ability';
 
 /**
  * FlutterDeviceScreenshot is a utility class that allows to capture a screenshot
@@ -79,6 +79,6 @@ export class FlutterDeviceScreenshot {
    * @param methodChannel the method channel to call into Dart.
    * @param result the result for the method channel that will contain the byte array.
    */
-  static captureView(ability: UIAbility, methodChannel: MethodChannel, result: Result): void {
+  static captureView(ability: UIAbility, methodChannel: MethodChannel, result: MethodResult): void {
   }
 }
