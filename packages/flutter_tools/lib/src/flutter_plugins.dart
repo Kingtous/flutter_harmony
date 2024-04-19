@@ -527,8 +527,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
 ''';
 
 const String _arktsPluginRegistryTemplate = '''
-import FlutterEngine from '@ohos/flutter_ohos/src/main/ets/embedding/engine/FlutterEngine';
-import Log from '@ohos/flutter_ohos/src/main/ets/util/Log';
+import { FlutterEngine, Log } from '@ohos/flutter_ohos';
 {{#methodChannelPlugins}}
 import {{class}} from '{{name}}'
 {{/methodChannelPlugins}}

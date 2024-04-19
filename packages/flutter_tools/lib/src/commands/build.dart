@@ -16,6 +16,7 @@ import '../commands/build_windows.dart';
 import '../runner/flutter_command.dart';
 import 'build_aar.dart';
 import 'build_apk.dart';
+import 'build_app.dart';
 import 'build_appbundle.dart';
 import 'build_bundle.dart';
 import 'build_hap.dart';
@@ -73,6 +74,7 @@ class BuildCommand extends FlutterCommand {
     _addSubcommand(BuildHapCommand(logger: logger, verboseHelp: verboseHelp));
     _addSubcommand(BuildHarCommand(logger: logger, verboseHelp: verboseHelp));
     _addSubcommand(BuildHspCommand(logger: logger, verboseHelp: verboseHelp));
+    _addSubcommand(BuildAppCommand(logger: logger, verboseHelp: verboseHelp));
   }
 
   void _addSubcommand(BuildSubCommand command) {

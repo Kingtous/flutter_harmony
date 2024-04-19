@@ -13,6 +13,8 @@
 * limitations under the License.
 */
 
+import 'dart:convert';
+
 import 'package:json5/json5.dart';
 
 import '../base/common.dart';
@@ -38,7 +40,7 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
   for (final Plugin plugin in plugins) {
     dependencies[plugin.name] = 'file:../har/${plugin.name}.har';
   }
-  final String configNew = JSON5.stringify(config, space: 2);
+  final String configNew = const JsonEncoder.withIndent('  ').convert(config);
   packageFile.writeAsStringSync(configNew, flush: true);
 }
 
@@ -75,7 +77,7 @@ Future<void> addPluginsModules(FlutterProject flutterProject) async {
       ],
     });
   }
-  final String buildProfileNew = JSON5.stringify(buildProfile, space: 2);
+  final String buildProfileNew = const JsonEncoder.withIndent('  ').convert(buildProfile);
   buildProfileFile.writeAsStringSync(buildProfileNew, flush: true);
 }
 
@@ -108,7 +110,7 @@ Future<void> removePluginsModules(FlutterProject flutterProject) async {
     }
   }
   buildProfile['modules'] = newModules;
-  final String buildProfileNew = JSON5.stringify(buildProfile, space: 2);
+  final String buildProfileNew = const JsonEncoder.withIndent('  ').convert(buildProfile);
   buildProfileFile.writeAsStringSync(buildProfileNew, flush: true);
 }
 
@@ -131,7 +133,7 @@ Future<void> addPluginsOverrides(FlutterProject flutterProject) async {
   for (final Plugin plugin in plugins) {
     overrides[plugin.name] = globals.fs.path.join(plugin.path, OhosPlugin.kConfigKey);
   }
-  final String configNew = JSON5.stringify(config, space: 2);
+  final String configNew = const JsonEncoder.withIndent('  ').convert(config);
   packageFile.writeAsStringSync(configNew, flush: true);
 }
 
@@ -156,6 +158,6 @@ Future<void> removePluginsOverrides(FlutterProject flutterProject) async {
   for (final Plugin plugin in plugins) {
     overrides.remove(plugin.name);
   }
-  final String configNew = JSON5.stringify(config, space: 2);
+  final String configNew = const JsonEncoder.withIndent('  ').convert(config);
   packageFile.writeAsStringSync(configNew, flush: true);
 }

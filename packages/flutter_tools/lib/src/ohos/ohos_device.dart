@@ -123,15 +123,14 @@ class OhosDevice extends Device {
     await runHdcCheckedAsync(<String>['shell', 'rm', remotePath]);
   }
 
-  @override
-  Future<bool> installApp(covariant ApplicationPackage app,
+  Future<bool> _installApp(covariant ApplicationPackage app,
       {String? userIdentifier}) async {
     if (app is! OhosHap) {
       throwToolExit('this project or file is not contain(a) Hap file');
     }
     final OhosHap hap = app;
     final List<String> installAppCommand =
-        hdcCommandForDevice(<String>['install', hap.applicationPackage.path]);
+        hdcCommandForDevice(<String>['install', '-r', hap.applicationPackage.path]);
     final File file = globals.fs.file(hap.applicationPackage.path);
     if (!file.existsSync()) {
       throwToolExit('the hap file not exists!');
@@ -321,13 +320,6 @@ class OhosDevice extends Device {
     _logger.printTrace("Stopping app '${builtPackage.name}' on $name.");
     await stopApp(builtPackage, userIdentifier: userIdentifier);
 
-    if (await isAppInstalled(builtPackage, userIdentifier: userIdentifier)) {
-      globals.printStatus('Uninstalling old version...');
-      if (!await uninstallApp(builtPackage, userIdentifier: userIdentifier)) {
-        globals.printWarning('Warning: uninstalling old version failed');
-      }
-    }
-
     if (!await installApp(builtPackage, userIdentifier: userIdentifier)) {
       return LaunchResult.failed();
     }
@@ -398,6 +390,30 @@ class OhosDevice extends Device {
     } finally {
       await observatoryDiscovery?.cancel();
     }
+  }
+
+  @override
+  Future<bool> installApp(covariant ApplicationPackage app,
+      {String? userIdentifier}) async {
+    final bool wasInstalled = await isAppInstalled(app, userIdentifier: userIdentifier);
+    _logger.printTrace('Installing Hap.');
+    if (await _installApp(app, userIdentifier: userIdentifier)) {
+      return true;
+    }
+    _logger.printTrace('Warning: Failed to install Hap.');
+    if (!wasInstalled) {
+      return false;
+    }
+    _logger.printStatus('Uninstalling old version...');
+    if (!await uninstallApp(app, userIdentifier: userIdentifier)) {
+      _logger.printError('Error: Uninstalling old version failed.');
+      return false;
+    }
+    if (!await _installApp(app, userIdentifier: userIdentifier)) {
+      _logger.printError('Error: Failed to install Hap again.');
+      return false;
+    }
+    return true;
   }
 
   @override
