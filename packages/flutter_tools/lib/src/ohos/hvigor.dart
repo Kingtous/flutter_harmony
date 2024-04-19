@@ -887,7 +887,7 @@ class OhosHvigorBuilder implements OhosBuilder {
   }
   
   Future<void> buildApplicationPipeLine(FlutterProject flutterProject, BuildInfo buildInfo, {required String target, required TargetPlatform targetPlatform, Logger? logger}) async {
-        if (!flutterProject.ohos.ohosBuildData.modeInfo.hasEntryModule) {
+        if (!flutterProject.ohos.ohosBuildData.moduleInfo.hasEntryModule) {
       throwToolExit(
           "this ohos project don't have a entry module , can't build to a application.");
     }
@@ -895,7 +895,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     parseData(flutterProject, logger);
 
     /// 检查plugin的har构建
-    await checkPluginsHarUpdate(flutterProject, buildInfo, ohosBuildData);
+    await checkOhosPluginsDependencies(flutterProject);
 
     await flutterBuildPre(flutterProject, buildInfo, target,
         targetPlatform: targetPlatform, logger: logger);
@@ -931,7 +931,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       ohosProject.deleteOhModulesCache();
       await ohpmInstall(
           processManager: globals.processManager,
-          entryPath: ohosProject.mainModuleDirectory.path,
+          workingDirectory: ohosProject.mainModuleDirectory.path,
           logger: logger);
     }
   }
