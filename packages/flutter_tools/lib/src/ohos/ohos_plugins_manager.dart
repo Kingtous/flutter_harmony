@@ -161,30 +161,11 @@ void copyOhosEmbeddingHarToModule(
     desFile.parent.createSync(recursive: true);
   }
 
-  /// 来源har
-  final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
-  // packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl
-  final String harPath = globals.fs.path.join(
-      flutterSdk,
-      'packages',
-      'flutter_tools',
-      'templates',
-      'app_shared',
-      'ohos.tmpl',
-      'har',
-      'har_product.tmpl');
-  final String fileSuffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
-  final String harFileName = '$HAR_FILE_NAME.$fileSuffix';
-  String harFilePath = globals.fs.path.join(harPath, harFileName);
-
-  String? localHarFilePath = getLocalArtifactEmbeddingHarPath();
-  if (localHarFilePath != null) {
-    harFilePath = localHarFilePath;
-  }
-
-  final File originHar = globals.fs.file(harFilePath);
+  // 来源har
+  final String originHarPath = getOriginHarPath(buildInfo, ohosBuildData);
+  final File originHar = globals.fs.file(originHarPath);
   globals.printStatus(
-      'ohos_plugins_manager: copy har from "$harFilePath" to "$desFilePath"');
+      'ohos_plugins_manager: copy har from "$originHarPath" to "$desFilePath"');
   originHar.copySync(desFilePath);
 }
 

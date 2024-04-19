@@ -576,11 +576,8 @@ void cleanAndCopyFlutterRuntime(
   final String copyDes = getDatPath(ohosRootPath, ohosProject);
   ohosDta.copySync(copyDes);
 
-  final String suffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
-  // 复制 har 和 so 文件
-  // 优先级从高到底依次为: 1. engine产物目录; 2. 项目中的 har/har_product 目录; 3. flutter_flutter 中的模板目录
-  final String originHarPath =
-      getOriginHarPath(ohosProject, ohosRootPath, suffix);
+  // 复制 flutter.har
+  final String originHarPath = getOriginHarPath(buildInfo, ohosBuildData);
 
   String desHarPath = '';
   if (ohosProject.isModule) {
@@ -592,7 +589,7 @@ void cleanAndCopyFlutterRuntime(
   ensureParentExists(desHarPath);
   final File originHarFile = globals.localFileSystem.file(originHarPath);
   originHarFile.copySync(desHarPath);
-  logger?.printStatus('originHarFile: $originHarFile');
+  logger?.printStatus('copy from: $originHarPath to $desHarPath');
   logger?.printStatus('copy flutter runtime to project end');
 }
 
@@ -609,25 +606,6 @@ String getEmbeddingHarFileSuffix(
   return '${buildInfo.isDebug ? 'debug' : buildInfo.isProfile ? 'profile' : 'release'}.$apiVersion';
 }
 
-/// 获取本地构建的flutter.har文件路径
-String? getLocalArtifactEmbeddingHarPath() {
-  final Artifacts artifacts = globals.artifacts!;
-  if (artifacts.isLocalEngine && artifacts is LocalEngineArtifacts) {
-    final String engineOutPath = artifacts.engineOutPath;
-    final String outputEmbeddingHar = globals.fs.path
-        .join(engineOutPath, HAR_FILE_NAME);
-    final String outputEmbeddingHarAbs =
-        globals.fs.path.normalize(outputEmbeddingHar);
-
-    if (globals.fs.file(outputEmbeddingHarAbs).existsSync()) {
-      return outputEmbeddingHarAbs;
-    } else {
-      return null;
-    }
-  } else {
-    return null;
-  }
-}
 
 String? getLocalEnginePath() {
   final Artifacts artifacts = globals.artifacts!;
@@ -639,44 +617,27 @@ String? getLocalEnginePath() {
 
 String getTmplPath() {
   final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
-  final String path = globals.fs.path.join(flutterSdk,
-      'packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl');
+  final String path = globals.fs.path.join(
+      flutterSdk,
+      'packages',
+      'flutter_tools',
+      'templates',
+      'app_shared',
+      'ohos.tmpl',
+      'har',
+      'har_product.tmpl');
   return path;
 }
 
-String getOriginHarPath(
-    OhosProject ohosProject, String ohosRootPath, String suffix) {
-  String target1 = '', target2 = '', target3 = '';
-  // 优先级从高到底依次为: 1. engine产物目录; 2. 项目中的 har/har_product 目录; 3. flutter_flutter 中的模板目录
-  // 1
-  final String? localEnginePath = getLocalEnginePath();
-  if (localEnginePath != null) {
-    target1 = globals.fs.path.join(localEnginePath, HAR_FILE_NAME);
-    if (globals.fs.file(target1).existsSync()) {
-      return target1;
-    }
+String getOriginHarPath(BuildInfo buildInfo, OhosBuildData ohosBuildData) {
+  final String suffix = getEmbeddingHarFileSuffix(buildInfo, ohosBuildData);
+  final String target = 
+      globals.fs.path.join(getTmplPath(), '$HAR_FILE_NAME.$suffix');
+  if (globals.fs.file(target).existsSync()) {
+    return target;
   }
 
-  // 2
-  final String harCachedPath =
-      ohosProject.isModule ? 'har_product' : 'har/har_product';
-  target2 = globals.fs.path.join(
-      ohosProject.flutterRuntimeAssertOriginPath.path,
-      harCachedPath,
-      '$HAR_FILE_NAME.$suffix');
-  if (globals.fs.file(target2).existsSync()) {
-    return target2;
-  }
-
-  // 3
-  target3 = globals.fs.path
-      .join(getTmplPath(), '$HAR_FILE_NAME.$suffix');
-  if (globals.fs.file(target3).existsSync()) {
-    return target3;
-  }
-
-  throwToolExit(
-      'File $HAR_FILE_NAME not found in [$target1, $target2, $target3]');
+  throwToolExit('File $HAR_FILE_NAME not found in [$target]');
 }
 
 class OhosHvigorBuilder implements OhosBuilder {
