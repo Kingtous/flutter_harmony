@@ -301,10 +301,11 @@ class OhosDevice extends Device {
       _logger.printTrace('Building Hap');
       final FlutterProject project = FlutterProject.current();
       await ohosBuilder?.buildHap(
-        project,
-        debuggingOptions.buildInfo,
-        targetPlatform: devicePlatform,
-        logger: globals.logger,
+        project: project,
+        ohosBuildInfo: OhosBuildInfo(
+          debuggingOptions.buildInfo,
+          targetArchs: <OhosArch>[ohosArch],
+        ),
         target: mainPath ?? 'lib/main.dart',
       );
 
