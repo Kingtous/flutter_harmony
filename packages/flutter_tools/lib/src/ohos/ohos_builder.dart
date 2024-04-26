@@ -14,7 +14,6 @@
 */
 
 import '../base/context.dart';
-import '../base/logger.dart';
 import '../build_info.dart';
 import '../project.dart';
 
@@ -27,26 +26,30 @@ abstract class OhosBuilder {
   const OhosBuilder();
 
   /// build hap
-  Future<void> buildHap(FlutterProject flutterProject, BuildInfo buildInfo,
-      {required String target,
-      required TargetPlatform targetPlatform,
-      Logger? logger});
+  Future<void> buildHap({
+    required FlutterProject project,
+    required OhosBuildInfo ohosBuildInfo,
+    required String target,
+  });
 
   /// build har
-  Future<void> buildHar(FlutterProject flutterProject, BuildInfo buildInfo,
-      {required String target,
-      required TargetPlatform targetPlatform,
-      Logger? logger});
+  Future<void> buildHar({
+    required FlutterProject project,
+    required OhosBuildInfo ohosBuildInfo,
+    required String target,
+  });
 
   /// build app
-  Future<void> buildApp(FlutterProject flutterProject, BuildInfo buildInfo,
-      {required String target,
-      required TargetPlatform targetPlatform,
-      Logger? logger});
+  Future<void> buildApp({
+    required FlutterProject project,
+    required OhosBuildInfo ohosBuildInfo,
+    required String target,
+  });
 
   /// build hsp
-  Future<void> buildHsp(FlutterProject flutterProject, BuildInfo buildInfo,
-      {required String target,
-      required TargetPlatform targetPlatform,
-      Logger? logger});
+  Future<void> buildHsp({
+    required FlutterProject project,
+    required OhosBuildInfo ohosBuildInfo,
+    required String target,
+  });
 }
