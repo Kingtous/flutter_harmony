@@ -1,28 +1,28 @@
 {
-  "app": {
-    "signingConfigs": [],
-    "products": [
-      {
-        "name": "default",
-        "signingConfig": "default",
-        "compileSdkVersion": "4.1.0(11)",
-        "compatibleSdkVersion": "4.1.0(11)",
-        "runtimeOS": "HarmonyOS",
-      }
-    ],
-    "buildModeSet": [
-      {
-        "name": "debug",
-      },
-      {
-        "name": "release"
-      }
-    ]
+  "apiType": "stageMode",
+  "buildOption": {
   },
-  "modules": [
+  "buildOptionSet": [
     {
-      "name": "ohos",
-      "srcPath": "./ohos"
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": true,
+            "files": [
+              "./obfuscation-rules.txt"
+            ]
+          },
+          "consumerFiles": [
+            "./consumer-rules.txt"
+          ]
+        }
+      }
+    },
+  ],
+  "targets": [
+    {
+      "name": "default"
     }
   ]
 }
