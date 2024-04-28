@@ -548,10 +548,16 @@ void cleanAndCopyFlutterRuntime(
   logger?.printStatus('copy flutter runtime to project start');
   // copy ohos font-family support
   if (ohosBuildInfo.buildInfo.isDebug) {
+    final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
     final File ohosDta = globals.localFileSystem.file(globals.fs.path.join(
-      ohosProject.flutterRuntimeAssertOriginPath.path,
-      'dta',
-      OHOS_DTA_FILE_NAME));
+        flutterSdk,
+        'packages',
+        'flutter_tools',
+        'templates',
+        'app_shared',
+        'ohos.tmpl',
+        'dta',
+        OHOS_DTA_FILE_NAME));
     final String copyDes = getDatPath(ohosRootPath, ohosProject);
     ohosDta.copySync(copyDes);
   }
