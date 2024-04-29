@@ -694,6 +694,8 @@ class OhosHvigorBuilder implements OhosBuilder {
           moduleName: harModules.map((OhosModule e) => e.name).join(','),
           logger: _logger);
       if (errorCode != 0) {
+        await removePluginsModules(project);
+        await removePluginsOverrides(project);
         throwToolExit('assembleHar error! please check log.');
       }
       for (final OhosModule module in harModules) {
@@ -794,6 +796,8 @@ class OhosHvigorBuilder implements OhosBuilder {
         moduleName: harModules.map((OhosModule e) => e.name).join(','),
         logger: _logger);
     if (errorCode != 0) {
+      await removePluginsModules(project);
+      await removePluginsOverrides(project);
       throwToolExit('assembleHar error! please check log.');
     }
     for (final OhosModule module in harModules) {
@@ -894,6 +898,8 @@ class OhosHvigorBuilder implements OhosBuilder {
           hvigorwPath: hvigorwPath,
           logger: _logger);
       if (errorCode0 != 0) {
+        await removePluginsModules(flutterProject);
+        await removePluginsOverrides(flutterProject);
         throwToolExit('assemble error! please check log.');
       }
 

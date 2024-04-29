@@ -36,9 +36,21 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
   }
   final String packageConfig = packageFile.readAsStringSync();
   final Map<String, dynamic> config = JSON5.parse(packageConfig) as Map<String, dynamic>;
-  final Map<String, dynamic> dependencies = config['dependencies'] as Map<String, dynamic>;
+  final Map<String, dynamic> dependencies =
+      config['dependencies'] as Map<String, dynamic>;
+  final List<String> removeList = <String>[];
   for (final Plugin plugin in plugins) {
+    for (final String key in dependencies.keys) {
+      if (key.startsWith('@ohos') && key.contains(plugin.name)) {
+        removeList.add(key);
+      }
+    }
     dependencies[plugin.name] = 'file:../har/${plugin.name}.har';
+  }
+  for (final String key in removeList) {
+    globals.printStatus(
+        'OhosDependenciesManager: deprecated plugin dependencies "$key" has been removed.');
+    dependencies.remove(key);
   }
   final String configNew = const JsonEncoder.withIndent('  ').convert(config);
   packageFile.writeAsStringSync(configNew, flush: true);

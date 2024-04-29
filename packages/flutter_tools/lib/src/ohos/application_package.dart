@@ -25,6 +25,7 @@ import '../base/user_messages.dart';
 import '../build_info.dart';
 import '../globals.dart' as globals;
 import '../project.dart';
+import 'ohos_plugins_manager.dart';
 import 'ohos_sdk.dart';
 
 const String OHOS_ENTRY_DEFAULT = 'entry';
@@ -214,14 +215,16 @@ class OhosModule {
     return modules.map((dynamic e) {
       final Map<String, dynamic> module = e as Map<String, dynamic>;
       final String srcPath = module['srcPath'] as String;
-      return OhosModule._fromModulePath(globals.fs.path.join(ohosProject.ohosRoot.path, srcPath));
+      return OhosModule._fromModulePath(ohosProject, globals.fs.path.join(ohosProject.ohosRoot.path, srcPath));
     }).toList();
   }
 
-  static OhosModule _fromModulePath(String srcPath) {
+  static OhosModule _fromModulePath(OhosProject ohosProject, String srcPath) {
     final String moduleJsonPath = globals.fs.path.join(srcPath, 'src', 'main', 'module.json5');
     final File moduleJsonFile = globals.fs.file(moduleJsonPath);
     if (!moduleJsonFile.existsSync()) {
+      removePluginsModules(ohosProject.parent);
+      removePluginsOverrides(ohosProject.parent);
       throwToolExit('Can not found module.json5 at $moduleJsonPath . \n'
         '  You need to update the Flutter plugin project structure. \n'
         '  See https://gitee.com/openharmony-sig/flutter_samples/tree/master/ohos/docs/09_specifications/update_flutter_plugin_structure.md');
