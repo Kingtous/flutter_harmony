@@ -94,6 +94,16 @@
                 <filteritem type="filepath" name="packages/integration_test/example/ohos/dependencies/.*" desc="dependencies files"/>
                 <filteritem type="filepath" name="packages/integration_test/example/ohos/entry/libs/arm64-v8a/libc++_shared.so" desc="libs files"/>
                 <filteritem type="filepath" name="packages/integration_test/example/ohos/dta/icudtl.dat" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/macrobenchmarks/ohos/hvigor/hvigor-wrapper.js" desc="hvigor files"/>
+                <filteritem type="filepath" name="dev/benchmarks/macrobenchmarks/ohos/entry/libs/arm64-v8a/libc++_shared.so" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/macrobenchmarks/ohos/hvigorw.bat" desc="hvigor files"/>
+                <filteritem type="filepath" name="dev/benchmarks/macrobenchmarks/ohos/entry/src/main/ets/plugins/GeneratedPluginRegistrant.ets" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/macrobenchmarks/ohos/dta/icudtl.dat" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/complex_layout/ohos/hvigor/hvigor-wrapper.js" desc="hvigor files"/>
+                <filteritem type="filepath" name="dev/benchmarks/complex_layout/ohos/entry/libs/arm64-v8a/libc++_shared.so" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/complex_layout/ohos/hvigorw.bat" desc="hvigor files"/>
+                <filteritem type="filepath" name="dev/benchmarks/complex_layout/ohos/entry/src/main/ets/plugins/GeneratedPluginRegistrant.ets" desc="libs files"/>
+                <filteritem type="filepath" name="dev/benchmarks/complex_layout/ohos/dta/icudtl.dat" desc="libs files"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
                 <filteritem type="filepath" name="dev/bots/test/analyze-test-input/root/packages/foo/foo.dart"
