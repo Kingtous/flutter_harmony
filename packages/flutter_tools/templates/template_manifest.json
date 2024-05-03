@@ -175,7 +175,6 @@
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-config.json5.tmpl",
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-wrapper.js.tmpl",
         "templates/app_shared/ohos.tmpl/local.properties.tmpl",
-        "templates/app_shared/ohos.tmpl/dta/icudtl.dat",
         "templates/app_shared/ohos.tmpl/entry/libs/arm64-v8a/libc++_shared.so",
 
         "templates/app_test_widget/test/widget_test.dart.tmpl",
@@ -313,9 +312,6 @@
         "templates/module/ohos/module_library/flutter_module.tmpl/hvigorfile.ts.tmpl",
         "templates/module/ohos/module_library/flutter_module.tmpl/index.ets",
         "templates/module/ohos/module_library/flutter_module.tmpl/oh-package.json5.tmpl",
-
-        "templates/module/ohos/module_library/dta.tmpl/icudtl.dat",
-        
         "templates/module/README.md",
 
         "templates/package/.gitignore.tmpl",

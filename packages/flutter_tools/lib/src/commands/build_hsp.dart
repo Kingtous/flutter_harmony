@@ -15,6 +15,7 @@
 
 import '../build_info.dart';
 import '../globals.dart' as globals;
+import '../ohos/hvigor_utils.dart';
 import '../ohos/ohos_builder.dart';
 import '../project.dart';
 import '../runner/flutter_command.dart';
@@ -23,17 +24,30 @@ import 'build.dart';
 class BuildHspCommand extends BuildSubCommand {
   BuildHspCommand({required super.logger, bool verboseHelp = false})
       : super(verboseHelp: verboseHelp) {
-    const String defaultTargetPlatform = 'ohos-arm64';
-    addDartObfuscationOption();
+    addTreeShakeIconsFlag();
+    usesTargetOption();
+    addBuildModeFlags(verboseHelp: verboseHelp);
+    usesFlavorOption();
+    usesPubOption();
+    addShrinkingFlag(verboseHelp: verboseHelp);
     addSplitDebugInfoOption();
+    addDartObfuscationOption();
+    usesDartDefineOption();
     usesExtraDartFlagOptions(verboseHelp: verboseHelp);
-    argParser.addOption(
+    addBundleSkSLPathOption(hide: !verboseHelp);
+    addEnableExperimentation(hide: !verboseHelp);
+    addBuildPerformanceFile(hide: !verboseHelp);
+    addNullSafetyModeOptions(hide: !verboseHelp);
+    usesAnalyzeSizeFlag();
+    addIgnoreDeprecationOption();
+    usesTrackWidgetCreation(verboseHelp: verboseHelp);
+
+    argParser.addMultiOption(
       'target-platform',
-      defaultsTo: defaultTargetPlatform,
+      defaultsTo: const <String>['ohos-arm64'],
       allowed: <String>['ohos-arm64', 'ohos-arm', 'ohos-x86'],
       help: 'The target platform for which the app is compiled.',
     );
-    addBuildModeFlags(verboseHelp: verboseHelp);
   }
 
   @override
@@ -44,15 +58,18 @@ class BuildHspCommand extends BuildSubCommand {
 
   @override
   Future<FlutterCommandResult> runCommand() async {
+    if (globals.hmosSdk == null) {
+      exitWithNoSdkMessage();
+    }
     final BuildInfo buildInfo = await getBuildInfo();
-    final TargetPlatform targetPlatform =
-        getTargetPlatformForName(stringArgDeprecated('target-platform')!);
-    await ohosBuilder?.buildHsp(
-      FlutterProject.current(),
+    final OhosBuildInfo ohosBuildInfo = OhosBuildInfo(
       buildInfo,
-      targetPlatform: targetPlatform,
-      logger: globals.logger,
-      target: getNameForTargetPlatform(targetPlatform),
+      targetArchs: stringsArg('target-platform').map<OhosArch>(getOhosArchForName),
+    );
+    await ohosBuilder?.buildHsp(
+      project: FlutterProject.current(),
+      ohosBuildInfo: ohosBuildInfo,
+      target: targetFile,
     );
     return FlutterCommandResult.success();
   }

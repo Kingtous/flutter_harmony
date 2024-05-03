@@ -382,6 +382,26 @@ class AndroidBuildInfo {
   final bool multidexEnabled;
 }
 
+/// Information about an Ohos build to be performed or used.
+class OhosBuildInfo {
+  const OhosBuildInfo(
+    this.buildInfo, {
+    this.targetArchs = const <OhosArch>[
+      OhosArch.armeabi_v7a,
+      OhosArch.arm64_v8a,
+      OhosArch.x86_64,
+    ],
+  });
+
+  // The build info containing the mode and flavor.
+  final BuildInfo buildInfo;
+
+  /// The target platforms for the build.
+  final Iterable<OhosArch> targetArchs;
+
+}
+
+
 /// A summary of the compilation strategy used for Dart.
 class BuildMode {
   const BuildMode._(this.name);
