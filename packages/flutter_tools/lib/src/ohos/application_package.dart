@@ -115,7 +115,7 @@ class OhosBuildData {
       moduleInfo = ModuleInfo.getModuleInfo(ohosProject);
       apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
     } on Exception catch (err) {
-      throwToolExit('parse ohos project build data exception! $err');
+      throwToolExit('parse ohos project build data exception! File: ${ohosProject.getAppJsonFile().absolute}, Error: $err');
     }
     return OhosBuildData(appInfo, moduleInfo, apiVersion);
   }
