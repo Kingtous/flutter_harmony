@@ -2,7 +2,7 @@
   "name": "integration_test",
   "version": "1.0.0",
   "description": "Please describe the basic information.",
-  "main": "",
+  "main": "Index.ets",
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
