@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "ohos",
+    "name": "integration_test",
     "type": "har",
     "deviceTypes": [
       "default",

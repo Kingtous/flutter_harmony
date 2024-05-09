@@ -249,15 +249,16 @@ Future<void> invokeCmd(
 /// ohpm should init first
 Future<void> ohpmInstall(
     {required ProcessManager processManager,
-    required String entryPath,
+    required String workingDirectory,
     Logger? logger}) async {
   final List<String> command = <String>[
     'ohpm',
     'install',
+    '--all',
   ];
-  logger?.printTrace('invoke at:$entryPath ,command: ${command.join(' ')}');
+  logger?.printTrace('invoke at:$workingDirectory ,command: ${command.join(' ')}');
   final Process server =
-      await processManager.start(command, workingDirectory: entryPath);
+      await processManager.start(command, workingDirectory: workingDirectory);
 
   server.stderr.transform<String>(utf8.decoder).listen(logger?.printError);
   final StdoutHandler stdoutHandler =
@@ -567,8 +568,7 @@ void cleanAndCopyFlutterRuntime(
 
   String desHarPath = '';
   if (ohosProject.isModule) {
-    desHarPath = globals.fs.path
-        .join(ohosProject.flutterModuleDirectory.path, 'har', HAR_FILE_NAME);
+    desHarPath = globals.fs.path.join(ohosRootPath, 'har', HAR_FILE_NAME);
   } else {
     desHarPath = globals.fs.path.join(ohosRootPath, 'har', HAR_FILE_NAME);
   }
@@ -672,9 +672,55 @@ class OhosHvigorBuilder implements OhosBuilder {
   }) async {
     _logger.printStatus('start hap build...');
 
+    if (!project.ohos.ohosBuildData.moduleInfo.hasEntryModule) {
+      throwToolExit(
+          "this ohos project don't have a entry module , can't build to a hap file.");
+    }
+    await addPluginsModules(project);
+    await addPluginsOverrides(project);
+
+    parseData(project, _logger);
+
     await buildApplicationPipeLine(project, ohosBuildInfo, target: target);
 
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
+    final List<OhosModule> harModules = ohosBuildData.harModules;
+    if (harModules.isNotEmpty) {
+      /// 生成所有 plugin 的 har
+      final int errorCode = await assembleHar(
+          processManager: globals.processManager,
+          workPath: ohosRootPath,
+          hvigorwPath: hvigorwPath,
+          moduleName: harModules.map((OhosModule e) => e.name).join(','),
+          logger: _logger);
+      if (errorCode != 0) {
+        await removePluginsModules(project);
+        await removePluginsOverrides(project);
+        throwToolExit('assembleHar error! please check log.');
+      }
+      for (final OhosModule module in harModules) {
+        final String desHarPath = globals.fs.path.join(ohosRootPath, 'har', '${module.name}.har');
+        final File originHar = globals.fs.directory(globals.fs.path.join(ohosRootPath, module.srcPath))
+            .childDirectory('build')
+            .childDirectory('default')
+            .childDirectory('outputs')
+            .childDirectory('default')
+            .childFile('${module.name}.har');
+        if (!originHar.existsSync()) {
+          throwToolExit('can not found module assemble har out file !');
+        }
+        ensureParentExists(desHarPath);
+        originHar.copySync(desHarPath);
+      }
+    }
+    await removePluginsModules(project);
+    await removePluginsOverrides(project);
+    ohosProject.deleteOhModulesCache();
+    await ohpmInstall(
+      processManager: globals.processManager,
+      workingDirectory: ohosRootPath,
+      logger: _logger,
+    );
 
     /// invoke hvigow task generate hap file.
     final int errorCode1 = await assembleHap(
@@ -712,25 +758,13 @@ class OhosHvigorBuilder implements OhosBuilder {
 
     cleanAndCopyFlutterRuntime(ohosProject, ohosBuildInfo, _logger, ohosRootPath, ohosBuildData);
 
-    // ohpm install at every module
+    // ohpm install for all modules
     ohosProject.deleteOhModulesCache();
-    if (flutterProject.ohos.isRunWithModuleHar) {
-      await ohpmInstall(
-          processManager: globals.processManager,
-          entryPath: flutterProject.ohos.flutterModuleDirectory.path,
-          logger: _logger);
-    } else {
-      for (final Directory element in ohosProject.moduleDirectorys) {
-        await ohpmInstall(
-            processManager: globals.processManager,
-            entryPath: element.path,
-            logger: _logger);
-      }
-      await ohpmInstall(
-          processManager: globals.processManager,
-          entryPath: ohosProject.ohosRoot.path,
-          logger: _logger);
-    }
+    await ohpmInstall(
+      processManager: globals.processManager,
+      workingDirectory: ohosRootPath,
+      logger: _logger,
+    );
   }
 
   @override
@@ -743,25 +777,70 @@ class OhosHvigorBuilder implements OhosBuilder {
         !project.ohos.flutterModuleDirectory.existsSync()) {
       throwToolExit('current project is not module or has not pub get');
     }
-    parseData(project, _logger);
 
-    /// 检查plugin的har构建
-    await checkPluginsHarUpdate(project, ohosBuildInfo.buildInfo, ohosBuildData);
+    await addPluginsModules(project);
+    await addPluginsOverrides(project);
+
+    parseData(project, _logger);
 
     await flutterBuildPre(project, ohosBuildInfo, target);
 
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
+    final List<OhosModule> harModules = ohosBuildData.harModules;
 
-    /// invoke hvigow task generate hap file.
+    /// 生成 module 和所有 plugin 的 har
     final int errorCode = await assembleHar(
         processManager: globals.processManager,
-        workPath: project.ohos.ephemeralDirectory.path,
+        workPath: ohosRootPath,
         hvigorwPath: hvigorwPath,
-        moduleName: project.ohos.flutterModuleName,
+        moduleName: harModules.map((OhosModule e) => e.name).join(','),
         logger: _logger);
     if (errorCode != 0) {
+      await removePluginsModules(project);
+      await removePluginsOverrides(project);
       throwToolExit('assembleHar error! please check log.');
     }
+    for (final OhosModule module in harModules) {
+      final String desHarPath = globals.fs.path.join(ohosRootPath, 'har', '${module.name}.har');
+      final File originHar = globals.fs.directory(globals.fs.path.join(ohosRootPath, module.srcPath))
+          .childDirectory('build')
+          .childDirectory('default')
+          .childDirectory('outputs')
+          .childDirectory('default')
+          .childFile('${module.name}.har');
+      if (!originHar.existsSync()) {
+        throwToolExit('can not found module assemble har out file !');
+      }
+      ensureParentExists(desHarPath);
+      originHar.copySync(desHarPath);
+    }
+    await removePluginsModules(project);
+    await removePluginsOverrides(project);
+    printHowToConsumeHar(logger: _logger);
+  }
+
+
+  /// Prints how to consume the har from a host app.
+  void printHowToConsumeHar({
+    Logger? logger,
+  }) {
+
+    logger?.printStatus('\nConsuming the Module', emphasis: true);
+    logger?.printStatus('''
+    1. Open ${globals.fs.path.join('<host project>', 'oh-package.json5')}
+    2. Add flutter_module to the dependencies list:
+
+      "dependencies": {
+        "@ohos/flutter_module": "file:path/to/har/flutter_module.har"
+      }
+
+    3. Override flutter and plugins dependencies:
+
+      "overrides" {
+        "@ohos/flutter_ohos": "file:path/to/har/flutter.har",
+        "plugin_xxx":'file:path/to/har/plugin_xxx.har',
+      }
+  ''');
   }
 
   @override
@@ -797,7 +876,7 @@ class OhosHvigorBuilder implements OhosBuilder {
   }
   
   Future<void> buildApplicationPipeLine(FlutterProject flutterProject, OhosBuildInfo ohosBuildInfo, {required String target}) async {
-        if (!flutterProject.ohos.ohosBuildData.modeInfo.hasEntryModule) {
+    if (!flutterProject.ohos.ohosBuildData.moduleInfo.hasEntryModule) {
       throwToolExit(
           "this ohos project don't have a entry module , can't build to a application.");
     }
@@ -805,7 +884,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     parseData(flutterProject, _logger);
 
     /// 检查plugin的har构建
-    await checkPluginsHarUpdate(flutterProject, ohosBuildInfo.buildInfo, ohosBuildData);
+    await checkOhosPluginsDependencies(flutterProject);
 
     await flutterBuildPre(flutterProject, ohosBuildInfo, target);
 
@@ -819,6 +898,8 @@ class OhosHvigorBuilder implements OhosBuilder {
           hvigorwPath: hvigorwPath,
           logger: _logger);
       if (errorCode0 != 0) {
+        await removePluginsModules(flutterProject);
+        await removePluginsOverrides(flutterProject);
         throwToolExit('assemble error! please check log.');
       }
 
@@ -840,7 +921,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       ohosProject.deleteOhModulesCache();
       await ohpmInstall(
           processManager: globals.processManager,
-          entryPath: ohosProject.mainModuleDirectory.path,
+          workingDirectory: ohosProject.mainModuleDirectory.path,
           logger: _logger);
     }
   }
