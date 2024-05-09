@@ -223,8 +223,6 @@ class OhosModule {
     final String moduleJsonPath = globals.fs.path.join(srcPath, 'src', 'main', 'module.json5');
     final File moduleJsonFile = globals.fs.file(moduleJsonPath);
     if (!moduleJsonFile.existsSync()) {
-      removePluginsModules(ohosProject.parent);
-      removePluginsOverrides(ohosProject.parent);
       throwToolExit('Can not found module.json5 at $moduleJsonPath . \n'
         '  You need to update the Flutter plugin project structure. \n'
         '  See https://gitee.com/openharmony-sig/flutter_samples/tree/master/ohos/docs/09_specifications/update_flutter_plugin_structure.md');

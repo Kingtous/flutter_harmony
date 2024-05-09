@@ -9,6 +9,7 @@ import 'package:yaml/yaml.dart';
 
 import '../src/convert.dart';
 import 'android/gradle_utils.dart' as gradle;
+import 'base/io.dart';
 import 'ohos/application_package.dart';
 import 'ohos/hvigor_utils.dart' as hvigor;
 import 'base/common.dart';
@@ -921,18 +922,33 @@ class OhosProject extends FlutterProjectPlatform {
 
   List<Directory> get ohModulesCacheDirectorys {
     const String OH_MODULES_NAME = 'oh_modules';
+    // 先删除build，再删除oh_modules
     final List<Directory> list = moduleDirectorys
-        .map((Directory e) => e.childDirectory(OH_MODULES_NAME))
+        .map((Directory e) => e.childDirectory('build'))
         .toList();
+    list.add(ohosRoot.childDirectory('build'));
+    list.addAll(moduleDirectorys
+        .map((Directory e) => e.childDirectory(OH_MODULES_NAME)));
     list.add(ohosRoot.childDirectory(OH_MODULES_NAME));
     return list;
   }
 
   /// 删除ohModules文件夹缓存
-  void deleteOhModulesCache() {
+  Future<void> deleteOhModulesCache() async {
     for (final Directory element in ohModulesCacheDirectorys) {
-      if (element.existsSync()) {
-        element.deleteSync(recursive: true);
+      await deleteDirectory(element);
+    }
+  }
+
+  Future<void> deleteDirectory(Directory dir) async {
+    if (dir.existsSync()) {
+      if (globals.platform.isWindows) {
+        final Process process = await Process.start('cmd', <String>['rmdir', '/s/q', dir.path]);
+        if (await process.exitCode != 0) {
+          throwToolExit('Unable to remove directory ${dir.path}', exitCode: 1);
+        }
+      } else {
+        dir.deleteSync(recursive: true);
       }
     }
   }
