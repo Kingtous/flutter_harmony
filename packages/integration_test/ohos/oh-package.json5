@@ -1,13 +1,11 @@
 {
-  "name": "ohos",
+  "name": "integration_test",
   "version": "1.0.0",
   "description": "Please describe the basic information.",
-  "main": "",
+  "main": "Index.ets",
   "author": "",
-  "license": "",
+  "license": "Apache-2.0",
   "dependencies": {
-  },
-  "devDependencies": {
-    "@ohos/hypium": "1.0.11"
+    "@ohos/flutter_ohos": "file:har/flutter.har",
   }
 }

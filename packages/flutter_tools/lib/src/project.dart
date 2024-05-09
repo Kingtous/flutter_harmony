@@ -902,7 +902,7 @@ class OhosProject extends FlutterProjectPlatform {
   String get flutterModuleName => isModule ? 'flutter_module' : mainModuleName;
 
   /// 主module，entry存在的话，是entryModuleName，否则是其他module
-  String get mainModuleName => ohosBuildData.modeInfo.mainModuleName;
+  String get mainModuleName => ohosBuildData.moduleInfo.mainModuleName;
 
   Directory get flutterModuleDirectory => isModule
       ? ephemeralDirectory.childDirectory(flutterModuleName)
@@ -911,10 +911,9 @@ class OhosProject extends FlutterProjectPlatform {
   Directory get mainModuleDirectory => ohosRoot.childDirectory(mainModuleName);
 
   List<Directory> get moduleDirectorys {
-    final List<Directory> list = ohosBuildData.modeInfo.moduleList
-        .map((OhosModule e) => e.moduleName)
-        .map((String moduleName) =>
-            globals.fs.path.join(ohosRoot.path, moduleName))
+    final List<Directory> list = ohosBuildData.moduleInfo.moduleList
+        .map((OhosModule e) =>
+            globals.fs.path.join(ohosRoot.path, e.srcPath))
         .map((String path) => globals.fs.directory(path))
         .toList();
     return list;
