@@ -924,7 +924,10 @@ class OhosProject extends FlutterProjectPlatform {
     final List<Directory> list = moduleDirectorys
         .map((Directory e) => e.childDirectory(OH_MODULES_NAME))
         .toList();
+    list.addAll(moduleDirectorys
+        .map((Directory e) => e.childDirectory('build')));
     list.add(ohosRoot.childDirectory(OH_MODULES_NAME));
+    list.add(ohosRoot.childDirectory('build'));
     return list;
   }
 
