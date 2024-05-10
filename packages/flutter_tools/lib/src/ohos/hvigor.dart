@@ -320,7 +320,7 @@ Future<int> assembleHap(
     Logger? logger}) async {
   final List<String> command = <String>[
     hvigorwPath,
-    'clean',
+    // 'clean',
     'assembleHap',
     '--no-daemon',
   ];
@@ -338,7 +338,7 @@ Future<int> assembleApp(
     Logger? logger}) async {
   final List<String> command = <String>[
     hvigorwPath,
-    'clean',
+    // 'clean',
     'assembleApp',
     '--no-daemon',
   ];
@@ -358,7 +358,7 @@ Future<int> assembleHar(
     Logger? logger}) async {
   final List<String> command = <String>[
     hvigorwPath,
-    'clean',
+    // 'clean',
     '--mode',
     'module',
     '-p',
@@ -634,8 +634,6 @@ class OhosHvigorBuilder implements OhosBuilder {
     await addPluginsModules(project);
     await addPluginsOverrides(project);
 
-    parseData(project, _logger);
-
     await buildApplicationPipeLine(project, ohosBuildInfo, target: target);
 
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
@@ -668,7 +666,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     }
     await removePluginsModules(project);
     await removePluginsOverrides(project);
-    ohosProject.deleteOhModulesCache();
+    // ohosProject.deleteOhModulesCache();
     await ohpmInstall(
       processManager: globals.processManager,
       workingDirectory: ohosRootPath,
@@ -712,7 +710,7 @@ class OhosHvigorBuilder implements OhosBuilder {
     cleanAndCopyFlutterRuntime(ohosProject, ohosBuildInfo, _logger, ohosRootPath, ohosBuildData);
 
     // ohpm install for all modules
-    ohosProject.deleteOhModulesCache();
+    // ohosProject.deleteOhModulesCache();
     await ohpmInstall(
       processManager: globals.processManager,
       workingDirectory: ohosRootPath,
@@ -867,7 +865,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       originHar.copySync(desPath);
 
       /// har文件拷贝后，需要重新install
-      ohosProject.deleteOhModulesCache();
+      // ohosProject.deleteOhModulesCache();
       await ohpmInstall(
           processManager: globals.processManager,
           workingDirectory: ohosProject.mainModuleDirectory.path,

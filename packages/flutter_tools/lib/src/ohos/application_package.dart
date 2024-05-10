@@ -112,10 +112,20 @@ class OhosBuildData {
       } else {
         appInfo = AppInfo('', 0, '');
       }
-      moduleInfo = ModuleInfo.getModuleInfo(ohosProject);
-      apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
     } on Exception catch (err) {
-      throwToolExit('parse ohos project build data exception! File: ${ohosProject.getAppJsonFile().absolute}, Error: $err');
+      throwToolExit('Parse ohos app.json5 error: $err');
+    }
+
+    try {
+      moduleInfo = ModuleInfo.getModuleInfo(ohosProject);
+    } on Exception catch(err) {
+      throwToolExit('Parse ohos module.json5 error: $err');
+    }
+
+    try {
+      apiVersion = getApiVersion(ohosProject.getBuildProfileFile());
+    } on Exception catch(err) {
+      throwToolExit('Parse ohos build-profile.json5 error: $err');
     }
     return OhosBuildData(appInfo, moduleInfo, apiVersion);
   }
@@ -210,6 +220,9 @@ class OhosModule {
 
   static List<OhosModule> fromOhosProject(OhosProject ohosProject) {
     final File buildProfileFile = ohosProject.ohosRoot.childFile('build-profile.json5');
+    if (!buildProfileFile.existsSync()) {
+      return <OhosModule>[];
+    }
     final Map<String, dynamic> buildProfile = JSON5.parse(buildProfileFile.readAsStringSync()) as Map<String, dynamic>;
     final List<dynamic> modules = buildProfile['modules'] as List<dynamic>;
     return modules.map((dynamic e) {
