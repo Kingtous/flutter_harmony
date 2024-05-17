@@ -127,8 +127,8 @@ int getApiVersion(File buildProfile) {
   }
   final String buildProfileConfig = buildProfile.readAsStringSync();
   final dynamic obj = JSON5.parse(buildProfileConfig);
-  dynamic sdkObj = obj['app']['compileSdkVersion'];
-  sdkObj ??= obj['app']['products'][0]['compileSdkVersion'];
+  dynamic sdkObj = obj['app']['compatibleSdkVersion'];
+  sdkObj ??= obj['app']['products'][0]['compatibleSdkVersion'];
   if (sdkObj is int) {
     return sdkObj;
   } else if (sdkObj is String && sdkObj != null) { // 4.1.0(11)
