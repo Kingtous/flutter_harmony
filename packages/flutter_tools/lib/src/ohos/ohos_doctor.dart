@@ -99,6 +99,27 @@ class OhosValidator extends DoctorValidator {
           .add(ValidationMessage.error(_userMessages.hosSdkInstallation()));
     }
 
+    /// check ohpm
+    final _VersionInfo? ohpmVersion = await _getBinaryVersion('ohpm');
+    final String? ohpmVersionString = ohpmVersion?.description;
+    if (ohpmVersionString == null) {
+      validationType = ValidationType.missing;
+      messages.add(ValidationMessage.error(_userMessages.ohpmMissing()));
+    } else {
+      messages
+          .add(ValidationMessage(_userMessages.ohpmVersion(ohpmVersionString)));
+    }
+
+    /// check node
+    final _VersionInfo? nodeVersion = await _getBinaryVersion('node');
+    final String? nodeVersionString = nodeVersion?.description;
+    if (nodeVersionString == null) {
+      validationType = ValidationType.missing;
+      messages.add(ValidationMessage.error(_userMessages.nodeMissing()));
+    } else {
+      messages
+          .add(ValidationMessage(_userMessages.nodeVersion(nodeVersionString)));
+    }
     return ValidationResult(validationType, messages);
   }
 

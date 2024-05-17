@@ -17,30 +17,30 @@ Flutter SDK 仓库
    *下列环境变量配置，类Unix系统（Linux、Mac），下可直接参照配置，Windows下环境变量配置请在‘编辑系统环境变量’中设置*
 
   1. 配置HarmonyOS SDK和环境变量
-   * API11 开发者预览版解压后目录结构如下：
+   * API12, deveco-studio-5.0.0.300, command-line-tools-xxx.zip
+   * 解压后目录结构如下
       ```
-      /SDK
-      ├── HarmonyOS-NEXT-DP0
-      │   └── base
-      │   └── hms
-      ├── HarmonyOS-NEXT-DP1
-      │   └── base
-      │   └── hms
-      ...
+      /command-line-tools
+      ├── bin
+      ├── codelinter
+      ├── hstack
+      ├── hvigor
+      ├── ohpm
+      ├── sdk/HarmonyOS-NEXT-DB1/openharmony
+         ├── ets
+         ├── js
+         ├── native
+         ├── previewer
+         └── toolchains
+      └── tool
       ```
-   * 解压开发套件包之后，配置环境变量,如：
+
+   * 配置环境变量
 
       ```
-      # HarmonyOS SDK，解压开发套件包中 sdk/xxSDK.zip 之后的目录
-      export HOS_SDK_HOME=/home/<user>/ohos/sdk
-
-      # 解压开发套件包中 commandline/commandline-tools-xxxx.zip 之后 bin 子目录
-      export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
+      export HOS_SDK_HOME=/home/<user>/ohos/command-line-tool/sdk
+      export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
       ```
-   * 配置sdkmgr的路径(commandline/command-line-tools/sdkmanager/conf/config.properties)，使用本地路径，并运行sdkmgr list验证，config.properties的路径配置：
-     ```
-     sdk-directory=/home/<user>/ohos/sdk
-     ```
 
   2. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，指定dev或master分支，并配置环境
 
@@ -62,16 +62,14 @@ Flutter SDK 仓库
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
       # 拉取下来的flutter_flutter/bin目录
-      export PATH=$PATH:/home/<user>/ohos/flutter_flutter/bin
+      export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
 
-      # 步骤1中command-line-tools的bin 子目录
-      export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
-
-      # HarmonyOS SDK，步骤1中解压开发套件包中 sdk/xxSDK.zip 之后的目录
-      export HOS_SDK_HOME=/home/<user>/ohos/sdk
+      # HamonyOS SDK
+      export HOS_SDK_HOME=/home/<user>/ohos/command-line-tools/sdk
+      export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
 
       # nodejs
-      export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
+      export NODE_HOME=/home/<user>/ohos/command-line-tools/tool/node
       export PATH=$NODE_HOME/bin:$PATH
       ```
 

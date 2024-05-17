@@ -18,33 +18,32 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
     *The following environment variable configuration is for Unix-like systems (Linux, Mac). You can directly refer to the configuration below. For environment variable configuration under Windows, please set it in ‘Edit System Environment Variables’*
 
    1. Download OpenHarmony SDK and configure environment variables
-   * The directory structure after decompression of the API11 developer preview version is as follows:
+   * API12, deveco-studio-5.0.0.300, command-line-tools-xxx.zip
+   * The directory structure after decompression is as follows
       ```
-      /SDK
-      ├── HarmonyOS-NEXT-DP0
-      │   └── base
-      │   └── hms
-      ├── HarmonyOS-NEXT-DP1
-      │   └── base
-      │   └── hms
-      ...
+      /command-line-tools
+      ├── bin
+      ├── codelinter
+      ├── hstack
+      ├── hvigor
+      ├── ohpm
+      ├── sdk/HarmonyOS-NEXT-DB1/openharmony
+         ├── ets
+         ├── js
+         ├── native
+         ├── previewer
+         └── toolchains
+      └── tool
       ```
 
     * Configure environment variables
 
        ```
-       #HarmonyOS SDK, extract the directory after sdk/xxSDK.zip from the development kit package
-       export HOS_SDK_HOME=/home/<user>/ohos/sdk
-
-       #Unzip the bin subdirectory after commandline/commandline tools xxxx.zip in the development kit package
-       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
+       export HOS_SDK_HOME=/home/<user>/ohos/command-line-tool/sdk
+       export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
        ```
-    * Configure the path of sdkmgr (commandline/command-line-tools/sdkmanager/conf/config.properties), use the local path, and run sdkmgr list to verify, the path configuration of config.properties:
-      ```
-      sdk-directory=/home/<user>/ohos/sdk
-      ```
 
-   1. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
+   2. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
 
       ```
       export PATH=<flutter_flutter path>/bin:$PATH
@@ -54,7 +53,7 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
       ```
 
-    2. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. --local-engine=src/out/<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
+    3. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. --local-engine=src/out/<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
 
        For the configuration of all the above environment variables (for environment variable configuration under Windows, please set it in 'Edit System Environment Variables'), you can refer to the following example (please replace user and specific code path with the actual path):
 
@@ -64,16 +63,14 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 
        # The flutter_flutter directory pulled from Gitee
-       export PATH=$PATH:$FLUTTER_HOME/bin
+       export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
 
-       # Unzip the bin subdirectory after commandline/commandline-tools-xxxx.zip in the development kit package
-       export PATH=$PATH:/home/<user>/ohos/command-line-tools/bin
+       # HarmonyOS SDK
+       export HOS_SDK_HOME=/home/<user>/ohos/command-line-tools/sdk
+       export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
 
-       # HarmonyOS SDK, unzip the directory after sdk/X86SDK.zip or M1SDK.zip in the DevEco Studio installation package
-       export HOS_SDK_HOME=/home/<user>/ohos/sdk
-
-       #nodejs
-       export NODE_HOME=/home/<user>/env/node-v14.19.1-linux-x64
+       # nodejs
+       export NODE_HOME=/home/<user>/ohos/command-line-tools/tool/node
        export PATH=$NODE_HOME/bin:$PATH
        ```
 

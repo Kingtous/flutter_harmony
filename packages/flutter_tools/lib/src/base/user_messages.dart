@@ -192,12 +192,16 @@ class UserMessages {
       'hdc version $ohpmVersion';
 
   String ohpmMissing() =>
-      'ohpm is missing ,please download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli;\n'
+      'Ohpm is missing ,please download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli;\n'
           'and set environment OHPM_HOME also set to PATH\n'
           'If the ohpm has been installed to a custom location, please use\n'
           '`flutter config --ohpm-home` to update to that location.\n';
   String ohpmVersion(String ohpmVersion) =>
-      'ohpm version $ohpmVersion';
+      'Ohpm version $ohpmVersion';
+
+  String nodeMissing() => 'Node is missing, please configure node to the environment variable PATH.';
+  String nodeVersion(String nodeVersion) =>
+    'Node version $nodeVersion';
 
   String signToolMissing() =>
       'signTool is missing ,please download from https://gitee.com/openharmony/developtools_hapsigner;\n'
