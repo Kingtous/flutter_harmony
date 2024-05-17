@@ -142,9 +142,6 @@
         "templates/app_shared/ohos.tmpl/.gitignore",
         "templates/app_shared/ohos.tmpl/build-profile.json5.tmpl",
         "templates/app_shared/ohos.tmpl/hvigorfile.ts.tmpl",
-        "templates/app_shared/ohos.tmpl/hvigorw.bat.tmpl",
-        "templates/app_shared/ohos.tmpl/hvigorw.tmpl",
-        "templates/app_shared/ohos.tmpl/local.properties.tmpl",
         "templates/app_shared/ohos.tmpl/oh-package.json5.tmpl",
         "templates/app_shared/ohos.tmpl/AppScope/app.json5.tmpl",
         "templates/app_shared/ohos.tmpl/AppScope/resources/base/element/string.json.tmpl",
@@ -174,7 +171,6 @@
         "templates/app_shared/ohos.tmpl/entry/src/ohosTest/resources/base/profile/test_pages.json.tmpl",
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-config.json5.tmpl",
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-wrapper.js.tmpl",
-        "templates/app_shared/ohos.tmpl/local.properties.tmpl",
         "templates/app_shared/ohos.tmpl/entry/libs/arm64-v8a/libc++_shared.so",
 
         "templates/app_test_widget/test/widget_test.dart.tmpl",
@@ -301,8 +297,6 @@
         "templates/module/ohos/hvigor_plugin/hvigor/hvigor-config.json5.tmpl",
         "templates/module/ohos/hvigor_plugin/hvigor/hvigor-wrapper.js.tmpl",
         "templates/module/ohos/hvigor_plugin/hvigorfile.ts.tmpl",
-        "templates/module/ohos/hvigor_plugin/hvigorw.bat.tmpl",
-        "templates/module/ohos/hvigor_plugin/hvigorw.tmpl",
 
         "templates/module/ohos/module_library/flutter_module.tmpl/libs/arm64-v8a/libc+++_shared.so",
         "templates/module/ohos/module_library/flutter_module.tmpl/src/main/module.json5",

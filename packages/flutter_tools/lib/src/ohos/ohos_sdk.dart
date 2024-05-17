@@ -27,6 +27,26 @@ const String kHmosHome = 'HOS_SDK_HOME';
 // for api11 developer preview
 SplayTreeMap<int, String> sdkVersionMap = SplayTreeMap<int, String>((a, b) => b.compareTo(a));
 
+// find first hdc in sdkPath
+String? _getHdcPath(String sdkPath) {
+  final bool isWindows = globals.platform.isWindows;
+  final String hdcName = isWindows ? 'hdc.exe' : 'hdc';
+  for (final int api in sdkVersionMap.keys) {
+    final String sdkVersion = sdkVersionMap[api]!;
+    final List<String> findList = <String>[
+      globals.fs.path.join(sdkPath, sdkVersion, 'openharmony', 'toolchains', hdcName),
+      globals.fs.path.join(sdkPath, sdkVersion, 'base', 'toolchains', hdcName),
+      globals.fs.path.join(sdkPath, api.toString(), 'toolchains', hdcName),
+    ];
+    for (final String path in findList) {
+      if (globals.fs.file(path).existsSync()) {
+        return path;
+      }
+    }
+  }
+  return null;
+}
+
 abstract class HarmonySdk {
   // name
   String get name;
@@ -68,7 +88,7 @@ class OhosSdk implements HarmonySdk {
   String get sdkPath => _sdkDir.path;
 
   @override
-  String? get hdcPath => getHdcPath(_sdkDir.path);
+  String? get hdcPath => _getHdcPath(_sdkDir.path);
 
   @override
   List<String> get apiAvailable => getAvailableApi();
@@ -146,28 +166,7 @@ class OhosSdk implements HarmonySdk {
   }
 
   static bool hdcExists(String dir) {
-    return getHdcPath(dir) != null;
-  }
-
-  static String? getHdcPath(String sdkPath) {
-    final bool isWindows = globals.platform.isWindows;
-    // find it in api11 developer preview folder
-    for (final int api in sdkVersionMap.keys) {
-      final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, sdkVersionMap[api]!, 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
-      if (file.existsSync()) {
-        return file.path;
-      }
-    }
-    // if hdc not found, find it in previous version
-    for (final int folder in sdkVersionMap.keys) {
-      final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, folder.toString(), 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
-      if (file.existsSync()) {
-        return file.path;
-      }
-    }
-    return null;
+    return _getHdcPath(dir) != null;
   }
 
   List<String> getAvailableApi() {
@@ -204,7 +203,7 @@ class HmosSdk implements HarmonySdk {
   String get name => 'HarmonyOSSDK';
 
   @override
-  String? get hdcPath => getHdcPath(_sdkDir.path);
+  String? get hdcPath => _getHdcPath(_sdkDir.path);
 
   @override
   String get sdkPath => _sdkDir.path;
@@ -301,28 +300,6 @@ class HmosSdk implements HarmonySdk {
       }
     }
   }
-
-  static String? getHdcPath(String sdkPath) {
-    final bool isWindows = globals.platform.isWindows;
-    // find it in api11 developer preview folder
-    for (final int api in sdkVersionMap.keys) {
-      final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, sdkVersionMap[api]!, 'base', 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
-      if (file.existsSync()) {
-        return file.path;
-      }
-    }
-    // if hdc not found, find it in previous version
-    for (final int folder in sdkVersionMap.keys) {
-      final File file = globals.fs.file(globals.fs.path
-          .join(sdkPath, folder.toString(), 'toolchains', isWindows ? 'hdc.exe' : 'hdc'));
-      if (file.existsSync()) {
-        return file.path;
-      }
-    }
-    return null;
-  }
-
 
   //harmonyOsSdk，包含目录hmscore和openharmony
   static bool validSdkDirectory(String hmosHomeDir) {
