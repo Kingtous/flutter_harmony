@@ -4120,9 +4120,7 @@ class EditableTextState extends State<EditableText> with AutomaticKeepAliveClien
       // in the web browser, but we do unfocus for all other kinds of events.
         switch (event.kind) {
           case ui.PointerDeviceKind.touch:
-            if (kIsWeb) {
-              widget.focusNode.unfocus();
-            }
+            widget.focusNode.unfocus();
             break;
           case ui.PointerDeviceKind.mouse:
           case ui.PointerDeviceKind.stylus:
