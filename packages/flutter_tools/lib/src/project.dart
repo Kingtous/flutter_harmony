@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:io' as io;
+import 'package:json5/json5.dart';
 import 'package:meta/meta.dart';
 import 'package:xml/xml.dart';
 import 'package:yaml/yaml.dart';
@@ -852,6 +853,9 @@ class OhosProject extends FlutterProjectPlatform {
     return _ohosBuildDataIns!;
   }
 
+  static const String kBuildProfileName = 'build-profile.json5';
+  static const String kFlutterModuleName = 'flutter_module';
+
   final FlutterProject parent;
 
   OhosBuildData? _ohosBuildDataIns;
@@ -868,7 +872,7 @@ class OhosProject extends FlutterProjectPlatform {
   /// possible, files that are edited by Flutter tooling after initial project
   /// creation should live here.
   Directory get managedDirectory =>
-      ohosRoot.childDirectory('$flutterModuleName/src/main/ets/plugins');
+      flutterModuleDirectory.childDirectory('src/main/ets/plugins');
 
   /// 是否先编译.ohos/module下har，再运行hap
   bool get isRunWithModuleHar =>
@@ -900,21 +904,42 @@ class OhosProject extends FlutterProjectPlatform {
       parent.directory.childDirectory('ohos');
 
   /// flutter资源和运行环境，生成和打包的module
-  String get flutterModuleName => isModule ? 'flutter_module' : mainModuleName;
+  String get flutterModuleName =>
+      isModule ? kFlutterModuleName : mainModuleName;
 
   /// 主module，entry存在的话，是entryModuleName，否则是其他module
   String get mainModuleName => ohosBuildData.moduleInfo.mainModuleName;
 
-  Directory get flutterModuleDirectory => isModule
-      ? ephemeralDirectory.childDirectory(flutterModuleName)
-      : editableHostAppDirectory.childDirectory(flutterModuleName);
+  Directory get flutterModuleDirectory {
+    if (isModule) {
+      final File buildProfileFile =
+          ephemeralDirectory.childFile(kBuildProfileName);
+      final Map<String, dynamic> buildProfile = JSON5
+          .parse(buildProfileFile.readAsStringSync()) as Map<String, dynamic>;
+      final List<dynamic> modules = buildProfile['modules'] as List<dynamic>;
+      final Map<String, dynamic>? module = modules.firstWhere((item) {
+        Map<String, dynamic> module = item as Map<String, dynamic>;
+        return module['name'] as String == kFlutterModuleName;
+      }, orElse: () => null);
+
+      if (module == null) {
+        throwToolExit(
+            'Failed to find $kFlutterModuleName in ${buildProfileFile.path}',
+            exitCode: 1);
+      }
+
+      final String srcPath = module['srcPath'] as String;
+      return globals.fs
+          .directory(globals.fs.path.join(ephemeralDirectory.path, srcPath));
+    }
+    return editableHostAppDirectory.childDirectory(mainModuleName);
+  }
 
   Directory get mainModuleDirectory => ohosRoot.childDirectory(mainModuleName);
 
   List<Directory> get moduleDirectorys {
     final List<Directory> list = ohosBuildData.moduleInfo.moduleList
-        .map((OhosModule e) =>
-            globals.fs.path.join(ohosRoot.path, e.srcPath))
+        .map((OhosModule e) => globals.fs.path.join(ohosRoot.path, e.srcPath))
         .map((String path) => globals.fs.directory(path))
         .toList();
     return list;
@@ -943,7 +968,8 @@ class OhosProject extends FlutterProjectPlatform {
   Future<void> deleteDirectory(Directory dir) async {
     if (dir.existsSync()) {
       if (globals.platform.isWindows) {
-        final Process process = await Process.start('cmd', <String>['rmdir', '/s/q', dir.path]);
+        final Process process =
+            await Process.start('cmd', <String>['rmdir', '/s/q', dir.path]);
         if (await process.exitCode != 0) {
           throwToolExit('Unable to remove directory ${dir.path}', exitCode: 1);
         }
@@ -956,7 +982,7 @@ class OhosProject extends FlutterProjectPlatform {
   File getAppJsonFile() =>
       ohosRoot.childDirectory('AppScope').childFile('app.json5');
 
-  File getBuildProfileFile() => ohosRoot.childFile('build-profile.json5');
+  File getBuildProfileFile() => ohosRoot.childFile(kBuildProfileName);
 
   // entry/src/main/module.json5 配置，主要获取启动ability名
   File getModuleJsonFile() => mainModuleDirectory

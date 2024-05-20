@@ -34,6 +34,7 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
   if (!packageFile.existsSync()) {
     throwToolExit('check if oh-package.json5 file:($packageFile) exist ?');
   }
+
   final String packageConfig = packageFile.readAsStringSync();
   final Map<String, dynamic> config = JSON5.parse(packageConfig) as Map<String, dynamic>;
   final Map<String, dynamic> dependencies =
@@ -45,7 +46,9 @@ Future<void> checkOhosPluginsDependencies(FlutterProject flutterProject) async {
         removeList.add(key);
       }
     }
-    dependencies[plugin.name] = 'file:../har/${plugin.name}.har';
+    final String absolutePath = globals.fs.path.join(flutterProject.ohos.ohosRoot.path, 'har/${plugin.name}.har');
+    final String relativePath = globals.fs.path.relative(absolutePath, from: globals.fs.path.dirname(packageFile.path));
+    dependencies[plugin.name] = 'file:${relativePath}';
   }
   for (final String key in removeList) {
     globals.printStatus(
@@ -157,7 +160,7 @@ Future<void> removePluginsOverrides(FlutterProject flutterProject) async {
   if (plugins.isEmpty) {
     return;
   }
-  final File packageFile = flutterProject.ohos.ohosRoot.childFile('oh-package.json5');;
+  final File packageFile = flutterProject.ohos.ohosRoot.childFile('oh-package.json5');
   if (!packageFile.existsSync()) {
     throwToolExit('check if oh-package.json5 file:($packageFile) exist ?');
   }
