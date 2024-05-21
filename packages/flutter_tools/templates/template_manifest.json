@@ -174,7 +174,6 @@
         "templates/app_shared/ohos.tmpl/entry/src/ohosTest/resources/base/profile/test_pages.json.tmpl",
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-config.json5.tmpl",
         "templates/app_shared/ohos.tmpl/hvigor/hvigor-wrapper.js.tmpl",
-        "templates/app_shared/ohos.tmpl/entry/libs/arm64-v8a/libc++_shared.so",
 
         "templates/app_test_widget/test/widget_test.dart.tmpl",
 
