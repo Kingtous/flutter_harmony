@@ -302,7 +302,6 @@
         "templates/module/ohos/hvigor_plugin/hvigor/hvigor-wrapper.js.tmpl",
         "templates/module/ohos/hvigor_plugin/hvigorfile.ts.tmpl",
 
-        "templates/module/ohos/module_library/flutter_module.tmpl/libs/arm64-v8a/libc+++_shared.so",
         "templates/module/ohos/module_library/flutter_module.tmpl/src/main/module.json5",
         "templates/module/ohos/module_library/flutter_module.tmpl/.gitignore",
         "templates/module/ohos/module_library/flutter_module.tmpl/build-profile.json5.tmpl",

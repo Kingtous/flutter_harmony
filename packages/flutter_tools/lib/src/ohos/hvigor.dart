@@ -425,8 +425,6 @@ Future<String> flutterAssemble(FlutterProject flutterProject, OhosBuildInfo ohos
             ...ohosBuildInfo.buildInfo.toBuildSystemEnvironment(),
             kTargetFile: targetFile,
             kTargetPlatform: getNameForTargetPlatform(TargetPlatform.ohos),
-            /// 运行本地引擎产物下的 font-subset 会报错，所以暂时关闭
-            kIconTreeShakerFlag: 'false',
           },
           artifacts: globals.artifacts!,
           fileSystem: globals.fs,
