@@ -482,6 +482,7 @@ void cleanAndCopyFlutterAsset(
     // copy app.so
     final String appSoPath = globals.fs.path.join(output, getNameForOhosArch(ohosBuildInfo.targetArchs.first), APP_SO_ORIGIN);
     final File appSoFile = globals.localFileSystem.file(appSoPath);
+    ensureParentExists(desAppSoPath);
     appSoFile.copySync(desAppSoPath);
   } else {
     final File appSo = globals.fs.file(desAppSoPath);
