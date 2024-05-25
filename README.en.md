@@ -18,34 +18,20 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
     *The following environment variable configuration is for Unix-like systems (Linux, Mac). You can directly refer to the configuration below. For environment variable configuration under Windows, please set it in ‘Edit System Environment Variables’*
 
    1. Download OpenHarmony SDK and configure environment variables
-   * API12, deveco-studio-5.0.0.300, command-line-tools-xxx.zip
-   * The directory structure after decompression is as follows
-      ```
-      /command-line-tools
-      ├── bin
-      ├── codelinter
-      ├── hstack
-      ├── hvigor
-      ├── ohpm
-      ├── sdk/HarmonyOS-NEXT-DB1/openharmony
-         ├── ets
-         ├── js
-         ├── native
-         ├── previewer
-         └── toolchains
-      └── tool
-      ```
+    * API12, deveco-studio-5.0.0.300 or command-line-tools-5.0.0.300
+    * Configure environment variables (SDK, node, ohpm, hvigor)
 
-    * Configure environment variables
-
-       ```
-       export HOS_SDK_HOME=/home/<user>/ohos/command-line-tool/sdk
-       export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
+       ```sh
+       export TOOL_HOME=/Applications/DevEco-Studio-5.0.3.300.app/Contents # For mac
+       export DEVECO_SDK_HOME=$TOOL_HOME/sdk # command-line-tools/sdk
+       export PATH=$TOOL_HOME/tools/ohpm/bin:$PATH # command-line-tools/ohpm/bin
+       export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
+       export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
        ```
 
    2. Download the current warehouse code `git clone https://gitee.com/openharmony-sig/flutter_flutter.git` through the code tool, and configure the environment
 
-      ```
+      ```sh
       export PATH=<flutter_flutter path>/bin:$PATH
 
       # Flutter pub domestic mirror
@@ -66,12 +52,11 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
 
        # HarmonyOS SDK
-       export HOS_SDK_HOME=/home/<user>/ohos/command-line-tools/sdk
-       export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
-
-       # nodejs
-       export NODE_HOME=/home/<user>/ohos/command-line-tools/tool/node
-       export PATH=$NODE_HOME/bin:$PATH
+       export TOOL_HOME=/Applications/DevEco-Studio-5.0.3.300.app/Contents # For mac
+       export DEVECO_SDK_HOME=$TOOL_HOME/sdk # command-line-tools/sdk
+       export PATH=$TOOL_HOME/tools/ohpm/bin:$PATH # command-line-tools/ohpm/bin
+       export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
+       export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
        ```
 
 ## Build steps

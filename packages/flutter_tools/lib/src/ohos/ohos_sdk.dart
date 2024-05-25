@@ -23,6 +23,7 @@ const String kOhosHome = 'OHOS_HOME';
 const String kOhosSdkRoot = 'OHOS_SDK_HOME';
 // HarmonyOS SDK
 const String kHmosHome = 'HOS_SDK_HOME';
+const String kDevecoSdk = 'DEVECO_SDK_HOME';
 
 // for api11 developer preview
 SplayTreeMap<int, String> sdkVersionMap = SplayTreeMap<int, String>((a, b) => b.compareTo(a));
@@ -176,7 +177,7 @@ class OhosSdk implements HarmonySdk {
       final Directory directory =
           globals.fs.directory(globals.fs.path.join(sdkPath, sdkVersionMap[api]));
       if (directory.existsSync()) {
-        list.add(sdkVersionMap[api]!);
+        list.add('$api:${sdkVersionMap[api]!}');
       }
     }
     // if not found, find it in previous version
@@ -221,7 +222,7 @@ class HmosSdk implements HarmonySdk {
        final Directory directory =
        globals.fs.directory(globals.fs.path.join(sdkPath, sdkVersionMap[api]));
        if (directory.existsSync()) {
-         list.add(sdkVersionMap[api]!);
+         list.add('$api:${sdkVersionMap[api]!}');
        }
      }
      // if not found, find it in previous version
@@ -244,6 +245,8 @@ class HmosSdk implements HarmonySdk {
         hmosHomeDir = globals.config.getValue('ohos-sdk') as String?;
       } else if (globals.platform.environment.containsKey(kHmosHome)) {
         hmosHomeDir = globals.platform.environment[kHmosHome];
+      } else if (globals.platform.environment.containsKey(kDevecoSdk)) {
+        hmosHomeDir = globals.platform.environment[kDevecoSdk];
       }
 
       if (hmosHomeDir != null) {

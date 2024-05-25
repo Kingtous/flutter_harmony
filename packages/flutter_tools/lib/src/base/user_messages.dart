@@ -183,9 +183,9 @@ class UserMessages {
           '`flutter config --ohos-sdk` to update to that location.\n';
 
   String ohosSdkVersion(HarmonySdk ohosSdk) =>
-      'OpenHarmony Sdk location: ${ohosSdk.sdkPath}, available api versions has ${ohosSdk.apiAvailable}';
+      'OpenHarmony Sdk at ${ohosSdk.sdkPath}, available api versions has ${ohosSdk.apiAvailable}';
   String hosSdkVersion(HarmonySdk hosSdk) =>
-      'HarmonyOS Sdk location: ${hosSdk.sdkPath}, available api versions has ${hosSdk.apiAvailable}';
+      'HarmonyOS Sdk at ${hosSdk.sdkPath}, available api versions has ${hosSdk.apiAvailable}';
 
   String hdcMissing() =>
       'hdc is missing ,please download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli;\n'
@@ -194,16 +194,16 @@ class UserMessages {
       'hdc version $ohpmVersion';
 
   String ohpmMissing() =>
-      'Ohpm is missing ,please download from https://developer.harmonyos.com/cn/develop/deveco-studio#download_cli;\n'
-          'and set environment OHPM_HOME also set to PATH\n'
-          'If the ohpm has been installed to a custom location, please use\n'
-          '`flutter config --ohpm-home` to update to that location.\n';
-  String ohpmVersion(String ohpmVersion) =>
-      'Ohpm version $ohpmVersion';
+      'Ohpm is missing, please configure "ohpm" to the environment variable PATH.';
+  String ohpmVersion(String version) => 'Ohpm version $version';
 
-  String nodeMissing() => 'Node is missing, please configure node to the environment variable PATH.';
-  String nodeVersion(String nodeVersion) =>
-    'Node version $nodeVersion';
+  String nodeMissing() =>
+      'Node is missing, please configure "node" to the environment variable PATH.';
+  String nodeVersion(String version) => 'Node version $version';
+
+  String hvigorwMissing() =>
+      'Hvigorw is missing, please configure "hvigorw" to the environment variable PATH.';
+  String hvigorwPath(String path) => 'Hvigorw binary at $path';
 
   String signToolMissing() =>
       'signTool is missing ,please download from https://gitee.com/openharmony/developtools_hapsigner;\n'

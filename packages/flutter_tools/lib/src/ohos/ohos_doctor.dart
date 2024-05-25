@@ -100,7 +100,7 @@ class OhosValidator extends DoctorValidator {
     }
 
     /// check ohpm
-    final _VersionInfo? ohpmVersion = await _getBinaryVersion('ohpm');
+    final _VersionInfo? ohpmVersion = await _getBinaryVersion(<String>['ohpm', '--version']);
     final String? ohpmVersionString = ohpmVersion?.description;
     if (ohpmVersionString == null) {
       validationType = ValidationType.missing;
@@ -111,7 +111,7 @@ class OhosValidator extends DoctorValidator {
     }
 
     /// check node
-    final _VersionInfo? nodeVersion = await _getBinaryVersion('node');
+    final _VersionInfo? nodeVersion = await _getBinaryVersion(<String>['node', '--version']);
     final String? nodeVersionString = nodeVersion?.description;
     if (nodeVersionString == null) {
       validationType = ValidationType.missing;
@@ -120,6 +120,22 @@ class OhosValidator extends DoctorValidator {
       messages
           .add(ValidationMessage(_userMessages.nodeVersion(nodeVersionString)));
     }
+
+    /// check hvigorw
+    final _VersionInfo? hvigorPath;
+    if (_platform.isWindows) {
+      hvigorPath = await _getBinaryVersion(<String>['where', 'hvigorw']);
+    } else {
+      hvigorPath = await _getBinaryVersion(<String>['which', 'hvigorw']);
+    }
+    final String? hvigorPathString = hvigorPath?.description;
+    if (hvigorPathString == null) {
+      validationType = ValidationType.missing;
+      messages.add(ValidationMessage.error(_userMessages.hvigorwMissing()));
+    } else {
+      messages
+          .add(ValidationMessage(_userMessages.hvigorwPath(hvigorPathString)));
+    }
     return ValidationResult(validationType, messages);
   }
 
@@ -127,13 +143,10 @@ class OhosValidator extends DoctorValidator {
   ///
   /// Requires tha [binary] take a '--version' flag, and print a version of the
   /// form x.y.z somewhere on the first line of output.
-  Future<_VersionInfo?> _getBinaryVersion(String binary) async {
+  Future<_VersionInfo?> _getBinaryVersion(List<Object> commands) async {
     ProcessResult? result;
     try {
-      result = await _processManager.run(<String>[
-        binary,
-        '--version',
-      ]);
+      result = await _processManager.run(commands);
     } on ArgumentError {
       // ignore error.
     } on ProcessException {

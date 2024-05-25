@@ -17,34 +17,20 @@ Flutter SDK 仓库
    *下列环境变量配置，类Unix系统（Linux、Mac），下可直接参照配置，Windows下环境变量配置请在‘编辑系统环境变量’中设置*
 
   1. 配置HarmonyOS SDK和环境变量
-   * API12, deveco-studio-5.0.0.300, command-line-tools-xxx.zip
-   * 解压后目录结构如下
-      ```
-      /command-line-tools
-      ├── bin
-      ├── codelinter
-      ├── hstack
-      ├── hvigor
-      ├── ohpm
-      ├── sdk/HarmonyOS-NEXT-DB1/openharmony
-         ├── ets
-         ├── js
-         ├── native
-         ├── previewer
-         └── toolchains
-      └── tool
-      ```
+   * API12, deveco-studio-5.0.0.300 或 command-line-tools-5.0.0.300
+   * 配置环境变量 (SDK, node, ohpm, hvigor)
 
-   * 配置环境变量
-
-      ```
-      export HOS_SDK_HOME=/home/<user>/ohos/command-line-tool/sdk
-      export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
+      ```sh
+      export TOOL_HOME=/Applications/DevEco-Studio-5.0.3.300.app/Contents # mac环境
+      export DEVECO_SDK_HOME=$TOOL_HOME/sdk # command-line-tools/sdk
+      export PATH=$TOOL_HOME/tools/ohpm/bin:$PATH # command-line-tools/ohpm/bin
+      export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
+      export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
       ```
 
   2. 通过代码工具下载当前仓库代码`git clone https://gitee.com/openharmony-sig/flutter_flutter.git`，指定dev或master分支，并配置环境
 
-     ```
+     ```sh
      export PATH=<flutter_flutter path>/bin:$PATH
 
      # Flutter pub国内镜像
@@ -56,7 +42,7 @@ Flutter SDK 仓库
 
       上述所有环境变量的配置（Windows下环境变量配置请在‘编辑系统环境变量’中设置），可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
 
-      ```
+      ```sh
       # 国内镜像
       export PUB_HOSTED_URL=https://pub.flutter-io.cn
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
@@ -65,12 +51,11 @@ Flutter SDK 仓库
       export PATH=/home/<user>/ohos/flutter_flutter/bin:$PATH
 
       # HamonyOS SDK
-      export HOS_SDK_HOME=/home/<user>/ohos/command-line-tools/sdk
-      export PATH=/home/<user>/ohos/command-line-tools/bin:$PATH
-
-      # nodejs
-      export NODE_HOME=/home/<user>/ohos/command-line-tools/tool/node
-      export PATH=$NODE_HOME/bin:$PATH
+      export TOOL_HOME=/Applications/DevEco-Studio-5.0.3.300.app/Contents # mac环境
+      export DEVECO_SDK_HOME=$TOOL_HOME/sdk # command-line-tools/sdk
+      export PATH=$TOOL_HOME/tools/ohpm/bin:$PATH # command-line-tools/ohpm/bin
+      export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
+      export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
       ```
 
 
