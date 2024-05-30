@@ -1109,15 +1109,20 @@ class OhosProject extends FlutterProjectPlatform {
       final Map<String, dynamic> buildProfile = JSON5
           .parse(buildProfileFile.readAsStringSync()) as Map<String, dynamic>;
       final List<dynamic> modules = buildProfile['modules'] as List<dynamic>;
-      final Map<String, dynamic>? module = modules.firstWhere((item) {
-        Map<String, dynamic> module = item as Map<String, dynamic>;
+      Map<String, dynamic>? module = modules.firstWhere((item) {
+        final Map<String, dynamic> module = item as Map<String, dynamic>;
         return module['name'] as String == kFlutterModuleName;
-      }, orElse: () => null);
+      }, orElse: () => null) as Map<String, dynamic>?;
 
       if (module == null) {
-        throwToolExit(
-            'Failed to find $kFlutterModuleName in ${buildProfileFile.path}',
-            exitCode: 1);
+        module = <String, String>{
+          'name': 'flutter_module',
+          'srcPath': './flutter_module',
+        };
+        final List<dynamic> modules = buildProfile['modules'] as List<dynamic>;
+        modules.add(module);
+        final String buildProfileNew = const JsonEncoder.withIndent('  ').convert(buildProfile);
+        buildProfileFile.writeAsStringSync(buildProfileNew, flush: true);
       }
 
       final String srcPath = module['srcPath'] as String;

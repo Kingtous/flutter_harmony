@@ -635,7 +635,7 @@ class OhosHvigorBuilder implements OhosBuilder {
           "this ohos project don't have a entry module, can't build to a hap file.");
     }
     await addPluginsModules(project);
-    await addPluginsOverrides(project);
+    await addFlutterModuleAndPluginsSrcOverrides(project);
 
     await buildApplicationPipeLine(project, ohosBuildInfo, target: target);
 
@@ -673,7 +673,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       }
     }
     await removePluginsModules(project);
-    await removePluginsOverrides(project);
+    await addFlutterModuleAndPluginsOverrides(project);
     // ohosProject.deleteOhModulesCache();
     await ohpmInstall(
       processManager: globals.processManager,
@@ -737,7 +737,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       throwToolExit('current project is not module or has not pub get');
     }
     await addPluginsModules(project);
-    await addPluginsOverrides(project);
+    await addFlutterModuleAndPluginsSrcOverrides(project);
 
     parseData(project, _logger);
 
@@ -771,7 +771,7 @@ class OhosHvigorBuilder implements OhosBuilder {
       originHar.copySync(desHarPath);
     }
     await removePluginsModules(project);
-    await removePluginsOverrides(project);
+    await addFlutterModuleAndPluginsOverrides(project);
     printHowToConsumeHar(logger: _logger);
   }
 

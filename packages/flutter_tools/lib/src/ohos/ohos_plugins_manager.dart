@@ -69,7 +69,7 @@ Future<void> addPluginsModules(FlutterProject flutterProject) async {
   }
   final File buildProfileFile = flutterProject.ohos.getBuildProfileFile();
   if (!buildProfileFile.existsSync()) {
-    throwToolExit('check if oh-package.json5 file:($buildProfileFile) exist ?');
+    throwToolExit('check if build-profile.json5 file:($buildProfileFile) exist ?');
   }
   final String packageConfig = buildProfileFile.readAsStringSync();
   final Map<String, dynamic> buildProfile = JSON5.parse(packageConfig) as Map<String, dynamic>;
@@ -96,6 +96,31 @@ Future<void> addPluginsModules(FlutterProject flutterProject) async {
   buildProfileFile.writeAsStringSync(buildProfileNew, flush: true);
 }
 
+/// 在工程级的的oh-package.json5里添加flutter_module以及plugins的配置
+Future<void> addFlutterModuleAndPluginsSrcOverrides(FlutterProject flutterProject) async {
+  final List<Plugin> plugins = (await findPlugins(flutterProject))
+      .where((Plugin p) => p.platforms.containsKey(OhosPlugin.kConfigKey))
+      .toList();
+  if (plugins.isEmpty) {
+    return;
+  }
+  final File packageFile = flutterProject.ohos.ohosRoot.childFile('oh-package.json5');
+  if (!packageFile.existsSync()) {
+    throwToolExit('check if oh-package.json5 file:($packageFile) exist ?');
+  }
+  final String packageConfig = packageFile.readAsStringSync();
+  final Map<String, dynamic> config = JSON5.parse(packageConfig) as Map<String, dynamic>;
+  final Map<String, dynamic> overrides = config['overrides'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+  for (final Plugin plugin in plugins) {
+    overrides[plugin.name] = globals.fs.path.join(plugin.path, OhosPlugin.kConfigKey);
+  }
+  final String relativePath = globals.fs.path.relative(flutterProject.ohos.flutterModuleDirectory.path, from: flutterProject.ohos.ohosRoot.path);
+  overrides['@ohos/flutter_module'] = 'file:./$relativePath';
+  overrides['@ohos/flutter_ohos'] = 'file:./har/flutter.har';
+  final String configNew = const JsonEncoder.withIndent('  ').convert(config);
+  packageFile.writeAsStringSync(configNew, flush: true);
+}
 
 /// 添加到工程级 build-profile.json5 的 modules 中
 Future<void> removePluginsModules(FlutterProject flutterProject) async {
@@ -129,8 +154,8 @@ Future<void> removePluginsModules(FlutterProject flutterProject) async {
   buildProfileFile.writeAsStringSync(buildProfileNew, flush: true);
 }
 
-/// 添加到工程级 oh-package.json5 的 overrides 中
-Future<void> addPluginsOverrides(FlutterProject flutterProject) async {
+/// 把flutter_module跟plugins的依赖写入工程级oh-package.json5里的overrides
+Future<void> addFlutterModuleAndPluginsOverrides(FlutterProject flutterProject) async {
   final List<Plugin> plugins = (await findPlugins(flutterProject))
       .where((Plugin p) => p.platforms.containsKey(OhosPlugin.kConfigKey))
       .toList();
@@ -146,32 +171,7 @@ Future<void> addPluginsOverrides(FlutterProject flutterProject) async {
   final Map<String, dynamic> overrides = config['overrides'] as Map<String, dynamic>? ?? <String, dynamic>{};
 
   for (final Plugin plugin in plugins) {
-    overrides[plugin.name] = globals.fs.path.join(plugin.path, OhosPlugin.kConfigKey);
-  }
-  final String configNew = const JsonEncoder.withIndent('  ').convert(config);
-  packageFile.writeAsStringSync(configNew, flush: true);
-}
-
-/// 从 工程级 oh-package.json5 的 overrides 中去除
-Future<void> removePluginsOverrides(FlutterProject flutterProject) async {
-  final List<Plugin> plugins = (await findPlugins(flutterProject))
-      .where((Plugin p) => p.platforms.containsKey(OhosPlugin.kConfigKey))
-      .toList();
-  if (plugins.isEmpty) {
-    return;
-  }
-  final File packageFile = flutterProject.ohos.ohosRoot.childFile('oh-package.json5');
-  if (!packageFile.existsSync()) {
-    throwToolExit('check if oh-package.json5 file:($packageFile) exist ?');
-  }
-  final String packageConfig = packageFile.readAsStringSync();
-  final Map<String, dynamic> config = JSON5.parse(packageConfig) as Map<String, dynamic>;
-  final Map<String, dynamic> overrides = config['overrides'] as Map<String, dynamic>? ?? <String, dynamic>{};
-  if (overrides.isEmpty) {
-    return;
-  }
-  for (final Plugin plugin in plugins) {
-    overrides.remove(plugin.name);
+    overrides[plugin.name] = 'file:./har/${plugin.name}.har';
   }
   final String configNew = const JsonEncoder.withIndent('  ').convert(config);
   packageFile.writeAsStringSync(configNew, flush: true);
