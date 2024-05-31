@@ -133,7 +133,7 @@ class OhosDevice extends Device {
         hdcCommandForDevice(<String>['install', '-r', hap.applicationPackage.path]);
     final File file = globals.fs.file(hap.applicationPackage.path);
     if (!file.existsSync()) {
-      throwToolExit('the hap file not exists!');
+      throwToolExit('Failed to get the hap file: ${file.path}');
     }
     try {
       _logger.printStatus('installing hap. bundleName: ${app.id} ');

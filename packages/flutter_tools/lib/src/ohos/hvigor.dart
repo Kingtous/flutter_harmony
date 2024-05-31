@@ -31,7 +31,10 @@ import '../build_system/targets/ohos.dart';
 import '../cache.dart';
 import '../compile.dart';
 import '../convert.dart';
+import '../flutter_plugins.dart';
 import '../globals.dart' as globals;
+import '../platform_plugins.dart';
+import '../plugins.dart';
 import '../project.dart';
 import '../reporting/reporting.dart';
 import 'application_package.dart';
@@ -629,36 +632,41 @@ class OhosHvigorBuilder implements OhosBuilder {
 
     if (!project.ohos.ohosBuildData.moduleInfo.hasEntryModule) {
       throwToolExit(
-          "this ohos project don't have a entry module , can't build to a hap file.");
+          "this ohos project don't have a entry module, can't build to a hap file.");
     }
     await addPluginsModules(project);
     await addPluginsOverrides(project);
 
     await buildApplicationPipeLine(project, ohosBuildInfo, target: target);
 
+    /// 生成所有 plugin 的 har
     final String hvigorwPath = getHvigorwPath(ohosRootPath, checkMod: true);
-    final List<OhosModule> harModules = ohosBuildData.harModules;
-    if (harModules.isNotEmpty) {
-      /// 生成所有 plugin 的 har
+    final List<Plugin> plugins = (await findPlugins(project))
+        .where((Plugin p) => p.platforms.containsKey(OhosPlugin.kConfigKey))
+        .toList();
+    if (plugins.isNotEmpty) {
       final int errorCode = await assembleHar(
           processManager: globals.processManager,
           workPath: ohosRootPath,
           hvigorwPath: hvigorwPath,
-          moduleName: harModules.map((OhosModule e) => e.name).join(','),
+          moduleName: plugins.map((Plugin e) => e.name).join(','),
           logger: _logger);
       if (errorCode != 0) {
         throwToolExit('assembleHar error! please check log.');
       }
-      for (final OhosModule module in harModules) {
-        final String desHarPath = globals.fs.path.join(ohosRootPath, 'har', '${module.name}.har');
-        final File originHar = globals.fs.directory(globals.fs.path.join(ohosRootPath, module.srcPath))
+
+      for (final Plugin plugin in plugins) {
+        final String desHarPath = globals.fs.path.join(ohosRootPath, 'har', '${plugin.name}.har');
+        final File originHar = globals.fs
+            .directory(globals.fs.path.join(ohosRootPath,
+                globals.fs.path.join(plugin.path, OhosPlugin.kConfigKey)))
             .childDirectory('build')
             .childDirectory('default')
             .childDirectory('outputs')
             .childDirectory('default')
-            .childFile('${module.name}.har');
+            .childFile('${plugin.name}.har');
         if (!originHar.existsSync()) {
-          throwToolExit('can not found module assemble har out file !');
+          throwToolExit('Oops! Failed to find: ${originHar.path}');
         }
         ensureParentExists(desHarPath);
         originHar.copySync(desHarPath);
@@ -688,8 +696,8 @@ class OhosHvigorBuilder implements OhosBuilder {
     final dynamic obj = JSON5.parse(buildProfileConfig);
     dynamic signingConfigs = obj['app']?['signingConfigs'];
     if (signingConfigs is List && signingConfigs.isEmpty) {
-      _logger.printError('请通过DevEco Studio打开ohos工程后配置调试签名(File -> Project Structure -> Signing Configs 勾选Automatically generate signature)');
-      return;
+      _logger.printError(
+          '请通过DevEco Studio打开ohos工程后配置调试签名(File -> Project Structure -> Signing Configs 勾选Automatically generate signature)');
     }
   }
 
@@ -728,7 +736,6 @@ class OhosHvigorBuilder implements OhosBuilder {
         !project.ohos.flutterModuleDirectory.existsSync()) {
       throwToolExit('current project is not module or has not pub get');
     }
-
     await addPluginsModules(project);
     await addPluginsOverrides(project);
 
@@ -758,7 +765,7 @@ class OhosHvigorBuilder implements OhosBuilder {
           .childDirectory('default')
           .childFile('${module.name}.har');
       if (!originHar.existsSync()) {
-        throwToolExit('can not found module assemble har out file !');
+        throwToolExit('Oops! Failed to find: ${originHar.path}');
       }
       ensureParentExists(desHarPath);
       originHar.copySync(desHarPath);
@@ -857,7 +864,7 @@ class OhosHvigorBuilder implements OhosBuilder {
           .childDirectory('default')
           .childFile('${ohosProject.flutterModuleName}.har');
       if (!originHar.existsSync()) {
-        throwToolExit('can not found module assemble har out file !');
+        throwToolExit('Oops! Failed to find: ${originHar.path}');
       }
       final String desPath = globals.fs.path
           .join(ohosRootPath, 'har', '${ohosProject.flutterModuleName}.har');

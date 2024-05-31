@@ -185,6 +185,11 @@ class ModuleInfo {
       entryModule?.name ??
       (moduleList.isNotEmpty ? moduleList.first.name : OHOS_ENTRY_DEFAULT);
 
+  /// 获取主要的module路径，如果存在entry，返回entry类型的module，否则返回第一个module
+  String get mainModuleSrcPath =>
+      entryModule?.srcPath ??
+      (moduleList.isNotEmpty ? moduleList.first.srcPath : OHOS_ENTRY_DEFAULT);
+
   static ModuleInfo getModuleInfo(OhosProject ohosProject) {
     return ModuleInfo(OhosModule.fromOhosProject(ohosProject));
   }
@@ -246,7 +251,6 @@ class OhosModule {
       final String name = module['name'] as String;
       final String type = module['type'] as String;
       final bool isEntry = type == OhosModuleType.entry.name;
-
       return OhosModule(
           name: name,
           srcPath: srcPath,
