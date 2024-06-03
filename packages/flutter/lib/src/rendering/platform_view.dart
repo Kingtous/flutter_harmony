@@ -540,6 +540,257 @@ class _UiKitViewGestureRecognizer extends OneSequenceGestureRecognizer {
   }
 }
 
+class RenderOhosView extends RenderBox {
+  RenderOhosView({
+    required OhosViewController viewController,
+    required this.hitTestBehavior,
+    required Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
+  }) : assert(viewController != null),
+        assert(hitTestBehavior != null),
+        assert(gestureRecognizers != null),
+        _viewController = viewController {
+    updateGestureRecognizers(gestureRecognizers);
+    _viewController.addOnPlatformViewCreatedListener(_onPlatformViewCreated);
+    _setOffset();
+  }
+
+  _PlatformViewState _state = _PlatformViewState.uninitialized;
+  OhosViewController get viewController => _viewController;
+  OhosViewController _viewController;
+  set viewController(OhosViewController value) {
+    assert(value != null);
+    if (_viewController == value) {
+      return;
+    }
+    _viewController.removeOnPlatformViewCreatedListener(_onPlatformViewCreated);
+    final bool needsSemanticsUpdate = _viewController.id != value.id;
+    _viewController = value;
+    _sizePlatformView();
+    markNeedsPaint();
+    if (needsSemanticsUpdate) {
+      markNeedsSemanticsUpdate();
+    }
+    _viewController.addOnPlatformViewCreatedListener(_onPlatformViewCreated);
+  }
+
+  void _onPlatformViewCreated(int id) {
+    markNeedsSemanticsUpdate();
+  }
+
+  PlatformViewHitTestBehavior hitTestBehavior;
+
+  Size? _currentTextureSize;
+
+  void updateGestureRecognizers(Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers) {
+    assert(gestureRecognizers != null);
+    assert(
+    _factoriesTypeSet(gestureRecognizers).length == gestureRecognizers.length,
+    'There were multiple gesture recognizer factories for the same type, there must only be a single '
+        'gesture recognizer factory for each gesture recognizer type.',
+    );
+    if (_factoryTypesSetEquals(gestureRecognizers, _gestureRecognizer?.gestureRecognizerFactories)) {
+      return;
+    }
+    _gestureRecognizer?.dispose();
+    _gestureRecognizer = _OhosViewGestureRecognizer(viewController, gestureRecognizers);
+  }
+
+  @override
+  bool get sizedByParent => true;
+
+  @override
+  bool get alwaysNeedsCompositing => true;
+
+  @override
+  bool get isRepaintBoundary => true;
+
+  _OhosViewGestureRecognizer? _gestureRecognizer;
+
+  PointerEvent? _lastPointerDownEvent;
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    return constraints.biggest;
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    context.addLayer(PlatformViewLayer(
+      rect: offset & size,
+      viewId: _viewController.id,
+    ));
+  }
+
+  @override
+  bool hitTest(BoxHitTestResult result, { Offset? position }) {
+    if (hitTestBehavior == PlatformViewHitTestBehavior.transparent || !size.contains(position!)) {
+      return false;
+    }
+    result.add(BoxHitTestEntry(this, position));
+    return hitTestBehavior == PlatformViewHitTestBehavior.opaque;
+  }
+
+  @override
+  bool hitTestSelf(Offset position) => hitTestBehavior != PlatformViewHitTestBehavior.transparent;
+
+  @override
+  void handleEvent(PointerEvent event, HitTestEntry entry) {
+    if (event is! PointerDownEvent) {
+      return;
+    }
+    _gestureRecognizer!.addPointer(event);
+    _lastPointerDownEvent = event.original ?? event;
+  }
+
+  // This is registered as a global PointerRoute while the render object is attached.
+  void _handleGlobalPointerEvent(PointerEvent event) {
+    if (event is! PointerDownEvent) {
+      return;
+    }
+    if (!(Offset.zero & size).contains(globalToLocal(event.position))) {
+      return;
+    }
+    if ((event.original ?? event) != _lastPointerDownEvent) {
+      // The pointer event is in the bounds of this render box, but we didn't get it in handleEvent.
+      // This means that the pointer event was absorbed by a different render object.
+      // Since on the platform side the FlutterTouchIntercepting view is seeing all events that are
+      // within its bounds we need to tell it to reject the current touch sequence.
+      _viewController.rejectGesture();
+    }
+    _lastPointerDownEvent = null;
+  }
+
+  @override
+  void describeSemanticsConfiguration (SemanticsConfiguration config) {
+    super.describeSemanticsConfiguration(config);
+    config.isSemanticBoundary = true;
+    config.platformViewId = _viewController.id;
+  }
+
+  @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_handleGlobalPointerEvent);
+  }
+
+  @override
+  void detach() {
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_handleGlobalPointerEvent);
+    _gestureRecognizer!.reset();
+    super.detach();
+  }
+
+  @override
+  void dispose() {
+    _viewController.removeOnPlatformViewCreatedListener(_onPlatformViewCreated);
+    super.dispose();
+  }
+
+  // Sets the offset of the underlying platform view on the platform side.
+  //
+  // This allows the Android native view to draw the a11y highlights in the same
+  // location on the screen as the platform view widget in the Flutter framework.
+  //
+  // It also allows platform code to obtain the correct position of the Android
+  // native view on the screen.
+  void _setOffset() {
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (attached) {
+        await _viewController.setOffset(localToGlobal(Offset.zero));
+      }
+      // Schedule a new post frame callback.
+      _setOffset();
+    });
+  }
+
+  @override
+  void performResize() {
+    super.performResize();
+    _sizePlatformView();
+  }
+
+  Future<void> _sizePlatformView() async {
+    if (_state == _PlatformViewState.resizing || size.isEmpty) {
+      return;
+    }
+  
+    _state = _PlatformViewState.resizing;
+
+    markNeedsPaint();
+
+    Size targetSize;
+    do {
+      targetSize = size;
+      _currentTextureSize = await _viewController.setSize(targetSize);
+    } while (size != targetSize);
+
+    _state = _PlatformViewState.ready;
+    markNeedsPaint();
+  }
+}
+
+class _OhosViewGestureRecognizer extends OneSequenceGestureRecognizer {
+  _OhosViewGestureRecognizer(
+      this.controller,
+      this.gestureRecognizerFactories
+      ) {
+    team = GestureArenaTeam()
+      ..captain = this;
+    _gestureRecognizers = gestureRecognizerFactories.map(
+          (Factory<OneSequenceGestureRecognizer> recognizerFactory) {
+        final OneSequenceGestureRecognizer gestureRecognizer = recognizerFactory.constructor();
+        gestureRecognizer.team = team;
+        if (gestureRecognizer is LongPressGestureRecognizer) {
+          gestureRecognizer.onLongPress ??= (){};
+        } else if (gestureRecognizer is DragGestureRecognizer) {
+          gestureRecognizer.onDown ??= (_){};
+        } else if (gestureRecognizer is TapGestureRecognizer) {
+          gestureRecognizer.onTapDown ??= (_){};
+        }
+        return gestureRecognizer;
+      },
+    ).toSet();
+  }
+
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizerFactories;
+  late Set<OneSequenceGestureRecognizer> _gestureRecognizers;
+
+  final OhosViewController controller;
+
+  @override
+  void addAllowedPointer(PointerDownEvent event) {
+    super.addAllowedPointer(event);
+    for (final OneSequenceGestureRecognizer recognizer in _gestureRecognizers) {
+      recognizer.addPointer(event);
+    }
+  }
+
+  @override
+  String get debugDescription => 'Ohos view';
+
+  @override
+  void didStopTrackingLastPointer(int pointer) { }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    stopTrackingIfPointerNoLongerDown(event);
+  }
+
+  @override
+  void acceptGesture(int pointer) {
+    controller.acceptGesture();
+  }
+
+  @override
+  void rejectGesture(int pointer) {
+    controller.rejectGesture();
+  }
+
+  void reset() {
+    resolve(GestureDisposition.rejected);
+  }
+}
+
 typedef _HandlePointerEvent = Future<void> Function(PointerEvent event);
 
 // This recognizer constructs gesture recognizers from a set of gesture recognizer factories

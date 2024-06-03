@@ -197,6 +197,185 @@ class AndroidView extends StatefulWidget {
   State<AndroidView> createState() => _AndroidViewState();
 }
 
+class OhosView extends StatefulWidget {
+  /// Creates a widget that embeds an iOS view.
+  ///
+  /// {@macro flutter.widgets.AndroidView.constructorArgs}
+  const OhosView({
+    super.key,
+    required this.viewType,
+    this.onPlatformViewCreated,
+    this.hitTestBehavior = PlatformViewHitTestBehavior.opaque,
+    this.layoutDirection,
+    this.creationParams,
+    this.creationParamsCodec,
+    this.gestureRecognizers,
+  }) : assert(viewType != null),
+        assert(hitTestBehavior != null),
+        assert(creationParams == null || creationParamsCodec != null);
+
+  final String viewType;
+
+  final PlatformViewCreatedCallback? onPlatformViewCreated;
+
+  final PlatformViewHitTestBehavior hitTestBehavior;
+
+  final TextDirection? layoutDirection;
+
+  final dynamic creationParams;
+
+  final MessageCodec<dynamic>? creationParamsCodec;
+
+  final Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
+
+  @override
+  State<OhosView> createState() => _OhosViewState();
+}
+
+class _OhosViewState extends State<OhosView> {
+  int? _id;
+  late OhosViewController _controller;
+  TextDirection? _layoutDirection;
+  bool _initialized = false;
+  late FocusNode _focusNode;
+
+  static final Set<Factory<OneSequenceGestureRecognizer>> _emptyRecognizersSet =
+  <Factory<OneSequenceGestureRecognizer>>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final OhosViewController? controller = _controller;
+    if (controller == null) {
+      return const SizedBox.expand();
+    }
+    return Focus(
+      focusNode: _focusNode,
+      onFocusChange: (bool isFocused) => _onFocusChange(isFocused, controller),
+      child: _OhosPlatformView(
+        controller: _controller,
+        hitTestBehavior: widget.hitTestBehavior,
+        gestureRecognizers: widget.gestureRecognizers ?? _emptyRecognizersSet,
+      ),
+    );
+  }
+
+  void _initializeOnce() {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+    _createNewOhosView();
+    _focusNode = FocusNode(debugLabel: 'OhosView(id: $_id)');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final TextDirection newLayoutDirection = _findLayoutDirection();
+    final bool didChangeLayoutDirection =
+        _layoutDirection != newLayoutDirection;
+    _layoutDirection = newLayoutDirection;
+
+    _initializeOnce();
+    if (didChangeLayoutDirection) {
+      // The native view will update asynchronously, in the meantime we don't want
+      // to block the framework. (so this is intentionally not awaiting).
+      _controller.setLayoutDirection(_layoutDirection!);
+    }
+  }
+
+  @override
+  void didUpdateWidget(OhosView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final TextDirection newLayoutDirection = _findLayoutDirection();
+    final bool didChangeLayoutDirection =
+        _layoutDirection != newLayoutDirection;
+    _layoutDirection = newLayoutDirection;
+
+    if (widget.viewType != oldWidget.viewType) {
+      _controller.dispose();
+      _createNewOhosView();
+      return;
+    }
+
+    if (didChangeLayoutDirection) {
+      _controller.setLayoutDirection(_layoutDirection!);
+    }
+  }
+
+  TextDirection _findLayoutDirection() {
+    assert(
+        widget.layoutDirection != null || debugCheckHasDirectionality(context));
+    return widget.layoutDirection ?? Directionality.of(context);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _createNewOhosView() {
+    _id = platformViewsRegistry.getNextPlatformViewId();
+    _controller = PlatformViewsService.initOhosView(
+        id: _id!,
+        viewType: widget.viewType,
+        layoutDirection: _layoutDirection!,
+        creationParams: widget.creationParams,
+        creationParamsCodec: widget.creationParamsCodec,
+        onFocus: () {
+          _focusNode.requestFocus();
+        }
+    );
+
+    if (widget.onPlatformViewCreated != null) {
+      _controller
+          .addOnPlatformViewCreatedListener(widget.onPlatformViewCreated!);
+    }
+  }
+
+  void _onFocusChange(bool isFocused, OhosViewController controller) {
+    if (!isFocused) {
+      return;
+    }
+    SystemChannels.textInput.invokeMethod<void>(
+      'TextInput.setPlatformViewClient',
+      <String, dynamic>{'platformViewId': controller.id},
+    );
+  }
+}
+
+class _OhosPlatformView extends LeafRenderObjectWidget {
+  const _OhosPlatformView({
+    required this.controller,
+    required this.hitTestBehavior,
+    required this.gestureRecognizers,
+  }) : assert(controller != null),
+        assert(hitTestBehavior != null),
+        assert(gestureRecognizers != null);
+
+  final OhosViewController controller;
+  final PlatformViewHitTestBehavior hitTestBehavior;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return RenderOhosView(
+      viewController: controller,
+      hitTestBehavior: hitTestBehavior,
+      gestureRecognizers: gestureRecognizers,
+    );
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, RenderOhosView renderObject) {
+    renderObject.viewController = controller;
+    renderObject.hitTestBehavior = hitTestBehavior;
+    renderObject.updateGestureRecognizers(gestureRecognizers);
+  }
+}
+
 /// Common superclass for iOS and macOS platform views.
 ///
 /// Platform views are used to embed native views in the widget hierarchy, with

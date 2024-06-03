@@ -292,6 +292,32 @@ class PlatformViewsService {
     }
     return AppKitViewController._(id, layoutDirection);
   }
+
+  static OhosViewController initOhosView({
+    required int id,
+    required String viewType,
+    required TextDirection layoutDirection,
+    dynamic creationParams,
+    MessageCodec<dynamic>? creationParamsCodec,
+    VoidCallback? onFocus,
+  }) {
+    assert(id != null);
+    assert(viewType != null);
+    assert(layoutDirection != null);
+    assert(creationParams == null || creationParamsCodec != null);
+
+    final OhosViewController controller =
+        OhosViewController._(
+      viewId: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: creationParams,
+      creationParamsCodec: creationParamsCodec,
+    );
+
+    _instance._focusCallbacks[id] = onFocus ?? () {};
+    return controller;
+  }
 }
 
 /// Properties of an Android pointer.
@@ -1460,6 +1486,247 @@ class AppKitViewController extends DarwinPlatformViewController {
     super.id,
     super.layoutDirection,
   );
+}
+
+class OhosViewController {
+  OhosViewController._({
+    required int viewId,
+    required String viewType,
+    required TextDirection layoutDirection,
+    dynamic creationParams,
+    MessageCodec<dynamic>? creationParamsCodec,
+  }) : assert(viewId != null),
+        assert(viewType != null),
+        assert(layoutDirection != null),
+        assert(creationParams == null || creationParamsCodec != null),
+        id = viewId,
+        _viewType = viewType,
+        _layoutDirection = layoutDirection,
+        _creationParams = creationParams == null
+            ? null
+            : _CreationParams(creationParams, creationParamsCodec!);
+
+  final int id;
+
+  final String _viewType;
+
+  TextDirection _layoutDirection;
+
+  final List<PlatformViewCreatedCallback> _platformViewCreatedCallbacks =
+      <PlatformViewCreatedCallback>[];
+
+  bool _debugDisposed = false;
+
+  /// The current offset of the platform view.
+  Offset _offset = Offset.zero;
+
+  final _CreationParams? _creationParams;
+
+  _AndroidViewState _state = _AndroidViewState.waitingForSize;
+
+  static const int kOhosLayoutDirectionLtr = 0;
+
+  static const int kOhosLayoutDirectionRtl = 1;
+
+  /// Adds a callback that will get invoke after the platform view has been
+  /// created.
+  void addOnPlatformViewCreatedListener(PlatformViewCreatedCallback listener) {
+    assert(listener != null);
+    assert(_state != _AndroidViewState.disposed);
+    _platformViewCreatedCallbacks.add(listener);
+  }
+
+  /// Removes a callback added with [addOnPlatformViewCreatedListener].
+  void removeOnPlatformViewCreatedListener(PlatformViewCreatedCallback listener) {
+    assert(listener != null);
+    assert(_state != _AndroidViewState.disposed);
+    _platformViewCreatedCallbacks.remove(listener);
+  }
+
+  static int _getOhosDirection(TextDirection direction) {
+    assert(direction != null);
+    switch (direction) {
+      case TextDirection.ltr:
+        return kOhosLayoutDirectionLtr;
+      case TextDirection.rtl:
+        return kOhosLayoutDirectionRtl;
+    }
+  }
+
+  Future<void> acceptGesture() {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+    };
+    return SystemChannels.platform_views.invokeMethod('acceptGesture', args);
+  }
+
+  Future<void> rejectGesture() {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+    };
+    return SystemChannels.platform_views.invokeMethod('rejectGesture', args);
+  }
+
+  Future<void> dispose() async {
+    _debugDisposed = true;
+
+    if (_state == _AndroidViewState.creating ||
+      _state == _AndroidViewState.created) {
+      await SystemChannels.platform_views.invokeMethod<void>('dispose',
+        <String, dynamic>{
+          'id': id,
+          'hybrid': false,
+        }
+      );
+    }
+
+    _platformViewCreatedCallbacks.clear();
+    _state = _AndroidViewState.disposed;
+    PlatformViewsService._instance._focusCallbacks.remove(id);
+  }
+
+  Future<void> setOffset(Offset offset) async {
+    if (offset == _offset) {
+      return;
+    }
+
+    if (_state != _AndroidViewState.created) {
+      return;
+    }
+
+    _offset = offset;
+
+    await SystemChannels.platform_views.invokeMethod<void>(
+      'offset',
+      <String, dynamic>{
+        'id': id,
+        'top': offset.dy,
+        'left': offset.dx,
+      },
+    );
+  }
+
+  Future<Size> _sendResizeMessage(Size size) async {
+    assert(_state != _AndroidViewState.waitingForSize,
+        'Ohos view must have an initial size. View id: $id');
+    assert(!size.isEmpty);
+
+    final Map<Object?, Object?>? meta =
+      await SystemChannels.platform_views.invokeMapMethod<Object?, Object?>(
+      'resize',
+      <String, dynamic>{
+        'id': id,
+        'width': size.width,
+        'height': size.height,
+      },
+    );
+    assert(meta != null);
+    assert(meta!.containsKey('width'));
+    assert(meta!.containsKey('height'));
+    return Size(meta!['width']! as double, meta['height']! as double);
+  }
+
+  Future<void> _sendCreateMessage(
+      {required Size size, Offset? position}) async {
+    assert(!size.isEmpty,
+        'trying to create $OhosViewController without setting a valid size.');
+
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+      'viewType': _viewType,
+      'direction': OhosViewController._getOhosDirection(_layoutDirection),
+      if (size != null) 'width': size.width,
+      if (size != null) 'height': size.height,
+      if (position != null) 'left': position.dx,
+      if (position != null) 'top': position.dy,
+    };
+
+    if (_creationParams != null) {
+      final ByteData paramsByteData =
+          _creationParams!.codec.encodeMessage(_creationParams!.data)!;
+      args['params'] = Uint8List.view(
+        paramsByteData.buffer,
+        0,
+        paramsByteData.lengthInBytes,
+      );
+    }
+    return SystemChannels.platform_views.invokeMethod<dynamic>('create', args);
+  }
+
+  Future<void> create({Size? size, Offset? position}) async {
+    assert(_state != _AndroidViewState.disposed,
+        'trying to create a disposed Ohos view');
+    assert(_state == _AndroidViewState.waitingForSize,
+        'Ohos view is already sized. View id: $id');
+
+    if (size == null) {
+      // Wait for a setSize call.
+      return;
+    }
+
+    _state = _AndroidViewState.creating;
+    await _sendCreateMessage(size: size, position: position);
+    _state = _AndroidViewState.created;
+
+    for (final PlatformViewCreatedCallback callback
+        in _platformViewCreatedCallbacks) {
+      callback(id);
+    }
+  }
+
+  /// Sizes the Android View.
+  ///
+  /// [size] is the view's new size in logical pixel, it must not be null and must
+  /// be bigger than zero.
+  ///
+  /// The first time a size is set triggers the creation of the Android view.
+  ///
+  /// Returns the buffer size in logical pixel that backs the texture where the platform
+  /// view pixels are written to.
+  ///
+  /// The buffer size may or may not be the same as [size].
+  ///
+  /// As a result, consumers are expected to clip the texture using [size], while using
+  /// the return value to size the texture.
+  Future<Size> setSize(Size size) async {
+    assert(_state != _AndroidViewState.disposed,
+        'Ohos view is disposed. View id: $id');
+    if (_state == _AndroidViewState.waitingForSize) {
+      // Either `create` hasn't been called, or it couldn't run due to missing
+      // size information, so create the view now.
+      await create(size: size);
+      return size;
+    } else {
+      return _sendResizeMessage(size);
+    }
+  }
+
+    /// Sets the layout direction for the Android view.
+  Future<void> setLayoutDirection(TextDirection layoutDirection) async {
+    assert(
+      _state != _AndroidViewState.disposed,
+      'trying to set a layout direction for a disposed UIView. View id: $id',
+    );
+
+    if (layoutDirection == _layoutDirection) {
+      return;
+    }
+
+    assert(layoutDirection != null);
+    _layoutDirection = layoutDirection;
+
+    // If the view was not yet created we just update _layoutDirection and return, as the new
+    // direction will be used in _create.
+    if (_state == _AndroidViewState.waitingForSize) {
+      return;
+    }
+
+    await SystemChannels.platform_views
+        .invokeMethod<void>('setDirection', <String, dynamic>{
+      'id': id,
+      'direction': _getOhosDirection(layoutDirection),
+    });
+  }
 }
 
 /// An interface for controlling a single platform view.
