@@ -801,7 +801,7 @@ Future<void> _writeOhosPluginRegistrant(FlutterProject project, List<Plugin> plu
     'os': 'ohos',
     'methodChannelPlugins': ohosMethodChannelPlugins,
   };
-  _renderTemplateToFile(
+  await _renderTemplateToFile(
     _arktsPluginRegistryTemplate,
     context,
     project.ohos.managedDirectory.childFile('GeneratedPluginRegistrant.ets'),
