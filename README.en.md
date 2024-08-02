@@ -14,7 +14,7 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
 
 * Environment configuration
 
-    **Please give priority to downloading the supporting development tools from [Hongmeng Kit List](https://developer.harmonyos.com/deveco-developer-suite/enabling/kit?currentPage=1&pageSize=100). Downloads from other channels are not currently supported. Kit**
+    **Please give priority to downloading the supporting development tools from [HarmonyOS Kit List](https://developer.huawei.com/consumer/cn/download/). Downloads from other channels are not currently supported. Kit**
     *The following environment variable configuration is for Unix-like systems (Linux, Mac). You can directly refer to the configuration below. For environment variable configuration under Windows, please set it in ‘Edit System Environment Variables’*
 
    1. Download OpenHarmony SDK and configure environment variables
@@ -39,7 +39,8 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
       export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
       ```
 
-    3. The application build relies on [Flutter Engine](https://github.com/flutter/engine) to build products: `ohos_debug_unopt_arm64` and `ohos_release_arm64`. Please add: `--local-engine= in the Flutter Tools command running parameters. --local-engine=src/out/<engine product directory\>`. Can be downloaded at this path [Compiled product](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)
+    3. The application build relies on flutter engine to build products and engine host in path `src/out`. Products of different build type are in directory of `ohos_debug_unopt_arm64`, `ohos_release_arm64` and `ohos_profile_arm64`. The engine host also has 3 types and they are in `host_debug_unopt`, `host_release` and `host_profile` directory respectively. The building process needs to use different engine product and engine host according to your build type.
+
 
        For the configuration of all the above environment variables (for environment variable configuration under Windows, please set it in 'Edit System Environment Variables'), you can refer to the following example (please replace user and specific code path with the actual path):
 
@@ -58,6 +59,7 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
        export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
        export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
        ```
+    4. Flutter uses `flutter.har` in its own sdk and will not use the one under flutter engine build. If the `flutter.har` in the engine build directory is needed, one needs to copy `src/out/ohos_<build_type>_arm64/har/flutter.har` to flutter sdk path `packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl/` and add build type with HarmonyOS sdk version suffix such as `flutter.har.release.12`.
 
 ## Build steps
 
@@ -71,16 +73,16 @@ This repository is a compatible extension of Flutter SDK for the OpenHarmony pla
 
     # Enter the project root directory to compile
     # Example: flutter build hap [--target-platform ohos-arm64] --local-engine=<DIR>/src/out/ohos_release_arm64 --release
-   flutter build hap --local-engine=/home/user/engine_make/src/out/ohos_release_arm64 --release
+    flutter build hap --target-platform ohos-arm64 --<debug|release|profile> --local-engine=<DIR>/src/out/<engine> --local-engine-host=src/out/<engine_host>/
     ```
 
 3. After discovering the ohos device through the `flutter devices` command, use `hdc -t <deviceId> install <hap file path>` to install it.
 
 4. You can also directly use the following command to run:
-```
-    # Example: flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64
-   flutter run --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 --debug
-```
+    ```
+    # Example: flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64 -d <device-id>
+    flutter run  --debug --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 -d <device-id> --local-engine-host=src/out/<engine_host>/
+    ```
 
 
 ## Compatible command list developed by OpenHarmony
