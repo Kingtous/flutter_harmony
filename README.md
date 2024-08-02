@@ -38,9 +38,7 @@ Flutter SDK 仓库
      export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
      ```
 
-   3. 应用构建依赖[Flutter Engine](https://github.com/flutter/engine)构建产物：`ohos_debug_unopt_arm64` 与 `ohos_release_arm64`，请在Flutter Tools指令运行参数中添加：`--local-engine=src/out/<engine产物目录\>` 可在该路径下载[编译产物](https://docs.qq.com/sheet/DUnljRVBYUWZKZEtF?tab=BB08J2)，engine路径指向需带上`src/out`目录
-
-      上述所有环境变量的配置（Windows下环境变量配置请在‘编辑系统环境变量’中设置），可参考下面的示例（其中user和具体代码路径请替换成实际路径）：
+   3. 应用构建依赖flutter engine构建产物与engine host，均在 `src/out` 路径下。不同构建类型的产物分别在 `ohos_debug_unopt_arm64`、 `ohos_release_arm64` 和 `ohos_profile_arm64` 目录下。engine host 的构建类型也有三种，分别在 `host_debug_unopt` 、`host_release` 与 `host_profile` 目录中。构建需要根据不同的构建类型来指定不同的目录。
 
       ```sh
       # 国内镜像
@@ -57,7 +55,7 @@ Flutter SDK 仓库
       export PATH=$TOOL_HOME/tools/hvigor/bin:$PATH # command-line-tools/hvigor/bin
       export PATH=$TOOL_HOME/tools/node/bin:$PATH # command-line-tools/tool/node/bin
       ```
-
+   4. Flutter 默认使用自己sdk中的har包，不会使用flutter engine中的har包，如果需要使用flutter engine的har包，需要手工将flutter engine中的 `src/out/ohos_<build_type>_arm64/har/flutter.har` 复制到flutter sdk路径下的 `packages/flutter_tools/templates/app_shared/ohos.tmpl/har/har_product.tmpl/` 并加上构建类型与HarmonyOS SDK版本的后缀，如 `flutter.har.release.12`。
 
 ## 构建步骤
 
@@ -71,7 +69,7 @@ Flutter SDK 仓库
 
    # 进入工程根目录编译
    # 示例：flutter build hap [--target-platform ohos-arm64] --local-engine=<DIR>/src/out/ohos_release_arm64 --release
-   flutter build hap --local-engine=/home/user/engine_make/src/out/ohos_release_arm64 --release
+   flutter build hap --target-platform ohos-arm64 --<debug|release|profile> --local-engine=src/out/<engine产物目录> --local-engine-host=src/out/<engine host目录>/
    ```
 
 3. 通过`flutter devices`指令发现ohos设备之后，使用 `hdc -t <deviceId> install <hap file path>`进行安装。
@@ -79,7 +77,7 @@ Flutter SDK 仓库
 4. 也可直接使用下列指令运行：
 ```
    # 示例：flutter run --local-engine=<DIR>/src/out/ohos_debug_unopt_arm64 -d <device-id>
-   flutter run --debug --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 -d <device-id>
+   flutter run --debug --local-engine=/home/user/engine_make/src/out/ohos_debug_unopt_arm64 -d <device-id> --local-engine-host=src/out/<engine host目录>/
 ```
 
 
