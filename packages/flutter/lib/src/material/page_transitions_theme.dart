@@ -202,10 +202,7 @@ class _OpenRightwardsPageTransition extends StatelessWidget {
         return AnimatedBuilder(
           animation: animation,
           builder: (BuildContext context, Widget? child) {
-            return Container(
-              alignment: Alignment.topLeft,
-              child: child,
-            );
+            return child ?? Container();
           },
           child: AnimatedBuilder(
             animation: secondaryAnimation,
