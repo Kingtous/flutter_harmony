@@ -195,5 +195,8 @@ Future<void> addFlutterModuleAndPluginsOverrides(FlutterProject flutterProject) 
 }
 
 String _relative(String path, {String? from}) {
-  return globals.fs.path.relative(path, from: from).replaceAll(r'\', '/');
+  final String realPath = globals.fs.file(path).resolveSymbolicLinksSync();
+  final String realFrom = globals.fs.file(from).resolveSymbolicLinksSync();
+  final String result = globals.fs.path.relative(realPath, from: realFrom).replaceAll(r'\', '/');
+  return result;
 }
