@@ -404,7 +404,7 @@ void cleanAndCopyFlutterRuntime(
     OhosBuildData ohosBuildData) {
   logger?.printTrace('copy flutter runtime to project start');
   // copy ohos font-family support
-  final String flutterSdk = globals.fsUtils.escapePath(Cache.flutterRoot!);
+  final String flutterSdk = Cache.flutterRoot!;
   final File ohosDta = globals.localFileSystem.file(globals.fs.path.join(
       flutterSdk,
       'packages',
