@@ -13,6 +13,7 @@
 * limitations under the License.
 */
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:json5/json5.dart';
@@ -157,15 +158,53 @@ void replaceKey(File file, File target, String key, String value) {
   target.writeAsStringSync(content);
 }
 
+Future<int> invokeCmd(
+    {required List<String> command,
+    required String workDirectory,
+    required ProcessManager processManager,
+    Logger? logger}) async {
+  final String cmd = command.join(' ');
+  logger?.printTrace('Invoke cmd: $cmd');
+  final Process server =
+      await processManager.start(command, workingDirectory: workDirectory);
+
+  server.stderr
+      .transform<String>(utf8.decoder)
+      .transform<String>(const LineSplitter())
+      .listen((String line) {
+    if (line.toLowerCase().contains('error:')) {
+      logger?.printError(line);
+    } else {
+      logger?.printTrace(line);
+    }
+  });
+  server.stdout
+      .transform<String>(utf8.decoder)
+      .transform<String>(const LineSplitter())
+      .listen((String line) {
+    logger?.printTrace(line);
+  });
+  final int exitCode = await server.exitCode;
+  if (exitCode == 0) {
+    logger?.printTrace('Invoke success: $cmd');
+  } else {
+    logger?.printError('Invoke error: $cmd');
+  }
+  return exitCode;
+}
+
 ///hvigorw任务
 Future<int> hvigorwTask(List<String> taskCommand,
     {required ProcessUtils processUtils,
     required String workPath,
     required String hvigorwPath,
     Logger? logger}) async {
-  final RunResult result = processUtils.runSync(taskCommand,
-      workingDirectory: workPath, throwOnError: true);
-  return result.exitCode;
+  final int code = await invokeCmd(
+      command: taskCommand,
+      workDirectory: workPath,
+      processManager: globals.processManager,
+      logger: logger);
+  return code;
 }
 
 Future<int> assembleHap(
